@@ -1,0 +1,1229 @@
+//START YEAR 2016  COMPLETE
+
+    2016: {
+      format: "current",
+      teams: {
+        p1: {name: "Marshawn's Lynching Party",owner: "Harrison",art: "artwork/2016/p1.png"},
+        p2: {name: "Deez Nuts",owner: "Jordan",art: "artwork/2016/p2.png"},
+        p3: {name: "The Clit Commanders",owner: "Brycen",art: "artwork/2016/p3.png"},
+        p4: {name: "Dirty birds",owner: "Preston",art: "artwork/2016/p4.png"},
+        p5: {name: "Vick's Dogs",owner: "Will",art: "artwork/2016/p5.png"},
+        p6: {name: "Natty Ice",owner: "David",art: "artwork/2016/p6.png"},
+        c1: {name: "Ronalbro's",owner: "Bailey",art: "artwork/2016/c1.png"},
+        c2: {name: "Tom deflated my balls",owner: "Sam",art: "artwork/2016/c2.png"},
+        c3: {name: "kkk",owner: "Keith",art: "artwork/2016/c3.png"},
+        c4: {name: "I love anal 69 in my butt",owner: "Mike",art: "artwork/2016/c4.png"},
+        c5: {name: "Mattyice8",owner: "Matt",art: "artwork/2016/c5.png"},
+        c6: {name: "Hate",owner: "Chris",art: "artwork/2016/c6.png"}
+      },
+
+      playoffs: {
+        label: "Playoffs",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "playoffs-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "p1"
+          },
+
+//2016_PQ1
+
+{
+  type: "matchup",
+  id: "PQ1",
+  round: "first",
+  slot: "first-upper",
+  roundName: "First Round",
+  bowlName: "",
+  bowlArt: "artwork/2016/PQ1.png",
+
+  teams: [
+    {
+      teamId: "p4",
+      seed: 4,
+      score: 105.22,
+      touchdowns: null,
+      winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Carson Palmer",position: "QB",nflTeam: "ARI",points: 20.72},
+                    {name: "DeMarco Murray",position: "RB",nflTeam: "TEN",points: 14.10},
+                    {name: "Carlos Hyde",position: "RB",nflTeam: "SF",points: 5.70},
+                    {name: "T.Y. Hilton",position: "WR",nflTeam: "IND",points: 4.50},
+                    {name: "Davante Adams",position: "WR",nflTeam: "GB",points: 2.50},
+                    {name: "Ladarius Green",position: "TE",nflTeam: "PIT",points: 7.20},
+                    {name: "Devonta Freeman",position: "RB",nflTeam: "ATL",points: 31.50},
+                    {name: "Justin Tucker",position: "K",nflTeam: "BAL",points: 11.00},
+                    {name: "Kansas City Chiefs",position: "DEF",nflTeam: "KC",points: 8.00}
+                  ],
+                  bench: [
+                    {name: "Kyle Rudolph",position: "TE",nflTeam: "MIN",points: 9.70},
+                    {name: "Drew Brees",position: "QB",nflTeam: "NO",points: 29.36},
+                    {name: "Thomas Rawls",position: "RB",nflTeam: "SEA",points: 3.90},
+                    {name: "Malcolm Mitchell",position: "WR",nflTeam: "NE",points: 1.40},
+                    {name: "Michael Thomas",position: "WR",nflTeam: "NO",points: 11.20},
+                    {name: "Kenneth Farrow",position: "RB",nflTeam: "LAC",points: 3.30},
+                  ]
+                }
+    },
+
+    {
+      teamId: "p5",
+      seed: 5,
+      score: 54.50,
+      touchdowns: null,
+      winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Andrew Luck",position: "QB",nflTeam: "IND",points: 18.80},
+                    {name: "Jeremy Hill",position: "RB",nflTeam: "CIN",points: 11.10},
+                    {name: "Jerick McKinnon",position: "RB",nflTeam: "MIN",points: 7.10},
+                    {name: "Julio Jones",position: "WR",nflTeam: "ATL",points: 0.00},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "LV",points: 2.80},
+                    {name: "Jimmy Graham",position: "TE",nflTeam: "SEA",points: 3.10},
+                    {name: "Willie Snead",position: "WR",nflTeam: "NO",points: 7.60},
+                    {name: "Chandler Catanzaro",position: "K",nflTeam: "ARI",points: 5.00},
+                    {name: "Minnesota Vikings",position: "DEF",nflTeam: "MIN",points: -1.00}
+                  ],
+                  bench: [
+                    {name: "Joe Flacco",position: "QB",nflTeam: "BAL",points: 12.14},
+                    {name: "Gary Barnidge",position: "TE",nflTeam: "CLE",points: 3.50},
+                    {name: "Julian Edelman",position: "WR",nflTeam: "NE",points: 7.50},
+                    {name: "Mark Ingram",position: "RB",nflTeam: "NO",points: 9.20},
+                    {name: "Mike Wallace",position: "WR",nflTeam: "BAL",points: 6.00},
+                    {name: "Charles Sims",position: "RB",nflTeam: "TB",points: 1.90},
+                  ]
+                }
+    },
+  ]
+},
+
+
+
+//2016_PQ2
+
+
+          {
+            type: "matchup",
+            id: "PQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2016/PQ2.png",
+
+            teams: [
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 98.06,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Tyrod Taylor",position: "QB",nflTeam: "BUF",points: 15.86},
+                    {name: "Spencer Ware",position: "RB",nflTeam: "KC",points: 9.40},
+                    {name: "Ty Montgomery",position: "RB",nflTeam: "GB",points: 28.30},
+                    {name: "Golden Tate",position: "WR",nflTeam: "DET",points: 12.20},
+                    {name: "Steve Smith",position: "WR",nflTeam: "BAL",points: 10.00},
+                    {name: "Dwayne Allen",position: "TE",nflTeam: "IND",points: 1.30},
+                    {name: "Kelvin Benjamin",position: "WR",nflTeam: "CAR",points: 2.00},
+                    {name: "Stephen Gostkowski",position: "K",nflTeam: "NE",points: 10.00},
+                    {name: "Buffalo Bills",position: "DEF",nflTeam: "BUF",points: 9.00}
+                  ],
+                  bench: [
+                    {name: "Ben Roethlisberger",position: "QB",nflTeam: "PIT",points: 14.94},
+                    {name: "Cole Beasley",position: "WR",nflTeam: "DAL",points: 4.80},
+                    {name: "Eric Ebron",position: "TE",nflTeam: "DET",points: 3.60},
+                    {name: "Jarvis Landry",position: "WR",nflTeam: "MIA",points: 16.80},
+                    {name: "Donte Moncrief",position: "WR",nflTeam: "IND",points: 0.00},
+                    {name: "Melvin Gordon",position: "RB",nflTeam: "LAC",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 62.72,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Tom Brady",position: "QB",nflTeam: "NE",points: 7.42},
+                    {name: "Matt Forte",position: "RB",nflTeam: "NYJ",points: 2.80},
+                    {name: "LeGarrette Blount",position: "RB",nflTeam: "NE",points: 9.10},
+                    {name: "DeSean Jackson",position: "WR",nflTeam: "WAS",points: 11.10},
+                    {name: "Larry Fitzgerald",position: "WR",nflTeam: "ARI",points: 3.70},
+                    {name: "Travis Kelce",position: "TE",nflTeam: "KC",points: 4.10},
+                    {name: "Frank Gore",position: "RB",nflTeam: "IND",points: 11.50},
+                    {name: "Matt Prater",position: "K",nflTeam: "DET",points: 6.00},
+                    {name: "Philadelphia Eagles",position: "DEF",nflTeam: "PHI",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "Matt Ryan",position: "QB",nflTeam: "ATL",points: 19.34},
+                    {name: "Michael Crabtree",position: "WR",nflTeam: "LV",points: 12.00},
+                    {name: "Eric Decker",position: "WR",nflTeam: "NYJ",points: 0.00},
+                    {name: "Adrian Peterson",position: "RB",nflTeam: "MIN",points: 0.30},
+                    {name: "Alfred Morris",position: "RB",nflTeam: "DAL",points: 0.00},
+                    {name: "Tampa Bay Buccaneers",position: "DEF",nflTeam: "TB",points: 5.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+          {
+            type: "bye",
+            id: "playoffs-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "p2"
+          },
+
+
+//2016_PS1
+
+          {
+            type: "matchup",
+            id: "PS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2016/PS1.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 125.38,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Aaron Rodgers",position: "QB",nflTeam: "GB",points: 37.18},
+                    {name: "Le'Veon Bell",position: "RB",nflTeam: "PIT",points: 25.70},
+                    {name: "Latavius Murray",position: "RB",nflTeam: "LV",points: 5.10},
+                    {name: "Julio Jones",position: "WR",nflTeam: "ATL",points: 6.00},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "LV",points: 7.60},
+                    {name: "Greg Olsen",position: "TE",nflTeam: "CAR",points: 5.90},
+                    {name: "Jay Ajayi",position: "RB",nflTeam: "MIA",points: 26.90},
+                    {name: "Sebastian Janikowski",position: "K",nflTeam: "LV",points: 3.00},
+                    {name: "Los Angeles Rams",position: "DEF",nflTeam: "LA",points: 8.00}
+                  ],
+                  bench: [
+                    {name: "A.J. Green",position: "WR",nflTeam: "CIN",points: 0.00},
+                    {name: "Delanie Walker",position: "TE",nflTeam: "TEN",points: 8.30},
+                    {name: "Ted Ginn",position: "WR",nflTeam: "CAR",points: 2.90},
+                    {name: "Chris Thompson",position: "RB",nflTeam: "WAS",points: 15.70},
+                    {name: "Tyreek Hill",position: "WR",nflTeam: "KC",points: 15.50},
+                    {name: "Dallas Cowboys",position: "DEF",nflTeam: "DAL",points: 8.00},
+                  ]
+                }
+              },
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 91.66,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Drew Brees",position: "QB",nflTeam: "NO",points: 16.06},
+                    {name: "DeMarco Murray",position: "RB",nflTeam: "TEN",points: 6.00},
+                    {name: "Carlos Hyde",position: "RB",nflTeam: "SF",points: 10.20},
+                    {name: "T.Y. Hilton",position: "WR",nflTeam: "IND",points: 12.50},
+                    {name: "Michael Thomas",position: "WR",nflTeam: "NO",points: 9.80},
+                    {name: "Kyle Rudolph",position: "TE",nflTeam: "MIN",points: 5.30},
+                    {name: "Devonta Freeman",position: "RB",nflTeam: "ATL",points: 8.80},
+                    {name: "Justin Tucker",position: "K",nflTeam: "BAL",points: 13.00},
+                    {name: "Kansas City Chiefs",position: "DEF",nflTeam: "KC",points: 10.00}
+                  ],
+                  bench: [
+                    {name: "Carson Palmer",position: "QB",nflTeam: "ARI",points: 15.26},
+                    {name: "Ladarius Green",position: "TE",nflTeam: "PIT",points: 0.00},
+                    {name: "Davante Adams",position: "WR",nflTeam: "GB",points: 10.40},
+                    {name: "Thomas Rawls",position: "RB",nflTeam: "SEA",points: 0.80},
+                    {name: "Malcolm Mitchell",position: "WR",nflTeam: "NE",points: 2.90},
+                    {name: "Kenneth Farrow",position: "RB",nflTeam: "LAC",points: 5.70},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+
+//2016_PS2
+          {
+            type: "matchup",
+            id: "PS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2016/PS2.png",
+
+            teams: [
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 155.50,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Russell Wilson",position: "QB",nflTeam: "SEA",points: 33.60},
+                    {name: "Tevin Coleman",position: "RB",nflTeam: "ATL",points: 19.50},
+                    {name: "Ezekiel Elliott",position: "RB",nflTeam: "DAL",points: 21.20},
+                    {name: "Jordy Nelson",position: "WR",nflTeam: "GB",points: 27.40},
+                    {name: "Taylor Gabriel",position: "WR",nflTeam: "ATL",points: 1.50},
+                    {name: "Martellus Bennett",position: "TE",nflTeam: "NE",points: 7.90},
+                    {name: "Dez Bryant",position: "WR",nflTeam: "DAL",points: 23.40},
+                    {name: "Matt Bryant",position: "K",nflTeam: "ATL",points: 19.00},
+                    {name: "Seattle Seahawks",position: "DEF",nflTeam: "SEA",points: 2.00}
+                  ],
+                  bench: [
+                    {name: "Bilal Powell",position: "RB",nflTeam: "NYJ",points: 7.40},
+                    {name: "Antonio Gates",position: "TE",nflTeam: "SD",points: 15.40},
+                    {name: "Kirk Cousins",position: "QB",nflTeam: "WAS",points: 29.80},
+                    {name: "Cameron Meredith",position: "WR",nflTeam: "CHI",points: 19.50},
+                    {name: "Tyrell Williams",position: "WR",nflTeam: "SD",points: 12.40},
+                    {name: "Kenneth Dixon",position: "RB",nflTeam: "BAL",points: 5.80},
+                  ]
+                }
+              },
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 101.46,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Tyrod Taylor",position: "QB",nflTeam: "BUF",points: 31.16},
+                    {name: "Spencer Ware",position: "RB",nflTeam: "KC",points: 8.20},
+                    {name: "Ty Montgomery",position: "RB",nflTeam: "GB",points: 4.00},
+                    {name: "Golden Tate",position: "WR",nflTeam: "DET",points: 5.80},
+                    {name: "Steve Smith",position: "WR",nflTeam: "BAL",points: 15.90},
+                    {name: "Dwayne Allen",position: "TE",nflTeam: "IND",points: 3.10},
+                    {name: "Kelvin Benjamin",position: "WR",nflTeam: "CAR",points: 12.30},
+                    {name: "Stephen Gostkowski",position: "K",nflTeam: "NE",points: 11.00},
+                    {name: "San Diego Chargers",position: "DEF",nflTeam: "SD",points: 10.00}
+                  ],
+                  bench: [
+                    {name: "Ben Roethlisberger",position: "QB",nflTeam: "PIT",points: 19.06},
+                    {name: "Cole Beasley",position: "WR",nflTeam: "DAL",points: 2.50},
+                    {name: "Eric Ebron",position: "TE",nflTeam: "DET",points: 9.30},
+                    {name: "Jarvis Landry",position: "WR",nflTeam: "MIA",points: 2.90},
+                    {name: "Donte Moncrief",position: "WR",nflTeam: "IND",points: 9.00},
+                    {name: "Melvin Gordon",position: "RB",nflTeam: "SD",points: 0.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2016_F1
+
+          {
+            type: "matchup",
+            id: "F1",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Championship",
+            bowlName: "",
+            bowlArt: "artwork/2016/F1.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 90.90,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Aaron Rodgers",position: "QB",nflTeam: "GB",points: 34.20},
+                    {name: "DeAngelo Williams",position: "RB",nflTeam: "PIT",points: 21.40},
+                    {name: "Latavius Murray",position: "RB",nflTeam: "LV",points: 2.50},
+                    {name: "Julio Jones",position: "WR",nflTeam: "ATL",points: 15.60},
+                    {name: "Tyreek Hill",position: "WR",nflTeam: "KC",points: 6.10},
+                    {name: "Greg Olsen",position: "TE",nflTeam: "CAR",points: 2.20},
+                    {name: "Jay Ajayi",position: "RB",nflTeam: "MIA",points: 7.90},
+                    {name: "Sebastian Janikowski",position: "K",nflTeam: "LV",points: 0.00},
+                    {name: "Los Angeles Rams",position: "DEF",nflTeam: "LA",points: 1.00}
+                  ],
+                  bench: [
+                    {name: "A.J. Green",position: "WR",nflTeam: "CIN",points: 0.00},
+                    {name: "Delanie Walker",position: "TE",nflTeam: "TEN",points: 3.50},
+                    {name: "Chris Thompson",position: "RB",nflTeam: "WAS",points: 4.20},
+                    {name: "Le'Veon Bell",position: "RB",nflTeam: "PIT",points: 0.00},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "LV",points: 9.90},
+                    {name: "Dallas Cowboys",position: "DEF",nflTeam: "DAL",points: 2.00},
+                  ]
+                }
+              },
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 78.90,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Russell Wilson",position: "QB",nflTeam: "SEA",points: 14.72},
+                    {name: "Tevin Coleman",position: "RB",nflTeam: "ATL",points: 11.90},
+                    {name: "Ezekiel Elliott",position: "RB",nflTeam: "DAL",points: 0.00},
+                    {name: "Jordy Nelson",position: "WR",nflTeam: "GB",points: 6.60},
+                    {name: "Tyrell Williams",position: "WR",nflTeam: "LAC",points: 7.00},
+                    {name: "Antonio Gates",position: "TE",nflTeam: "LAC",points: 11.50},
+                    {name: "Cameron Meredith",position: "WR",nflTeam: "CHI",points: 10.18},
+                    {name: "Matt Bryant",position: "K",nflTeam: "ATL",points: 8.00},
+                    {name: "Seattle Seahawks",position: "DEF",nflTeam: "SEA",points: 9.00}
+                  ],
+                  bench: [
+                    {name: "Martellus Bennett",position: "TE",nflTeam: "NE",points: 9.30},
+                    {name: "Dez Bryant",position: "WR",nflTeam: "DAL",points: 0.00},
+                    {name: "Bilal Powell",position: "RB",nflTeam: "NYJ",points: 19.70},
+                    {name: "Kirk Cousins",position: "QB",nflTeam: "WAS",points: 11.48},
+                    {name: "Taylor Gabriel",position: "WR",nflTeam: "ATL",points: 0.00},
+                    {name: "Kenneth Dixon",position: "RB",nflTeam: "BAL",points: 12.30},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2016_F3
+
+          {
+            type: "matchup",
+            id: "F3",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Third Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2016/F3.png",
+
+            teams: [
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 108.40,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Drew Brees",position: "QB",nflTeam: "NO",points: 20.00},
+                    {name: "DeMarco Murray",position: "RB",nflTeam: "TEN",points: 1.90},
+                    {name: "Carlos Hyde",position: "RB",nflTeam: "SF",points: 0.00},
+                    {name: "T.Y. Hilton",position: "WR",nflTeam: "IND",points: 9.50},
+                    {name: "Michael Thomas",position: "WR",nflTeam: "NO",points: 21.60},
+                    {name: "Kyle Rudolph",position: "TE",nflTeam: "MIN",points: 17.70},
+                    {name: "Devonta Freeman",position: "RB",nflTeam: "ATL",points: 23.70},
+                    {name: "Justin Tucker",position: "K",nflTeam: "BAL",points: 4.00},
+                    {name: "Kansas City Chiefs",position: "DEF",nflTeam: "KC",points: 10.00}
+                  ],
+                  bench: [
+                    {name: "Carson Palmer",position: "QB",nflTeam: "ARI",points: 20.20},
+                    {name: "Ladarius Green",position: "TE",nflTeam: "PIT",points: 0.00},
+                    {name: "Davante Adams",position: "WR",nflTeam: "GB",points: 17.10},
+                    {name: "Thomas Rawls",position: "RB",nflTeam: "SEA",points: 7.40},
+                    {name: "Malcolm Mitchell",position: "WR",nflTeam: "NE",points: 0.00},
+                    {name: "Kenneth Farrow",position: "RB",nflTeam: "LAC",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 62.60,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Tyrod Taylor",position: "QB",nflTeam: "BUF",points: 0.00},
+                    {name: "Spencer Ware",position: "RB",nflTeam: "KC",points: 0.00},
+                    {name: "Ty Montgomery",position: "RB",nflTeam: "GB",points: 6.10},
+                    {name: "Golden Tate",position: "WR",nflTeam: "DET",points: 14.40},
+                    {name: "Steve Smith",position: "WR",nflTeam: "BAL",points: 3.40},
+                    {name: "Dwayne Allen",position: "TE",nflTeam: "IND",points: 9.40},
+                    {name: "Kelvin Benjamin",position: "WR",nflTeam: "CAR",points: 15.30},
+                    {name: "Stephen Gostkowski",position: "K",nflTeam: "NE",points: 9.00},
+                    {name: "Los Angeles Chargers",position: "DEF",nflTeam: "LAC",points: 5.00}
+                  ],
+                  bench: [
+                    {name: "Ben Roethlisberger",position: "QB",nflTeam: "PIT",points: 0.00},
+                    {name: "Cole Beasley",position: "WR",nflTeam: "DAL",points: 4.90},
+                    {name: "Eric Ebron",position: "TE",nflTeam: "DET",points: 6.10},
+                    {name: "Jarvis Landry",position: "WR",nflTeam: "MIA",points: 13.60},
+                    {name: "Donte Moncrief",position: "WR",nflTeam: "IND",points: 0.00},
+                    {name: "Melvin Gordon",position: "RB",nflTeam: "LAC",points: 0.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2016_F5
+
+          {
+            type: "matchup",
+            id: "F5",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Fifth Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2016/F5.png",
+
+            teams: [
+              {
+                teamId: "p5",
+                seed: 5,
+                score: 101.48,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Joe Flacco",position: "QB",nflTeam: "BAL",points: 8.68},
+                    {name: "Mark Ingram",position: "RB",nflTeam: "NO",points: 19.20},
+                    {name: "Jerick McKinnon",position: "RB",nflTeam: "MIN",points: 23.00},
+                    {name: "Jimmy Graham",position: "TE",nflTeam: "SEA",points: 6.40},
+                    {name: "Willie Snead",position: "WR",nflTeam: "NO",points: 8.20},
+                    {name: "Chandler Catanzaro",position: "K",nflTeam: "ARI",points: 14.00},
+                    {name: "Minnesota Vikings",position: "DEF",nflTeam: "MIN",points: 22.00}
+                  ],
+                  bench: [
+                    {name: "Gary Barnidge",position: "TE",nflTeam: "CLE",points: 10.00},
+                    {name: "Julian Edelman",position: "WR",nflTeam: "NE",points: 23.70},
+                    {name: "Mike Wallace",position: "WR",nflTeam: "BAL",points: 3.30},
+                    {name: "Andrew Luck",position: "QB",nflTeam: "IND",points: 18.54},
+                    {name: "Allen Robinson",position: "WR",nflTeam: "JAX",points: 8.20},
+                    {name: "Jeremy Hill",position: "RB",nflTeam: "CIN",points: 0.00},
+                    {name: "Charles Sims",position: "RB",nflTeam: "TB",points: 0.00},
+                    {name: "Tyler Boyd",position: "WR",nflTeam: "CIN",points: 5.40},
+                  ]
+                }
+              },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 77.84,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Tom Brady",position: "QB",nflTeam: "NE",points: 25.64},
+                    {name: "Matt Forte",position: "RB",nflTeam: "NYJ",points: 0.00},
+                    {name: "LeGarrette Blount",position: "RB",nflTeam: "NE",points: 11.10},
+                    {name: "DeSean Jackson",position: "WR",nflTeam: "WAS",points: 3.40},
+                    {name: "Larry Fitzgerald",position: "WR",nflTeam: "ARI",points: 10.30},
+                    {name: "Travis Kelce",position: "TE",nflTeam: "KC",points: 0.80},
+                    {name: "Frank Gore",position: "RB",nflTeam: "IND",points: 7.60},
+                    {name: "Matt Prater",position: "K",nflTeam: "DET",points: 8.00},
+                    {name: "Philadelphia Eagles",position: "DEF",nflTeam: "PHI",points: 11.00}
+                  ],
+                  bench: [
+                    {name: "Matt Ryan",position: "QB",nflTeam: "ATL",points: 29.44},
+                    {name: "Michael Crabtree",position: "WR",nflTeam: "LV",points: 4.70},
+                    {name: "Eric Decker",position: "WR",nflTeam: "NYJ",points: 0.00},
+                    {name: "Adrian Peterson",position: "RB",nflTeam: "MIN",points: 0.00},
+                    {name: "Alfred Morris",position: "RB",nflTeam: "DAL",points: 1.50},
+                    {name: "Tampa Bay Buccaneers",position: "DEF",nflTeam: "TB",points: 16.00},
+                  ]
+                }
+              },
+            ]
+          },
+        ],
+
+
+//END 2016 Playoffs
+
+        connections: [
+          {
+            from: "playoffs-bye-1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "PQ1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "playoffs-bye-2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PQ2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS2",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PS2",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PQ1",
+            to: "F5",
+            result: "loser"
+          },
+          {
+            from: "PQ2",
+            to: "F5",
+            result: "loser"
+          }
+        ]
+      },
+
+      consolation: {
+        label: "Consolation",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "consolation-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "c1"
+          },
+
+//2016_CQ1
+
+          {
+            type: "matchup",
+            id: "CQ1",
+            round: "first",
+            slot: "first-upper",
+            roundName: "First Round",
+            bowlName: "First Round",
+            bowlArt: "artwork/2016/CQ1.png",
+
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 81.04,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Philip Rivers",position: "QB",nflTeam: "LAC",points: 14.24},
+                    {name: "LeSean McCoy",position: "RB",nflTeam: "BUF",points: 28.90},
+                    {name: "Doug Martin",position: "RB",nflTeam: "TB",points: 4.20},
+                    {name: "Michael Floyd",position: "WR",nflTeam: "NE",points: 0.00},
+                    {name: "Odell Beckham",position: "WR",nflTeam: "NYG",points: 13.30},
+                    {name: "Jordan Reed",position: "TE",nflTeam: "WAS",points: 0.60},
+                    {name: "Emmanuel Sanders",position: "WR",nflTeam: "DEN",points: 4.80},
+                    {name: "Graham Gano",position: "K",nflTeam: "CAR",points: 14.00},
+                    {name: "Cincinnati Bengals",position: "DEF",nflTeam: "CIN",points: 1.00}
+                  ],
+                  bench: [
+                    {name: "Shane Vereen",position: "RB",nflTeam: "NYG",points: 2.00},
+                    {name: "Markus Wheaton",position: "WR",nflTeam: "PIT",points: 0.00},
+                    {name: "Derek Carr",position: "QB",nflTeam: "LV",points: 11.02},
+                    {name: "Allen Hurns",position: "WR",nflTeam: "JAX",points: 0.00},
+                    {name: "T.J. Yeldon",position: "RB",nflTeam: "JAX",points: 6.20},
+                    {name: "Laquon Treadwell",position: "WR",nflTeam: "MIN",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 70.74,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Marcus Mariota",position: "QB",nflTeam: "TEN",points: 5.44},
+                    {name: "David Johnson",position: "RB",nflTeam: "ARI",points: 22.80},
+                    {name: "DeAndre Washington",position: "RB",nflTeam: "LV",points: 3.40},
+                    {name: "Demaryius Thomas",position: "WR",nflTeam: "DEN",points: 9.10},
+                    {name: "Terrance Williams",position: "WR",nflTeam: "DAL",points: 3.00},
+                    {name: "Coby Fleener",position: "TE",nflTeam: "NO",points: 1.00},
+                    {name: "Breshad Perriman",position: "WR",nflTeam: "BAL",points: 0.00},
+                    {name: "Chris Boswell",position: "K",nflTeam: "PIT",points: 18.00},
+                    {name: "Carolina Panthers",position: "DEF",nflTeam: "CAR",points: 8.00}
+                  ],
+                  bench: [
+                    {name: "Jeremy Maclin",position: "WR",nflTeam: "KC",points: 8.20},
+                    {name: "Brent Celek",position: "TE",nflTeam: "PHI",points: 0.50},
+                    {name: "Jameis Winston",position: "QB",nflTeam: "TB",points: 10.48},
+                    {name: "Stefon Diggs",position: "WR",nflTeam: "MIN",points: 1.30},
+                    {name: "Matt Jones",position: "RB",nflTeam: "WAS",points: 0.00},
+                    {name: "Don Jackson",position: "RB",nflTeam: "GB",points: 0.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2016_CQ2
+
+          {
+            type: "matchup",
+            id: "CQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2016/CQ2.png",
+
+            teams: [
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 89.02,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Colin Kaepernick",position: "QB",nflTeam: "SF",points: 17.42},
+                    {name: "Terrance West",position: "RB",nflTeam: "BAL",points: 12.20},
+                    {name: "Isaiah Crowell",position: "RB",nflTeam: "CLE",points: 2.80},
+                    {name: "Antonio Brown",position: "WR",nflTeam: "PIT",points: 5.80},
+                    {name: "Travis Benjamin",position: "WR",nflTeam: "LAC",points: 11.60},
+                    {name: "Cameron Brate",position: "TE",nflTeam: "TB",points: 13.30},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 5.90},
+                    {name: "Brandon McManus",position: "K",nflTeam: "DEN",points: 3.00},
+                    {name: "New England Patriots",position: "DEF",nflTeam: "NE",points: 17.00}
+                  ],
+                  bench: [
+                    {name: "Andy Dalton",position: "QB",nflTeam: "CIN",points: 10.38},
+                    {name: "Brandon Marshall",position: "WR",nflTeam: "NYJ",points: 1.60},
+                    {name: "Rishard Matthews",position: "WR",nflTeam: "TEN",points: 8.50},
+                    {name: "Tyler Lockett",position: "WR",nflTeam: "SEA",points: 19.00},
+                    {name: "Duke Johnson",position: "RB",nflTeam: "CLE",points: 9.30},
+                    {name: "Zach Zenner",position: "RB",nflTeam: "DET",points: 4.40},
+                  ]
+                }
+              },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 77.20,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Cam Newton",position: "QB",nflTeam: "CAR",points: 20.00},
+                    {name: "Rashad Jennings",position: "RB",nflTeam: "NYG",points: 3.80},
+                    {name: "Todd Gurley",position: "RB",nflTeam: "LA",points: 3.60},
+                    {name: "Randall Cobb",position: "WR",nflTeam: "GB",points: 0.00},
+                    {name: "Doug Baldwin",position: "WR",nflTeam: "SEA",points: 9.50},
+                    {name: "Zach Ertz",position: "TE",nflTeam: "PHI",points: 8.00},
+                    {name: "Jordan Howard",position: "RB",nflTeam: "CHI",points: 17.30},
+                    {name: "Caleb Sturgis",position: "K",nflTeam: "PHI",points: 12.00},
+                    {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 3.00}
+                  ],
+                  bench: [
+                    {name: "Matthew Stafford",position: "QB",nflTeam: "DET",points: 10.22},
+                    {name: "Dion Lewis",position: "RB",nflTeam: "NE",points: 10.40},
+                    {name: "Vernon Davis",position: "TE",nflTeam: "WAS",points: 2.30},
+                    {name: "Marvin Jones",position: "WR",nflTeam: "DET",points: 4.10},
+                    {name: "Alshon Jeffery",position: "WR",nflTeam: "CHI",points: 14.90},
+                    {name: "Rob Kelley",position: "RB",nflTeam: "WAS",points: 11.50},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+          {
+            type: "bye",
+            id: "consolation-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "c2"
+          },
+
+//2016_CS1
+
+          {
+            type: "matchup",
+            id: "CS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2016/CS1.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 52.04,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Eli Manning",position: "QB",nflTeam: "NYG",points: 12.24},
+                    {name: "C.J. Anderson",position: "RB",nflTeam: "DEN",points: 0.00},
+                    {name: "Kenny Stills",position: "WR",nflTeam: "MIA",points: 9.50},
+                    {name: "Brandin Cooks",position: "WR",nflTeam: "NO",points: 9.80},
+                    {name: "Jason Witten",position: "TE",nflTeam: "DAL",points: 9.30},
+                    {name: "John Brown",position: "WR",nflTeam: "ARI",points: 1.20},
+                    {name: "Dan Bailey",position: "K",nflTeam: "DAL",points: 6.00},
+                    {name: "Pittsburgh Steelers",position: "DEF",nflTeam: "PIT",points: 4.00}
+                  ],
+                  bench: [
+                    {name: "Brandon LaFell",position: "WR",nflTeam: "CIN",points: 19.00},
+                    {name: "Alex Smith",position: "QB",nflTeam: "KC",points: 22.36},
+                    {name: "Mohamed Sanu",position: "WR",nflTeam: "ATL",points: 5.60},
+                    {name: "Theo Riddick",position: "RB",nflTeam: "DET",points: 0.00},
+                    {name: "Tyler Eifert",position: "TE",nflTeam: "CIN",points: 0.00},
+                    {name: "James White",position: "RB",nflTeam: "NE",points: 10.60},
+                    {name: "Wendell Smallwood",position: "RB",nflTeam: "PHI",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 75.58,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Philip Rivers",position: "QB",nflTeam: "LAC",points: 18.88},
+                    {name: "LeSean McCoy",position: "RB",nflTeam: "BUF",points: 20.50},
+                    {name: "Doug Martin",position: "RB",nflTeam: "TB",points: 0.00},
+                    {name: "Michael Floyd",position: "WR",nflTeam: "NE",points: 0.60},
+                    {name: "Odell Beckham",position: "WR",nflTeam: "NYG",points: 15.00},
+                    {name: "Jordan Reed",position: "TE",nflTeam: "WAS",points: 0.00},
+                    {name: "Emmanuel Sanders",position: "WR",nflTeam: "DEN",points: 2.60},
+                    {name: "Graham Gano",position: "K",nflTeam: "CAR",points: 10.00},
+                    {name: "Cincinnati Bengals",position: "DEF",nflTeam: "CIN",points: 8.00}
+                  ],
+                  bench: [
+                    {name: "Shane Vereen",position: "RB",nflTeam: "NYG",points: 0.00},
+                    {name: "Markus Wheaton",position: "WR",nflTeam: "PIT",points: 0.00},
+                    {name: "Derek Carr",position: "QB",nflTeam: "LV",points: 22.08},
+                    {name: "Allen Hurns",position: "WR",nflTeam: "JAX",points: 0.00},
+                    {name: "T.J. Yeldon",position: "RB",nflTeam: "JAX",points: 0.50},
+                    {name: "Laquon Treadwell",position: "WR",nflTeam: "MIN",points: 0.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2016_CS2
+
+          {
+            type: "matchup",
+            id: "CS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2016/CS2.png",
+
+            teams: [
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 53.38,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Dak Prescott",position: "QB",nflTeam: "DAL",points: 23.98},
+                    {name: "Ryan Mathews",position: "RB",nflTeam: "PHI",points: 6.20},
+                    {name: "Lamar Miller",position: "RB",nflTeam: "HOU",points: 0.00},
+                    {name: "Kenny Britt",position: "WR",nflTeam: "LA",points: 1.50},
+                    {name: "DeAndre Hopkins",position: "WR",nflTeam: "HOU",points: 4.30},
+                    {name: "C.J. Fiedorowicz",position: "TE",nflTeam: "HOU",points: 4.20},
+                    {name: "Jonathan Stewart",position: "RB",nflTeam: "CAR",points: 5.20},
+                    {name: "Stephen Hauschka",position: "K",nflTeam: "SEA",points: 5.00},
+                    {name: "New York Giants",position: "DEF",nflTeam: "NYG",points: 3.00}
+                  ],
+                  bench: [
+                    {name: "Anquan Boldin",position: "WR",nflTeam: "DET",points: 3.30},
+                    {name: "Darren Sproles",position: "RB",nflTeam: "PHI",points: 12.30},
+                    {name: "Chris Ivory",position: "RB",nflTeam: "JAX",points: 15.40},
+                    {name: "Ryan Tannehill",position: "QB",nflTeam: "MIA",points: 0.00},
+                    {name: "Christine Michael",position: "RB",nflTeam: "GB",points: 0.50},
+                    {name: "Jordan Matthews",position: "WR",nflTeam: "PHI",points: 1.20},
+                  ]
+                }
+              },
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 120.64,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Colin Kaepernick",position: "QB",nflTeam: "SF",points: 26.14},
+                    {name: "Terrance West",position: "RB",nflTeam: "BAL",points: 5.50},
+                    {name: "Isaiah Crowell",position: "RB",nflTeam: "CLE",points: 17.80},
+                    {name: "Antonio Brown",position: "WR",nflTeam: "PIT",points: 15.60},
+                    {name: "Rishard Matthews",position: "WR",nflTeam: "TEN",points: 9.10},
+                    {name: "Cameron Brate",position: "TE",nflTeam: "TB",points: 7.20},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 15.70},
+                    {name: "Brandon McManus",position: "K",nflTeam: "DEN",points: 6.60},
+                    {name: "New England Patriots",position: "DEF",nflTeam: "NE",points: 17.00}
+                  ],
+                  bench: [
+                    {name: "Andy Dalton",position: "QB",nflTeam: "CIN",points: 12.72},
+                    {name: "Brandon Marshall",position: "WR",nflTeam: "NYJ",points: 2.80},
+                    {name: "Travis Benjamin",position: "WR",nflTeam: "LAC",points: 7.50},
+                    {name: "Tyler Lockett",position: "WR",nflTeam: "SEA",points: 3.80},
+                    {name: "Duke Johnson",position: "RB",nflTeam: "CLE",points: 4.90},
+                    {name: "Zach Zenner",position: "RB",nflTeam: "DET",points: 21.20},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2016_F7
+
+          {
+            type: "matchup",
+            id: "F7",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Consolation Championship",
+            bowlName: "",
+            bowlArt: "artwork/2016/F7.png",
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 55.46,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Philip Rivers",position: "QB",nflTeam: "LAC",points: 14.86},
+                    {name: "LeSean McCoy",position: "RB",nflTeam: "BUF",points: 1.60},
+                    {name: "Doug Martin",position: "RB",nflTeam: "TB",points: 0.00},
+                    {name: "Michael Floyd",position: "WR",nflTeam: "NE",points: 9.60},
+                    {name: "Odell Beckham",position: "WR",nflTeam: "NYG",points: 4.40},
+                    {name: "Jordan Reed",position: "TE",nflTeam: "WAS",points: 8.00},
+                    {name: "Emmanuel Sanders",position: "WR",nflTeam: "DEN",points: 0.00},
+                    {name: "Graham Gano",position: "K",nflTeam: "CAR",points: 6.00},
+                    {name: "Cincinnati Bengals",position: "DEF",nflTeam: "CIN",points: 11.00}
+                  ],
+                  bench: [
+                    {name: "Shane Vereen",position: "RB",nflTeam: "NYG",points: 0.00},
+                    {name: "Markus Wheaton",position: "WR",nflTeam: "PIT",points: 0.00},
+                    {name: "Derek Carr",position: "QB",nflTeam: "LV",points: 0.00},
+                    {name: "Allen Hurns",position: "WR",nflTeam: "JAX",points: 0.00},
+                    {name: "T.J. Yeldon",position: "RB",nflTeam: "JAX",points: 0.00},
+                    {name: "Laquon Treadwell",position: "WR",nflTeam: "MIN",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 71.40,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Colin Kaepernick",position: "QB",nflTeam: "SF",points: 12.20},
+                    {name: "Terrance West",position: "RB",nflTeam: "BAL",points: 3.50},
+                    {name: "Isaiah Crowell",position: "RB",nflTeam: "CLE",points: 14.80},
+                    {name: "Travis Benjamin",position: "WR",nflTeam: "LAC",points: 0.00},
+                    {name: "Rishard Matthews",position: "WR",nflTeam: "TEN",points: 17.40},
+                    {name: "Cameron Brate",position: "TE",nflTeam: "TB",points: 0.00},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 12.50},
+                    {name: "Brandon McManus",position: "K",nflTeam: "DEN",points: 6.00},
+                    {name: "New England Patriots",position: "DEF",nflTeam: "NE",points: 5.00}
+                  ],
+                  bench: [
+                    {name: "Andy Dalton",position: "QB",nflTeam: "CIN",points: 13.44},
+                    {name: "Brandon Marshall",position: "WR",nflTeam: "NYJ",points: 0.00},
+                    {name: "Antonio Brown",position: "WR",nflTeam: "PIT",points: 0.00},
+                    {name: "Tyler Lockett",position: "WR",nflTeam: "SEA",points: 0.00},
+                    {name: "Duke Johnson",position: "RB",nflTeam: "CLE",points: 0.40},
+                    {name: "Zach Zenner",position: "RB",nflTeam: "DET",points: 17.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2016_F9
+
+          {
+            type: "matchup",
+            id: "F9",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Ninth Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2016/F9.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 41.70,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Eli Manning",position: "QB",nflTeam: "NYG",points: 7.20},
+                    {name: "C.J. Anderson",position: "RB",nflTeam: "DEN",points: 0.00},
+                    {name: "Kenny Stills",position: "WR",nflTeam: "MIA",points: 10.10},
+                    {name: "Brandin Cooks",position: "WR",nflTeam: "NO",points: 1.90},
+                    {name: "Jason Witten",position: "TE",nflTeam: "DAL",points: 1.00},
+                    {name: "John Brown",position: "WR",nflTeam: "ARI",points: 2.50},
+                    {name: "Dan Bailey",position: "K",nflTeam: "DAL",points: 7.00},
+                    {name: "Pittsburgh Steelers",position: "DEF",nflTeam: "PIT",points: 12.00}
+                  ],
+                  bench: [
+                    {name: "Brandon LaFell",position: "WR",nflTeam: "CIN",points: 6.70},
+                    {name: "Alex Smith",position: "QB",nflTeam: "KC",points: 24.66},
+                    {name: "Mohamed Sanu",position: "WR",nflTeam: "ATL",points: 9.20},
+                    {name: "Theo Riddick",position: "RB",nflTeam: "DET",points: 0.00},
+                    {name: "Tyler Eifert",position: "TE",nflTeam: "CIN",points: 0.00},
+                    {name: "James White",position: "RB",nflTeam: "NE",points: 3.00},
+                    {name: "Wendell Smallwood",position: "RB",nflTeam: "PHI",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 68.08,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Dak Prescott",position: "QB",nflTeam: "DAL",points: 2.38},
+                    {name: "Ryan Mathews",position: "RB",nflTeam: "PHI",points: 0.00},
+                    {name: "Lamar Miller",position: "RB",nflTeam: "HOU",points: 0.00},
+                    {name: "Kenny Britt",position: "WR",nflTeam: "LA",points: 0.00},
+                    {name: "DeAndre Hopkins",position: "WR",nflTeam: "HOU",points: 12.30},
+                    {name: "C.J. Fiedorowicz",position: "TE",nflTeam: "HOU",points: 7.20},
+                    {name: "Jonathan Stewart",position: "RB",nflTeam: "CAR",points: 13.20},
+                    {name: "Stephen Hauschka",position: "K",nflTeam: "SEA",points: 13.00},
+                    {name: "New York Giants",position: "DEF",nflTeam: "NYG",points: 20.00}
+                  ],
+                  bench: [
+                    {name: "Anquan Boldin",position: "WR",nflTeam: "DET",points: 11.70},
+                    {name: "Darren Sproles",position: "RB",nflTeam: "PHI",points: 3.60},
+                    {name: "Chris Ivory",position: "RB",nflTeam: "JAX",points: 0.00},
+                    {name: "Ryan Tannehill",position: "QB",nflTeam: "MIA",points: 0.00},
+                    {name: "Christine Michael",position: "RB",nflTeam: "GB",points: 1.60},
+                    {name: "Jordan Matthews",position: "WR",nflTeam: "PHI",points: 0.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2016_F11
+
+          {
+            type: "matchup",
+            id: "F11",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Last Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2016/F11.png",
+
+            teams: [
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 48.10,
+                touchdowns: null,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Marcus Mariota",position: "QB",nflTeam: "TEN",points: 0.00},
+                    {name: "David Johnson",position: "RB",nflTeam: "ARI",points: 4.40},
+                    {name: "DeAndre Washington",position: "RB",nflTeam: "LV",points: 5.70},
+                    {name: "Demaryius Thomas",position: "WR",nflTeam: "DEN",points: 4.70},
+                    {name: "Terrance Williams",position: "WR",nflTeam: "DAL",points: 9.30},
+                    {name: "Coby Fleener",position: "TE",nflTeam: "NO",points: 3.80},
+                    {name: "Breshad Perriman",position: "WR",nflTeam: "BAL",points: 6.20},
+                    {name: "Chris Boswell",position: "K",nflTeam: "PIT",points: 3.00},
+                    {name: "Carolina Panthers",position: "DEF",nflTeam: "CAR",points: 11.00}
+                  ],
+                  bench: [
+                    {name: "Jeremy Maclin",position: "WR",nflTeam: "KC",points: 5.30},
+                    {name: "Brent Celek",position: "TE",nflTeam: "PHI",points: 0.90},
+                    {name: "Jameis Winston",position: "QB",nflTeam: "TB",points: 9.88},
+                    {name: "Stefon Diggs",position: "WR",nflTeam: "MIN",points: 0.00},
+                    {name: "Matt Jones",position: "RB",nflTeam: "WAS",points: 0.00},
+                    {name: "Don Jackson",position: "RB",nflTeam: "GB",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 95.28,
+                touchdowns: null,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Cam Newton",position: "QB",nflTeam: "CAR",points: 8.08},
+                    {name: "Rashad Jennings",position: "RB",nflTeam: "NYG",points: 11.70},
+                    {name: "Todd Gurley",position: "RB",nflTeam: "LA",points: 7.70},
+                    {name: "Randall Cobb",position: "WR",nflTeam: "GB",points: 0.00},
+                    {name: "Doug Baldwin",position: "WR",nflTeam: "SEA",points: 4.40},
+                    {name: "Zach Ertz",position: "TE",nflTeam: "PHI",points: 25.90},
+                    {name: "Jordan Howard",position: "RB",nflTeam: "CHI",points: 13.50},
+                    {name: "Caleb Sturgis",position: "K",nflTeam: "PHI",points: 9.00},
+                    {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 15.00}
+                  ],
+                  bench: [
+                    {name: "Matthew Stafford",position: "QB",nflTeam: "DET",points: 19.88},
+                    {name: "Dion Lewis",position: "RB",nflTeam: "NE",points: 5.20},
+                    {name: "Vernon Davis",position: "TE",nflTeam: "WAS",points: 4.90},
+                    {name: "Marvin Jones",position: "WR",nflTeam: "DET",points: 7.60},
+                    {name: "Alshon Jeffery",position: "WR",nflTeam: "CHI",points: 1.00},
+                    {name: "Rob Kelley",position: "RB",nflTeam: "WAS",points: 3.30},
+                  ]
+                }
+              },
+            ]
+          },
+        ],
+//END 2016 CONSOLATION
+
+        connections: [
+          {
+            from: "consolation-bye-1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "CQ1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "consolation-bye-2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CQ2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS2",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CS2",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CQ1",
+            to: "F11",
+            result: "loser"
+          },
+          {
+            from: "CQ2",
+            to: "F11",
+            result: "loser"
+          }
+        ]
+      }
+    },
+
+
+
+//END2016!!!!!!!!!!!!!!!!!!!!!!!!!!END2016!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!END2016!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!END2016
+
+

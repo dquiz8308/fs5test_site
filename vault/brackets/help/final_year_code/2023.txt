@@ -1,0 +1,1228 @@
+//START YEAR 2023
+
+    2023: {
+      format: "current",
+      teams: {
+        p1: {name: "Tuas Concussions One Kupp",owner: "Chris",art: "artwork/2023/p1.png"},
+        p2: {name: "Pompano Mokes",owner: "Max",art: "artwork/2023/p2.png"},
+        p3: {name: "Atlanta Nitro Hawgs",owner: "Cody",art: "artwork/2023/p3.png"},
+        p4: {name: "Free ChiefsAholic",owner: "Brycen",art: "artwork/2023/p4.png"},
+        p5: {name: "The Running Backs",owner: "Mike",art: "artwork/2023/p5.png"},
+        p6: {name: "Mark of the Beasts",owner: "Jordan",art: "artwork/2023/p6.png"},
+        c1: {name: "Plague Dr draft",owner: "Keith",art: "artwork/2023/c1.png"},
+        c2: {name: "The NightAmon Cometh",owner: "David",art: "artwork/2023/c2.png"},
+        c3: {name: "Jackson Fan Account A New Hope ",owner: "Ethan",art: "artwork/2023/c3.png"},
+        c4: {name: "Vick's Dumb Bitches",owner: "Will",art: "artwork/2023/c4.png"},
+        c5: {name: "The PissDawgs",owner: "Matt",art: "artwork/2023/c5.png"},
+        c6: {name: "McGriddy Twins",owner: "Bailey",art: "artwork/2023/c6.png"}
+      },
+
+      playoffs: {
+        label: "Playoffs",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "playoffs-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "p1"
+          },
+
+//2023_PQ1
+
+{
+  type: "matchup",
+  id: "PQ1",
+  round: "first",
+  slot: "first-upper",
+  roundName: "First Round",
+  bowlName: "",
+  bowlArt: "artwork/2023/PQ1.png",
+
+  teams: [
+    {
+      teamId: "p4",
+      seed: 4,
+      score: 102.30,
+      touchdowns: 3,
+      winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Patrick Mahomes",position: "QB",nflTeam: "KC",points: 15.70},
+                    {name: "Chuba Hubbard",position: "RB",nflTeam: "CAR",points: 12.30},
+                    {name: "Jaylen Warren",position: "RB",nflTeam: "PIT",points: 11.80},
+                    {name: "DJ Moore",position: "WR",nflTeam: "CHI",points: 9.20},
+                    {name: "Puka Nacua",position: "WR",nflTeam: "LAR",points: 10.30},
+                    {name: "Travis Kelce",position: "TE",nflTeam: "KC",points: 7.80},
+                    {name: "Kenneth Walker",position: "RB",nflTeam: "SEA",points: 20.20},
+                    {name: "Younghoe Koo",position: "K",nflTeam: "ATL",points: 1.00},
+                    {name: "New Orleans Saints",position: "DEF",nflTeam: "NO",points: 14.00}
+                  ],
+                  bench: [
+                    {name: "Jerick McKinnon",position: "RB",nflTeam: "KC",points: 16.16},
+                    {name: "Chris Godwin",position: "WR",nflTeam: "TB",points: 25.50},
+                    {name: "Terry McLaurin",position: "WR",nflTeam: "WAS",points: 26.10},
+                    {name: "Clyde Edwards-Helaire",position: "RB",nflTeam: "KC",points: 20.10},
+                    {name: "Rhamondre Stevenson",position: "RB",nflTeam: "NE",points: 0.00},
+                    {name: "Isiah Pacheco",position: "RB",nflTeam: "KC",points: 0.00},
+                  ]
+                }
+    },
+
+    {
+      teamId: "p5",
+      seed: 5,
+      score: 89.18,
+      touchdowns: 2,
+      winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Sam Howell",position: "QB",nflTeam: "SEA",points: 8.28},
+                    {name: "David Montgomery",position: "RB",nflTeam: "DET",points: 10.20},
+                    {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 9.20},
+                    {name: "Brandon Aiyuk",position: "WR",nflTeam: "SF",points: 6.70},
+                    {name: "Jaylen Waddle",position: "WR",nflTeam: "MIA",points: 28.20},
+                    {name: "Taysom Hill",position: "TE",nflTeam: "NO",points: 1.50},
+                    {name: "Courtland Sutton",position: "WR",nflTeam: "DEN",points: 12.10},
+                    {name: "Chase McLaughlin",position: "K",nflTeam: "TB",points: 11.00},
+                    {name: "Pittsburgh Steelers",position: "DEF",nflTeam: "PIT",points: 2.00}
+                  ],
+                  bench: [
+                    {name: "Gardner Minshew",position: "QB",nflTeam: "LV",points: 20.60},
+                    {name: "Cole Kmet",position: "TE",nflTeam: "CHI",points: 13.30},
+                    {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 10.40},
+                    {name: "Jonathan Taylor",position: "RB",nflTeam: "IND",points: 0.00},
+                    {name: "Tyler Allgeier",position: "RB",nflTeam: "ATL",points: 6.10},
+                    {name: "Jerome Ford",position: "RB",nflTeam: "CLE",points: 7.10},
+                  ]
+                }
+    },
+  ]
+},
+
+
+
+//2023_PQ2
+
+
+          {
+            type: "matchup",
+            id: "PQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2023/PQ2.png",
+
+            teams: [
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 85.64,
+                touchdowns: 2,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Justin Fields",position: "QB",nflTeam: "PIT",points: 9.64},
+                    {name: "Devin Singletary",position: "RB",nflTeam: "NYG",points: 21.00},
+                    {name: "D'Andre Swift",position: "RB",nflTeam: "CHI",points: 9.50},
+                    {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 5.90},
+                    {name: "Parker Washington",position: "WR",nflTeam: "JAX",points: 5.20},
+                    {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 6.70},
+                    {name: "Ty Chandler",position: "RB",nflTeam: "MIN",points: 24.70},
+                    {name: "Cameron Dicker",position: "K",nflTeam: "LAC",points: 3.00},
+                    {name: "Dallas Cowboys",position: "DEF",nflTeam: "DAL",points: 0.00}
+                  ],
+                  bench: [
+                    {name: "Keenan Allen",position: "WR",nflTeam: "CHI",points: 0.00},
+                    {name: "Tyreek Hill",position: "WR",nflTeam: "MIA",points: 0.00},
+                    {name: "Alexander Mattison",position: "RB",nflTeam: "LV",points: 0.00},
+                    {name: "Trevor Lawrence",position: "QB",nflTeam: "JAX",points: 14.66},
+                    {name: "Kenneth Gainwell",position: "RB",nflTeam: "PHI",points: 2.10},
+                    {name: "Zamir White",position: "RB",nflTeam: "LV",points: 17.50},
+                  ]
+                }
+              },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 152.12,
+                touchdowns: 8,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Jalen Hurts",position: "QB",nflTeam: "PHI",points: 21.92},
+                    {name: "Austin Ekeler",position: "RB",nflTeam: "WAS",points: 7.80},
+                    {name: "Kyren Williams",position: "RB",nflTeam: "LAR",points: 24.50},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 15.70},
+                    {name: "Deebo Samuel",position: "WR",nflTeam: "SF",points: 21.90},
+                    {name: "Trey McBride",position: "TE",nflTeam: "ARI",points: 20.20},
+                    {name: "Rashee Rice",position: "WR",nflTeam: "KC",points: 24.10},
+                    {name: "Brandon Aubrey",position: "K",nflTeam: "DAL",points: 4.00},
+                    {name: "San Francisco 49ers",position: "DEF",nflTeam: "SF",points: 12.00}
+                  ],
+                  bench: [
+                    {name: "Zay Jones",position: "WR",nflTeam: "JAX",points: 10.90},
+                    {name: "Tyjae Spears",position: "RB",nflTeam: "TEN",points: 4.70},
+                    {name: "Tank Dell",position: "WR",nflTeam: "HOU",points: 0.00},
+                    {name: "C.J. Stroud",position: "QB",nflTeam: "HOU",points: 0.00},
+                    {name: "Jordan Addison",position: "WR",nflTeam: "MIN",points: 29.10},
+                  ]
+                }
+              },
+            ]
+          },
+
+          {
+            type: "bye",
+            id: "playoffs-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "p2"
+          },
+
+
+//2023_PS1
+
+          {
+            type: "matchup",
+            id: "PS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2023/PS1.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 108.72,
+                touchdowns: 3,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Tua Tagovailoa",position: "QB",nflTeam: "MIA",points: 15.52},
+                    {name: "Alvin Kamara",position: "RB",nflTeam: "NO",points: 8.50},
+                    {name: "Travis Etienne",position: "RB",nflTeam: "JAX",points: 6.10},
+                    {name: "Cooper Kupp",position: "WR",nflTeam: "LAR",points: 10.90},
+                    {name: "CeeDee Lamb",position: "WR",nflTeam: "DAL",points: 25.20},
+                    {name: "Evan Engram",position: "TE",nflTeam: "JAX",points: 17.50},
+                    {name: "Raheem Mostert",position: "RB",nflTeam: "MIA",points: 12.00},
+                    {name: "Tyler Bass",position: "K",nflTeam: "BUF",points: 6.00},
+                    {name: "Cleveland Browns",position: "DEF",nflTeam: "CLE",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "Logan Thomas",position: "TE",nflTeam: "WAS",points: 14.60},
+                    {name: "Kyler Murray",position: "QB",nflTeam: "ARI",points: 20.40},
+                    {name: "Jakobi Meyers",position: "WR",nflTeam: "LV",points: 7.20},
+                    {name: "Drake London",position: "WR",nflTeam: "ATL",points: 6.90},
+                    {name: "Breece Hall",position: "RB",nflTeam: "NYJ",points: 43.10},
+                    {name: "Zay Flowers",position: "WR",nflTeam: "BAL",points: 22.20},
+                  ]
+                }
+              },
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 112.20,
+                touchdowns: 4,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Patrick Mahomes",position: "QB",nflTeam: "KC",points: 16.70},
+                    {name: "Chuba Hubbard",position: "RB",nflTeam: "CAR",points: 12.10},
+                    {name: "Kenneth Walker",position: "RB",nflTeam: "SEA",points: 6.60},
+                    {name: "DJ Moore",position: "WR",nflTeam: "CHI",points: 4.80},
+                    {name: "Puka Nacua",position: "WR",nflTeam: "LAR",points: 33.00},
+                    {name: "Travis Kelce",position: "TE",nflTeam: "KC",points: 9.40},
+                    {name: "Isiah Pacheco",position: "RB",nflTeam: "KC",points: 10.60},
+                    {name: "Younghoe Koo",position: "K",nflTeam: "ATL",points: 19.00},
+                    {name: "New Orleans Saints",position: "DEF",nflTeam: "NO",points: 0.00}
+                  ],
+                  bench: [
+                    {name: "Chris Godwin",position: "WR",nflTeam: "TB",points: 13.90},
+                    {name: "Terry McLaurin",position: "WR",nflTeam: "WAS",points: 8.00},
+                    {name: "Clyde Edwards-Helaire",position: "RB",nflTeam: "KC",points: 7.80},
+                    {name: "Rhamondre Stevenson",position: "RB",nflTeam: "NE",points: 0.00},
+                    {name: "Jaylen Warren",position: "RB",nflTeam: "PIT",points: 10.40},
+                    {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 5.00},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+
+//2023_PS2
+          {
+            type: "matchup",
+            id: "PS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2023/PS2.png",
+
+            teams: [
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 108.60,
+                touchdowns: 4,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Brock Purdy",position: "QB",nflTeam: "SF",points: 2.40},
+                    {name: "Christian McCaffrey",position: "RB",nflTeam: "SF",points: 25.10},
+                    {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 19.70},
+                    {name: "DeAndre Hopkins",position: "WR",nflTeam: "TEN",points: 4.00},
+                    {name: "DK Metcalf",position: "WR",nflTeam: "SEA",points: 15.60},
+                    {name: "Sam LaPorta",position: "TE",nflTeam: "DET",points: 4.80},
+                    {name: "Tee Higgins",position: "WR",nflTeam: "CIN",points: 25.00},
+                    {name: "Jake Moody",position: "K",nflTeam: "SF",points: 6.00},
+                    {name: "Kansas City Chiefs",position: "DEF",nflTeam: "KC",points: 6.00}
+                  ],
+                  bench: [
+                    {name: "David Njoku",position: "TE",nflTeam: "CLE",points: 16.40},
+                    {name: "Gus Edwards",position: "RB",nflTeam: "LAC",points: 14.00},
+                    {name: "Josh Jacobs",position: "RB",nflTeam: "GB",points: 0.00},
+                    {name: "Gabe Davis",position: "WR",nflTeam: "JAX",points: 23.00},
+                    {name: "Josh Palmer",position: "WR",nflTeam: "LAC",points: 9.70},
+                    {name: "George Pickens",position: "WR",nflTeam: "PIT",points: 35.50},
+                  ]
+                }
+              },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 121.34,
+                touchdowns: 5,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Jalen Hurts",position: "QB",nflTeam: "PHI",points: 23.44},
+                    {name: "Kyren Williams",position: "RB",nflTeam: "LAR",points: 16.40},
+                    {name: "Tyjae Spears",position: "RB",nflTeam: "TEN",points: 11.70},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 27.60},
+                    {name: "Deebo Samuel",position: "WR",nflTeam: "SF",points: 9.40},
+                    {name: "Trey McBride",position: "TE",nflTeam: "ARI",points: 9.10},
+                    {name: "Rashee Rice",position: "WR",nflTeam: "KC",points: 11.70},
+                    {name: "Brandon Aubrey",position: "K",nflTeam: "DAL",points: 9.00},
+                    {name: "San Francisco 49ers",position: "DEF",nflTeam: "SF",points: 3.00}
+                  ],
+                  bench: [
+                    {name: "Zay Jones",position: "WR",nflTeam: "JAX",points: 0.00},
+                    {name: "Austin Ekeler",position: "RB",nflTeam: "WAS",points: 11.60},
+                    {name: "Tank Dell",position: "WR",nflTeam: "HOU",points: 0.00},
+                    {name: "C.J. Stroud",position: "QB",nflTeam: "HOU",points: 0.00},
+                    {name: "Jordan Addison",position: "WR",nflTeam: "MIN",points: 1.20},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2023_F1
+
+          {
+            type: "matchup",
+            id: "F1",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Championship",
+            bowlName: "",
+            bowlArt: "artwork/2023/F1.png",
+
+            teams: [
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 140.30,
+                touchdowns: 5,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Patrick Mahomes",position: "QB",nflTeam: "KC",points: 12.00},
+                    {name: "Isiah Pacheco",position: "RB",nflTeam: "KC",points: 29.50},
+                    {name: "Kenneth Walker",position: "RB",nflTeam: "SEA",points: 16.50},
+                    {name: "DJ Moore",position: "WR",nflTeam: "CHI",points: 30.90},
+                    {name: "Puka Nacua",position: "WR",nflTeam: "LAR",points: 18.70},
+                    {name: "Travis Kelce",position: "TE",nflTeam: "KC",points: 4.60},
+                    {name: "Terry McLaurin",position: "WR",nflTeam: "WAS",points: 16.10},
+                    {name: "Younghoe Koo",position: "K",nflTeam: "ATL",points: 5.00},
+                    {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "Chris Godwin",position: "WR",nflTeam: "TB",points: 17.10},
+                    {name: "Clyde Edwards-Helaire",position: "RB",nflTeam: "KC",points: 0.00},
+                    {name: "Chuba Hubbard",position: "RB",nflTeam: "CAR",points: 11.10},
+                    {name: "Rhamondre Stevenson",position: "RB",nflTeam: "NE",points: 0.00},
+                    {name: "Jaylen Warren",position: "RB",nflTeam: "PIT",points: 19.80},
+                    {name: "New Orleans Saints",position: "DEF",nflTeam: "NO",points: 14.00},
+                  ]
+                }
+              },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 129.98,
+                touchdowns: 7,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Jalen Hurts",position: "QB",nflTeam: "PHI",points: 19.18},
+                    {name: "Austin Ekeler",position: "RB",nflTeam: "WAS",points: 4.00},
+                    {name: "Kyren Williams",position: "RB",nflTeam: "LAR",points: 30.10},
+                    {name: "Mike Evans",position: "WR",nflTeam: "TB",points: 10.00},
+                    {name: "Deebo Samuel",position: "WR",nflTeam: "SF",points: 18.20},
+                    {name: "Trey McBride",position: "TE",nflTeam: "ARI",points: 10.80},
+                    {name: "Rashee Rice",position: "WR",nflTeam: "KC",points: 17.70},
+                    {name: "Brandon Aubrey",position: "K",nflTeam: "DAL",points: 11.00},
+                    {name: "San Francisco 49ers",position: "DEF",nflTeam: "SF",points: 9.00}
+                  ],
+                  bench: [
+                    {name: "Jeff Wilson",position: "RB",nflTeam: "MIA",points: 6.40},
+                    {name: "Khalil Herbert",position: "RB",nflTeam: "CHI",points: 20.90},
+                    {name: "Tyjae Spears",position: "RB",nflTeam: "TEN",points: 6.90},
+                    {name: "Tank Dell",position: "WR",nflTeam: "HOU",points: 0.00},
+                    {name: "C.J. Stroud",position: "QB",nflTeam: "HOU",points: 12.92},
+                    {name: "Jordan Addison",position: "WR",nflTeam: "MIN",points: 5.80},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2023_F3
+
+          {
+            type: "matchup",
+            id: "F3",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Third Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2023/F3.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 170.88,
+                touchdowns: 9,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Kyler Murray",position: "QB",nflTeam: "ARI",points: 23.68},
+                    {name: "Alvin Kamara",position: "RB",nflTeam: "NO",points: 6.90},
+                    {name: "Breece Hall",position: "RB",nflTeam: "NYJ",points: 27.60},
+                    {name: "Cooper Kupp",position: "WR",nflTeam: "LAR",points: 12.70},
+                    {name: "CeeDee Lamb",position: "WR",nflTeam: "DAL",points: 40.20},
+                    {name: "Evan Engram",position: "TE",nflTeam: "JAX",points: 12.00},
+                    {name: "Travis Etienne",position: "RB",nflTeam: "JAX",points: 25.80},
+                    {name: "Tyler Bass",position: "K",nflTeam: "BUF",points: 9.00},
+                    {name: "Cleveland Browns",position: "DEF",nflTeam: "CLE",points: 13.00}
+                  ],
+                  bench: [
+                    {name: "Logan Thomas",position: "TE",nflTeam: "WAS",points: 5.00},
+                    {name: "Raheem Mostert",position: "RB",nflTeam: "MIA",points: 0.00},
+                    {name: "Jakobi Meyers",position: "WR",nflTeam: "LV",points: 11.60},
+                    {name: "Tua Tagovailoa",position: "QB",nflTeam: "MIA",points: 14.88},
+                    {name: "Drake London",position: "WR",nflTeam: "ATL",points: 9.60},
+                    {name: "Zay Flowers",position: "WR",nflTeam: "BAL",points: 19.60},
+                  ]
+                }
+              },
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 103.40,
+                touchdowns: 2,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Brock Purdy",position: "QB",nflTeam: "SF",points: 17.60},
+                    {name: "Christian McCaffrey",position: "RB",nflTeam: "SF",points: 13.10},
+                    {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 8.60},
+                    {name: "DeAndre Hopkins",position: "WR",nflTeam: "TEN",points: 14.20},
+                    {name: "DK Metcalf",position: "WR",nflTeam: "SEA",points: 15.60},
+                    {name: "Sam LaPorta",position: "TE",nflTeam: "DET",points: 15.40},
+                    {name: "Tee Higgins",position: "WR",nflTeam: "CIN",points: 2.90},
+                    {name: "Jake Moody",position: "K",nflTeam: "SF",points: 9.00},
+                    {name: "Kansas City Chiefs",position: "DEF",nflTeam: "KC",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "David Njoku",position: "TE",nflTeam: "CLE",points: 17.40},
+                    {name: "Gus Edwards",position: "RB",nflTeam: "LAC",points: 10.80},
+                    {name: "Josh Jacobs",position: "RB",nflTeam: "GB",points: 0.00},
+                    {name: "Gabe Davis",position: "WR",nflTeam: "JAX",points: 4.10},
+                    {name: "Josh Palmer",position: "WR",nflTeam: "LAC",points: 0.00},
+                    {name: "George Pickens",position: "WR",nflTeam: "PIT",points: 20.10},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2023_F5
+
+          {
+            type: "matchup",
+            id: "F5",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Fifth Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2023/F5.png",
+
+            teams: [
+              {
+                teamId: "p5",
+                seed: 5,
+                score: 108.60,
+                touchdowns: 6,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Sam Howell",position: "QB",nflTeam: "SEA",points: 6.66},
+                    {name: "David Montgomery",position: "RB",nflTeam: "DET",points: 12.50},
+                    {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 23.70},
+                    {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 8.40},
+                    {name: "Brandon Aiyuk",position: "WR",nflTeam: "SF",points: 24.40},
+                    {name: "Taysom Hill",position: "TE",nflTeam: "NO",points: 11.54},
+                    {name: "Jonathan Taylor",position: "RB",nflTeam: "IND",points: 17.40},
+                    {name: "Chase McLaughlin",position: "K",nflTeam: "TB",points: 1.00},
+                    {name: "Pittsburgh Steelers",position: "DEF",nflTeam: "PIT",points: 3.00}
+                  ],
+                  bench: [
+                    {name: "Courtland Sutton",position: "WR",nflTeam: "DEN",points: 0.00},
+                    {name: "Gardner Minshew",position: "QB",nflTeam: "LV",points: 13.26},
+                    {name: "Cole Kmet",position: "TE",nflTeam: "CHI",points: 0.00},
+                    {name: "Jaylen Waddle",position: "WR",nflTeam: "MIA",points: 0.00},
+                    {name: "Tyler Allgeier",position: "RB",nflTeam: "ATL",points: 15.80},
+                    {name: "Jerome Ford",position: "RB",nflTeam: "CLE",points: 26.10},
+                  ]
+                }
+              },
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 101.82,
+                touchdowns: 2,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Justin Fields",position: "QB",nflTeam: "PIT",points: 25.22},
+                    {name: "Zamir White",position: "RB",nflTeam: "LV",points: 15.60},
+                    {name: "Ty Chandler",position: "RB",nflTeam: "MIN",points: 9.40},
+                    {name: "Tyreek Hill",position: "WR",nflTeam: "MIA",points: 13.60},
+                    {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 9.90},
+                    {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 1.50},
+                    {name: "D'Andre Swift",position: "RB",nflTeam: "CHI",points: 7.60},
+                    {name: "Cameron Dicker",position: "K",nflTeam: "LAC",points: 13.00},
+                    {name: "Dallas Cowboys",position: "DEF",nflTeam: "DAL",points: 6.00}
+                  ],
+                  bench: [
+                    {name: "Keenan Allen",position: "WR",nflTeam: "CHI",points: 0.00},
+                    {name: "Alexander Mattison",position: "RB",nflTeam: "LV",points: 5.00},
+                    {name: "Devin Singletary",position: "RB",nflTeam: "NYG",points: 11.60},
+                    {name: "Trevor Lawrence",position: "QB",nflTeam: "JAX",points: 0.00},
+                    {name: "Kenneth Gainwell",position: "RB",nflTeam: "PHI",points: 6.68},
+                    {name: "Parker Washington",position: "WR",nflTeam: "JAX",points: 1.20},
+                  ]
+                }
+              },
+            ]
+          },
+        ],
+
+
+//END 2023 Playoffs
+
+        connections: [
+          {
+            from: "playoffs-bye-1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "PQ1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "playoffs-bye-2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PQ2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS2",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PS2",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PQ1",
+            to: "F5",
+            result: "loser"
+          },
+          {
+            from: "PQ2",
+            to: "F5",
+            result: "loser"
+          }
+        ]
+      },
+
+      consolation: {
+        label: "Consolation",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "consolation-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "c1"
+          },
+
+//2023_CQ1
+
+          {
+            type: "matchup",
+            id: "CQ1",
+            round: "first",
+            slot: "first-upper",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2023/CQ1.png",
+
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 103.22,
+                touchdowns: 4,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Russell Wilson",position: "QB",nflTeam: "PIT",points: 17.52},
+                    {name: "Derrick Henry",position: "RB",nflTeam: "BAL",points: 5.00},
+                    {name: "James Conner",position: "RB",nflTeam: "ARI",points: 17.90},
+                    {name: "Stefon Diggs",position: "WR",nflTeam: "HOU",points: 8.80},
+                    {name: "DeVonta Smith",position: "WR",nflTeam: "PHI",points: 10.00},
+                    {name: "Dalton Schultz",position: "TE",nflTeam: "HOU",points: 9.80},
+                    {name: "Diontae Johnson",position: "WR",nflTeam: "CAR",points: 16.20},
+                    {name: "Jake Elliott",position: "K",nflTeam: "PHI",points: 5.00},
+                    {name: "Houston Texans",position: "DEF",nflTeam: "HOU",points: 13.00}
+                  ],
+                  bench: [
+                    {name: "Tyler Boyd",position: "WR",nflTeam: "CIN",points: 7.30},
+                    {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 10.90},
+                    {name: "Nico Collins",position: "WR",nflTeam: "HOU",points: 0.00},
+                    {name: "Christian Watson",position: "WR",nflTeam: "GB",points: 0.00},
+                    {name: "Dameon Pierce",position: "RB",nflTeam: "HOU",points: 0.30},
+                    {name: "Cade Otton",position: "TE",nflTeam: "TB",points: 6.40},
+                  ]
+                }
+              },
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 105.26,
+                touchdowns: 3,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Dak Prescott",position: "QB",nflTeam: "DAL",points: 6.06},
+                    {name: "Tony Pollard",position: "RB",nflTeam: "TEN",points: 7.70},
+                    {name: "James Cook",position: "RB",nflTeam: "BUF",points: 36.10},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "CLE",points: 20.90},
+                    {name: "A.J. Brown",position: "WR",nflTeam: "PHI",points: 10.60},
+                    {name: "T.J. Hockenson",position: "TE",nflTeam: "MIN",points: 12.30},
+                    {name: "Ezekiel Elliott",position: "RB",nflTeam: "DAL",points: 9.60},
+                    {name: "Chris Boswell",position: "K",nflTeam: "PIT",points: 0.00},
+                    {name: "New York Jets",position: "DEF",nflTeam: "NYJ",points: 2.00}
+                  ],
+                  bench: [
+                    {name: "Latavius Murray",position: "RB",nflTeam: "BUF",points: 7.10},
+                    {name: "Brandin Cooks",position: "WR",nflTeam: "DAL",points: 3.00},
+                    {name: "Deshaun Watson",position: "QB",nflTeam: "CLE",points: 0.00},
+                    {name: "Tanner Hudson",position: "TE",nflTeam: "CIN",points: 9.90},
+                    {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 17.20},
+                    {name: "Demario Douglas",position: "WR",nflTeam: "NE",points: 6.30},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2023_CQ2
+
+          {
+            type: "matchup",
+            id: "CQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2023/CQ2.png",
+
+            teams: [
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 86.64,
+                touchdowns: 2,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Lamar Jackson",position: "QB",nflTeam: "BAL",points: 18.54},
+                    {name: "Javonte Williams",position: "RB",nflTeam: "DEN",points: 4.00},
+                    {name: "Bijan Robinson",position: "RB",nflTeam: "ATL",points: 0.40},
+                    {name: "Odell Beckham",position: "WR",nflTeam: "BAL",points: 2.40},
+                    {name: "Michael Pittman",position: "WR",nflTeam: "IND",points: 11.80},
+                    {name: "Jake Ferguson",position: "TE",nflTeam: "DAL",points: 10.40},
+                    {name: "Davante Adams",position: "WR",nflTeam: "LV",points: 24.10},
+                    {name: "Dustin Hopkins",position: "K",nflTeam: "CLE",points: 8.00},
+                    {name: "Atlanta Falcons",position: "DEF",nflTeam: "ATL",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "Kareem Hunt",position: "RB",nflTeam: "CLE",points: 3.00},
+                    {name: "Curtis Samuel",position: "WR",nflTeam: "BUF",points: 21.10},
+                    {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 17.46},
+                    {name: "Isaiah Likely",position: "TE",nflTeam: "BAL",points: 18.00},
+                    {name: "Brian Robinson",position: "RB",nflTeam: "WAS",points: 0.00},
+                    {name: "Buffalo Bills",position: "DEF",nflTeam: "BUF",points: 9.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 113.42,
+                touchdowns: 5,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Matthew Stafford",position: "QB",nflTeam: "LAR",points: 18.52},
+                    {name: "Antonio Gibson",position: "RB",nflTeam: "NE",points: 8.50},
+                    {name: "Jahmyr Gibbs",position: "RB",nflTeam: "DET",points: 24.80},
+                    {name: "Justin Jefferson",position: "WR",nflTeam: "MIN",points: 15.40},
+                    {name: "Ja'Marr Chase",position: "WR",nflTeam: "CIN",points: 10.40},
+                    {name: "Dalton Kincaid",position: "TE",nflTeam: "BUF",points: 0.00},
+                    {name: "Jaxon Smith-Njigba",position: "WR",nflTeam: "SEA",points: 14.80},
+                    {name: "Jason Sanders",position: "K",nflTeam: "MIA",points: 12.00},
+                    {name: "Baltimore Ravens",position: "DEF",nflTeam: "BAL",points: 9.00}
+                  ],
+                  bench: [
+                    {name: "Jared Goff",position: "QB",nflTeam: "DET",points: 31.12},
+                    {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 7.10},
+                    {name: "Chris Olave",position: "WR",nflTeam: "NO",points: 0.00},
+                    {name: "Jahan Dotson",position: "WR",nflTeam: "WAS",points: 2.20},
+                    {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 1.60},
+                    {name: "Keaton Mitchell",position: "RB",nflTeam: "BAL",points: 10.80},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+          {
+            type: "bye",
+            id: "consolation-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "c2"
+          },
+
+//2023_CS1
+
+          {
+            type: "matchup",
+            id: "CS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2023/CS1.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 109.48,
+                touchdowns: 5,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+                    {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+                    {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+                    {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+                    {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+                    {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+                    {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+                    {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+                    {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+                  ],
+
+                  bench: [
+                    {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+                    {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+                    {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+                    {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+                    {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+                    {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+                  ]
+                }
+              },
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 143.22,
+                touchdowns: 5,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Dak Prescott",position: "QB",nflTeam: "DAL",points: 18.62},
+                    {name: "Tony Pollard",position: "RB",nflTeam: "TEN",points: 5.30},
+                    {name: "James Cook",position: "RB",nflTeam: "BUF",points: 5.00},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "CLE",points: 51.50},
+                    {name: "A.J. Brown",position: "WR",nflTeam: "PHI",points: 14.00},
+                    {name: "T.J. Hockenson",position: "TE",nflTeam: "MIN",points: 9.80},
+                    {name: "Ezekiel Elliott",position: "RB",nflTeam: "DAL",points: 21.00},
+                    {name: "Chris Boswell",position: "K",nflTeam: "PIT",points: 12.00},
+                    {name: "New York Jets",position: "DEF",nflTeam: "NYJ",points: 6.00}
+                  ],
+                  bench: [
+                    {name: "Latavius Murray",position: "RB",nflTeam: "BUF",points: 0.00},
+                    {name: "Brandin Cooks",position: "WR",nflTeam: "DAL",points: 10.30},
+                    {name: "Deshaun Watson",position: "QB",nflTeam: "CLE",points: 0.00},
+                    {name: "Tanner Hudson",position: "TE",nflTeam: "CIN",points: 1.50},
+                    {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 0.00},
+                    {name: "Demario Douglas",position: "WR",nflTeam: "NE",points: 12.40},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2023_CS2
+
+          {
+            type: "matchup",
+            id: "CS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "",
+            bowlArt: "artwork/2023/CS2.png",
+
+            teams: [
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 151.90,
+                touchdowns: 7,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Jake Browning",position: "QB",nflTeam: "CIN",points: 13.40},
+                    {name: "Saquon Barkley",position: "RB",nflTeam: "PHI",points: 19.40},
+                    {name: "A.J. Dillon",position: "RB",nflTeam: "GB",points: 7.20},
+                    {name: "Calvin Ridley",position: "WR",nflTeam: "TEN",points: 25.80},
+                    {name: "Amon-Ra St. Brown",position: "WR",nflTeam: "DET",points: 28.60},
+                    {name: "George Kittle",position: "TE",nflTeam: "SF",points: 19.60},
+                    {name: "Romeo Doubs",position: "WR",nflTeam: "GB",points: 17.90},
+                    {name: "Justin Tucker",position: "K",nflTeam: "BAL",points: 16.00},
+                    {name: "Philadelphia Eagles",position: "DEF",nflTeam: "PHI",points: 4.00}
+                  ],
+                  bench: [
+                    {name: "Derek Carr",position: "QB",nflTeam: "NO",points: 24.96},
+                    {name: "D'Onta Foreman",position: "RB",nflTeam: "CLE",points: 0.00},
+                    {name: "Noah Brown",position: "WR",nflTeam: "HOU",points: 6.80},
+                    {name: "Matt Breida",position: "RB",nflTeam: "NYG",points: 1.30},
+                    {name: "Darrell Henderson",position: "RB",nflTeam: "FA",points: 0.00},
+                    {name: "Miles Sanders",position: "RB",nflTeam: "CAR",points: 1.80},
+                  ]
+                }
+              },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 135.06,
+                touchdowns: 4,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Taylor Heinicke",position: "QB",nflTeam: "ATL",points: 14.16},
+                    {name: "Boston Scott",position: "RB",nflTeam: "LAR",points: -1.70},
+                    {name: "Jahmyr Gibbs",position: "RB",nflTeam: "DET",points: 24.00},
+                    {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 9.30},
+                    {name: "Jaxon Smith-Njigba",position: "WR",nflTeam: "SEA",points: 12.10},
+                    {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 14.10},
+                    {name: "Justin Jefferson",position: "WR",nflTeam: "MIN",points: 26.10},
+                    {name: "Jason Sanders",position: "K",nflTeam: "MIA",points: 22.00},
+                    {name: "Baltimore Ravens",position: "DEF",nflTeam: "BAL",points: 15.00}
+                  ],
+                  bench: [
+                    {name: "Jared Goff",position: "QB",nflTeam: "DET",points: 14.28},
+                    {name: "Antonio Gibson",position: "RB",nflTeam: "NE",points: 10.20},
+                    {name: "Ja'Marr Chase",position: "WR",nflTeam: "CIN",points: 0.00},
+                    {name: "Chris Olave",position: "WR",nflTeam: "NO",points: 23.30},
+                    {name: "Dalton Kincaid",position: "TE",nflTeam: "BUF",points: 1.70},
+                    {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 0.60},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2023_F7
+
+          {
+            type: "matchup",
+            id: "F7",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Consolation Championship",
+            bowlName: "",
+            bowlArt: "artwork/2023/F7.png",
+
+            teams: [
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 83.20,
+                touchdowns: 4,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Dak Prescott",position: "QB",nflTeam: "DAL",points: 20.30},
+                    {name: "Ezekiel Elliott",position: "RB",nflTeam: "DAL",points: 11.50},
+                    {name: "James Cook",position: "RB",nflTeam: "BUF",points: 5.40},
+                    {name: "Amari Cooper",position: "WR",nflTeam: "CLE",points: 0.00},
+                    {name: "A.J. Brown",position: "WR",nflTeam: "PHI",points: 9.30},
+                    {name: "Tanner Hudson",position: "TE",nflTeam: "CIN",points: 6.80},
+                    {name: "Tony Pollard",position: "RB",nflTeam: "TEN",points: 5.90},
+                    {name: "Chris Boswell",position: "K",nflTeam: "PIT",points: 12.00},
+                    {name: "New York Jets",position: "DEF",nflTeam: "NYJ",points: 12.00}
+                  ],
+                  bench: [
+                    {name: "Latavius Murray",position: "RB",nflTeam: "BUF",points: 0.00},
+                    {name: "Brandin Cooks",position: "WR",nflTeam: "DAL",points: 17.00},
+                    {name: "Deshaun Watson",position: "QB",nflTeam: "CLE",points: 0.00},
+                    {name: "T.J. Hockenson",position: "TE",nflTeam: "MIN",points: 0.00},
+                    {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 26.90},
+                    {name: "Demario Douglas",position: "WR",nflTeam: "NE",points: 7.30},
+                  ]
+                }
+              },
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 87.28,
+                touchdowns: 4,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Jake Browning",position: "QB",nflTeam: "CIN",points: 21.08},
+                    {name: "Saquon Barkley",position: "RB",nflTeam: "PHI",points: 8.80},
+                    {name: "A.J. Dillon",position: "RB",nflTeam: "GB",points: 2.70},
+                    {name: "Calvin Ridley",position: "WR",nflTeam: "TEN",points: 7.90},
+                    {name: "Amon-Ra St. Brown",position: "WR",nflTeam: "DET",points: 22.10},
+                    {name: "George Kittle",position: "TE",nflTeam: "SF",points: 5.90},
+                    {name: "Romeo Doubs",position: "WR",nflTeam: "GB",points: 5.80},
+                    {name: "Justin Tucker",position: "K",nflTeam: "BAL",points: 8.00},
+                    {name: "Philadelphia Eagles",position: "DEF",nflTeam: "PHI",points: 5.00}
+                  ],
+                  bench: [
+                    {name: "Derek Carr",position: "QB",nflTeam: "NO",points: 15.58},
+                    {name: "D'Onta Foreman",position: "RB",nflTeam: "CLE",points: 0.00},
+                    {name: "Noah Brown",position: "WR",nflTeam: "HOU",points: 1.80},
+                    {name: "Matt Breida",position: "RB",nflTeam: "NYG",points: 0.00},
+                    {name: "Darrell Henderson",position: "RB",nflTeam: "FA",points: 0.00},
+                    {name: "Miles Sanders",position: "RB",nflTeam: "CAR",points: 4.20},
+                  ]
+                }
+              },
+            ]
+          },
+
+//2023_F9
+
+          {
+            type: "matchup",
+            id: "F9",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Ninth Place Game",
+            bowlName: "",
+            bowlArt: "artwork/2023/F9.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 109.26,
+                touchdowns: 4,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Josh Allen",position: "QB",nflTeam: "BUF",points: 21.16},
+                    {name: "Joe Mixon",position: "RB",nflTeam: "HOU",points: 18.70},
+                    {name: "Najee Harris",position: "RB",nflTeam: "PIT",points: 24.20},
+                    {name: "Adam Thielen",position: "WR",nflTeam: "CAR",points: 9.80},
+                    {name: "Tyler Lockett",position: "WR",nflTeam: "SEA",points: 2.00},
+                    {name: "Chig Okonkwo",position: "TE",nflTeam: "TEN",points: 6.40},
+                    {name: "K.J. Osborn",position: "WR",nflTeam: "NE",points: 0.00},
+                    {name: "Harrison Butker",position: "K",nflTeam: "KC",points: 24.00},
+                    {name: "Indianapolis Colts",position: "DEF",nflTeam: "IND",points: 3.00}
+                  ],
+                  bench: [
+                    {name: "Christian Kirk",position: "WR",nflTeam: "JAX",points: 0.00},
+                    {name: "Baker Mayfield",position: "QB",nflTeam: "TB",points: 16.26},
+                    {name: "Marquise Brown",position: "WR",nflTeam: "KC",points: 0.00},
+                    {name: "Zack Moss",position: "RB",nflTeam: "CIN",points: 0.00},
+                    {name: "Josh Downs",position: "WR",nflTeam: "IND",points: 7.30},
+                    {name: "Miami Dolphins",position: "DEF",nflTeam: "MIA",points: -1.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 79.78,
+                touchdowns: 2,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Matthew Stafford",position: "QB",nflTeam: "LAR",points: 12.58},
+                    {name: "Antonio Gibson",position: "RB",nflTeam: "NE",points: 5.60},
+                    {name: "Jahmyr Gibbs",position: "RB",nflTeam: "DET",points: 5.30},
+                    {name: "Justin Jefferson",position: "WR",nflTeam: "MIN",points: 10.90},
+                    {name: "Chris Olave",position: "WR",nflTeam: "NO",points: 5.60},
+                    {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 15.70},
+                    {name: "Ja'Marr Chase",position: "WR",nflTeam: "CIN",points: 7.10},
+                    {name: "Jason Sanders",position: "K",nflTeam: "MIA",points: 7.00},
+                    {name: "Baltimore Ravens",position: "DEF",nflTeam: "BAL",points: 10.00}
+                  ],
+                  bench: [
+                    {name: "Jared Goff",position: "QB",nflTeam: "DET",points: 10.84},
+                    {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 9.50},
+                    {name: "Rashid Shaheed",position: "WR",nflTeam: "NO",points: 3.40},
+                    {name: "Dalton Kincaid",position: "TE",nflTeam: "BUF",points: 12.70},
+                    {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 9.10},
+                    {name: "Jaxon Smith-Njigba",position: "WR",nflTeam: "SEA",points: 8.20},
+                  ]
+                }
+              },
+            ]
+          },
+
+
+//2023_F11
+
+          {
+            type: "matchup",
+            id: "F11",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Last Place Game",
+            bowlName: "The Malcolm Rhodes Memorial Bowl",
+            bowlArt: "artwork/2023/F11.png",
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 121.06,
+                touchdowns: 6,
+                winner: false,
+
+                lineup: {
+                  starters: [
+                    {name: "Joe Flacco",position: "QB",nflTeam: "IND",points: 22.66},
+                    {name: "Derrick Henry",position: "RB",nflTeam: "BAL",points: 4.20},
+                    {name: "James Conner",position: "RB",nflTeam: "ARI",points: 26.30},
+                    {name: "Stefon Diggs",position: "WR",nflTeam: "HOU",points: 7.10},
+                    {name: "DeVonta Smith",position: "WR",nflTeam: "PHI",points: 6.00},
+                    {name: "Darren Waller",position: "TE",nflTeam: "NYG",points: 10.10},
+                    {name: "Nico Collins",position: "WR",nflTeam: "HOU",points: 15.70},
+                    {name: "Jake Elliott",position: "K",nflTeam: "PHI",points: 8.00},
+                    {name: "Houston Texans",position: "DEF",nflTeam: "HOU",points: 21.00}
+                  ],
+                  bench: [
+                    {name: "Tyler Boyd",position: "WR",nflTeam: "CIN",points: 4.90},
+                    {name: "Demarcus Robinson",position: "WR",nflTeam: "LAR",points: 13.20},
+                    {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 14.00},
+                    {name: "Dalton Schultz",position: "TE",nflTeam: "HOU",points: 3.90},
+                    {name: "Diontae Johnson",position: "WR",nflTeam: "CAR",points: 11.60},
+                    {name: "Christian Watson",position: "WR",nflTeam: "GB",points: 0.00},
+                  ]
+                }
+              },
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 145.84,
+                touchdowns: 8,
+                winner: true,
+
+                lineup: {
+                  starters: [
+                    {name: "Lamar Jackson",position: "QB",nflTeam: "BAL",points: 36.34},
+                    {name: "Brian Robinson",position: "RB",nflTeam: "WAS",points: 11.60},
+                    {name: "Bijan Robinson",position: "RB",nflTeam: "ATL",points: 11.60},
+                    {name: "Davante Adams",position: "WR",nflTeam: "LV",points: 37.60},
+                    {name: "Michael Pittman",position: "WR",nflTeam: "IND",points: 9.60},
+                    {name: "Jake Ferguson",position: "TE",nflTeam: "DAL",points: 7.30},
+                    {name: "Javonte Williams",position: "RB",nflTeam: "DEN",points: 8.80},
+                    {name: "Greg Joseph",position: "K",nflTeam: "GB",points: 6.00},
+                    {name: "Buffalo Bills",position: "DEF",nflTeam: "BUF",points: 17.00}
+                  ],
+                  bench: [
+                    {name: "Odell Beckham",position: "WR",nflTeam: "BAL",points: 4.30},
+                    {name: "Kareem Hunt",position: "RB",nflTeam: "CLE",points: 9.10},
+                    {name: "Curtis Samuel",position: "WR",nflTeam: "BUF",points: 6.30},
+                    {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 28.44},
+                    {name: "Isaiah Likely",position: "TE",nflTeam: "BAL",points: 18.20},
+                    {name: "Atlanta Falcons",position: "DEF",nflTeam: "ATL",points: -1.00},
+                  ]
+                }
+              },
+            ]
+          },
+        ],
+//END 2023 CONSOLATION
+
+        connections: [
+          {
+            from: "consolation-bye-1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "CQ1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "consolation-bye-2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CQ2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS2",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CS2",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CQ1",
+            to: "F11",
+            result: "loser"
+          },
+          {
+            from: "CQ2",
+            to: "F11",
+            result: "loser"
+          }
+        ]
+      }
+    },
+
+
+
+//END2023!!!!!!!!!!!!!!!!!!!!!!!!!!END2023!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!END2023!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!END2023
+
+

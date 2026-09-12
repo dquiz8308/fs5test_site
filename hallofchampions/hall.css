@@ -1,0 +1,800 @@
+/* =========================================================
+   HALL OF CHAMPIONS
+   Styles are scoped beneath .champions-hall.
+   ========================================================= */
+
+.champions-hall {
+    --hall-background: #090a0b;
+    --hall-surface: #151513;
+    --hall-surface-light: #1c1b17;
+
+    --hall-gold: #d4a63f;
+    --hall-gold-light: #f2ce70;
+    --hall-gold-dark: #73551c;
+
+    --hall-text: #f3eee3;
+    --hall-muted: #bdb4a4;
+
+    --hall-border: rgba(212, 166, 63, 0.42);
+    --hall-soft-border: rgba(212, 166, 63, 0.20);
+
+    --timeline-width: 96rem;
+    --entry-width: 82.5rem;
+
+    /*
+        This determines how far the timeline shifts
+        left and right between entries.
+    */
+    --timeline-step: clamp(2.5rem, 4.5vw, 5.25rem);
+
+    --marker-column: 6.25rem;
+    --entry-gap: 4.5rem;
+
+    position: relative;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden;
+    color: var(--hall-text);
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(212, 166, 63, 0.08),
+            transparent 34rem
+        ),
+        linear-gradient(
+            180deg,
+            #101112 0%,
+            var(--hall-background) 38%,
+            #070809 100%
+        );
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.5;
+
+    isolation: isolate;
+}
+
+.champions-hall *,
+.champions-hall *::before,
+.champions-hall *::after {
+    box-sizing: border-box;
+}
+
+.champions-hall::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    pointer-events: none;
+    opacity: 0.18;
+
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.018) 0,
+            rgba(255, 255, 255, 0.018) 1px,
+            transparent 1px,
+            transparent 6px
+        ),
+        radial-gradient(
+            circle at center,
+            transparent 0,
+            rgba(0, 0, 0, 0.36) 100%
+        );
+}
+
+/* =========================================================
+   TIMELINE CONTAINER
+   ========================================================= */
+
+.champions-timeline {
+    position: relative;
+    width: min(100%, var(--timeline-width));
+
+    margin: 0 auto;
+    padding: 5rem 1rem;
+}
+
+/* =========================================================
+   INDIVIDUAL CHAMPION ENTRY
+   ========================================================= */
+
+.champion {
+    --entry-shift: 0rem;
+
+    position: relative;
+    left: var(--entry-shift);
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.0fr)
+        var(--marker-column)
+        minmax(0, 1fr);
+
+    grid-template-rows: auto;
+    align-items: stretch;
+
+    width: min(
+        var(--entry-width),
+        calc(100% - (var(--timeline-step) * 2) - 2rem)
+    );
+
+    margin: 0 auto var(--entry-gap);
+
+    isolation: isolate;
+}
+
+
+
+/*
+    Artwork-left entries move the entire row right.
+    Therefore their timeline segment is right of center.
+*/
+.champion--art-left {
+    --entry-shift: var(--timeline-step);
+}
+
+/*
+    Artwork-right entries move the entire row left.
+    Therefore their timeline segment is left of center.
+*/
+.champion--art-right {
+    --entry-shift: calc(var(--timeline-step) * -1);
+}
+
+/* Vertical section of the timeline */
+
+.champion::before {
+    content: "";
+    position: absolute;
+
+    z-index: 0;
+
+    top: calc(var(--entry-gap) / -2);
+    bottom: calc(var(--entry-gap) / -2);
+    left: 50%;
+
+    width: 3px;
+
+    transform: translateX(-50%);
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--hall-gold-dark),
+            var(--hall-gold-light),
+            var(--hall-gold-dark)
+        );
+
+    box-shadow:
+        0 0 12px rgba(212, 166, 63, 0.32);
+}
+
+/*
+    The first line begins at the first marker.
+*/
+.champion:first-child::before {
+    top: 50%;
+}
+
+/*
+    The final line ends at the last marker.
+*/
+.champion:last-child::before {
+    bottom: 50%;
+}
+
+/*
+    Horizontal bridge between one shifted timeline
+    position and the next.
+*/
+.champion:not(:last-child)::after {
+    content: "";
+    position: absolute;
+
+    z-index: 0;
+
+    bottom: calc(var(--entry-gap) / -2);
+
+    width: calc(var(--timeline-step) * 2);
+    height: 3px;
+
+    transform: translateY(50%);
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--hall-gold-dark),
+            var(--hall-gold-light),
+            var(--hall-gold-dark)
+        );
+
+    box-shadow:
+        0 0 12px rgba(212, 166, 63, 0.32);
+}
+
+/*
+    A right-shifted entry connects leftward.
+*/
+.champion--art-left:not(:last-child)::after {
+    left: calc(50% - (var(--timeline-step) * 2));
+}
+
+/*
+    A left-shifted entry connects rightward.
+*/
+.champion--art-right:not(:last-child)::after {
+    left: 50%;
+}
+
+/* =========================================================
+   ARTWORK
+   ========================================================= */
+
+.champion__artwork {
+    position: relative;
+    z-index: 1;
+
+    grid-column: 1;
+    grid-row: 1;
+
+    align-self: center;
+
+    width: calc(100% + 7rem);
+    justify-self: end;
+    aspect-ratio: 3 / 2;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 1px solid var(--hall-border);
+    background: #050505;
+
+    box-shadow:
+        0 1.4rem 3.5rem rgba(0, 0, 0, 0.42);
+}
+
+.champion--art-right .champion__artwork {
+    grid-column: 3;
+    justify-self: start;
+}
+
+.champion__artwork::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    box-shadow:
+        inset 0 0 2rem rgba(0, 0, 0, 0.2);
+}
+
+.champion__artwork img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    object-fit: contain;
+    object-position: center;
+
+    background: #050505;
+}
+
+/* =========================================================
+   YEAR MARKER
+   ========================================================= */
+
+.champion__marker {
+    position: relative;
+    z-index: 3;
+
+    grid-column: 2;
+    grid-row: 1;
+
+    align-self: center;
+    justify-self: center;
+
+    display: grid;
+    place-items: center;
+
+    width: 5.1rem;
+    height: 5.1rem;
+
+    border: 2px solid var(--hall-gold-light);
+    border-radius: 50%;
+
+    color: var(--hall-gold-light);
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #312718 0%,
+            #11110f 48%,
+            #080909 100%
+        );
+
+    box-shadow:
+        0 0 0 0.42rem rgba(9, 10, 11, 0.98),
+        0 0 0 0.52rem rgba(212, 166, 63, 0.2),
+        0 0 1.7rem rgba(212, 166, 63, 0.34);
+}
+
+.champion__marker::before,
+.champion__marker::after {
+    display: none;
+    content: "";
+    position: absolute;
+
+    top: 50%;
+
+    width: 1.6rem;
+    height: 1px;
+
+    background: var(--hall-gold);
+}
+
+.champion__marker::before {
+    right: 100%;
+}
+
+.champion__marker::after {
+    left: 100%;
+}
+
+.champion__marker span {
+    color: inherit;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1;
+
+    text-shadow:
+        0 0 0.7rem rgba(242, 206, 112, 0.42);
+}
+
+/* =========================================================
+   DETAILS PANEL
+   ========================================================= */
+
+.champion__details {
+    position: relative;
+    z-index: 1;
+
+    grid-column: 3;
+    grid-row: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    min-width: 0;
+    height: 100%;
+
+    padding: clamp(1.6rem, 3vw, 3rem);
+
+    border: 1px solid var(--hall-border);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.05),
+            transparent 42%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(31, 29, 24, 0.99),
+            rgba(17, 17, 15, 0.99)
+        );
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.035),
+        inset 0 0 2.5rem rgba(0, 0, 0, 0.3),
+        0 1.5rem 3.75rem rgba(0, 0, 0, 0.44);
+}
+
+.champion--art-right .champion__details {
+    grid-column: 1;
+    text-align: left;
+}
+
+/*
+    These rules override possible global site heading styles,
+    including background colors, padding, or shadows.
+*/
+
+.champions-hall .champion__label {
+    margin: 0 0 0.55rem !important;
+    padding: 0 !important;
+
+    color: var(--hall-gold) !important;
+    background: transparent !important;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.champions-hall .champion__team {
+    display: block;
+
+    width: auto;
+    max-width: 100%;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: var(--hall-gold-light) !important;
+    background: transparent !important;
+    background-image: none !important;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.8rem, 2.6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: 0;
+    text-align: inherit;
+    text-transform: none;
+
+    border: 0 !important;
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+    text-shadow:
+        0 2px 0 rgba(86, 57, 11, 0.8),
+        0 0 1rem rgba(212, 166, 63, 0.16);
+}
+
+.champions-hall .champion__owner {
+    margin: 0.75rem 0 0 !important;
+    padding: 0 !important;
+
+    color: #e8d7b4 !important;
+    background: transparent !important;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    line-height: 1.4;
+
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+
+.champion__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+
+    width: 100%;
+
+    margin: 1.4rem 0 1.25rem;
+    padding: 1.05rem 0;
+
+    border-top: 1px solid var(--hall-border);
+    border-bottom: 1px solid var(--hall-border);
+
+    background: rgba(212, 166, 63, 0.025);
+}
+
+.champion__stat {
+    min-width: 0;
+    padding: 0 0.85rem;
+}
+
+.champion__stat:first-child {
+    padding-left: 0;
+}
+
+.champion__stat + .champion__stat {
+    border-left: 1px solid var(--hall-soft-border);
+}
+
+.champion__stat dt {
+    margin: 0 0 0.25rem;
+    padding: 0;
+
+    color: #d2c5ad;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.64rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.champion__stat dd {
+    margin: 0;
+    padding: 0;
+
+    color: var(--hall-text);
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.champions-hall .champion__description {
+    margin: 0 !important;
+    padding: 0 !important;
+
+    color: var(--hall-muted) !important;
+    background: transparent !important;
+
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: clamp(0.88rem, 1.1vw, 1rem);
+    font-weight: 400;
+    line-height: 1.7;
+    text-align: inherit;
+
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   OPTIONAL SCROLL REVEAL
+   Content remains visible when JavaScript is unavailable.
+   ========================================================= */
+
+.champions-hall.champions-reveal-active .champion {
+    opacity: 0;
+
+    transform: translateY(2rem);
+
+    transition:
+        opacity 650ms ease,
+        transform 650ms ease;
+}
+
+.champions-hall.champions-reveal-active .champion.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =========================================================
+   TABLET / MOBILE
+   The stepped timeline becomes one clean left-side line.
+   ========================================================= */
+
+@media (max-width: 1050px) {
+    .champions-hall {
+        --entry-gap: 3.5rem;
+    }
+
+    .champions-timeline {
+        width: min(100%, 50rem);
+        padding: 3rem 0.75rem;
+    }
+
+    .champion,
+    .champion--art-left,
+    .champion--art-right {
+        --entry-shift: 0rem;
+
+        left: 0;
+
+        grid-template-columns: 4.5rem minmax(0, 1fr);
+        grid-template-rows: auto auto;
+
+        width: 100%;
+        margin-bottom: var(--entry-gap);
+    }
+
+    .champion::before,
+    .champion--art-left::before,
+    .champion--art-right::before {
+        left: 2.25rem;
+
+        transform: translateX(-50%);
+    }
+
+    .champion:first-child::before {
+        top: 2.25rem;
+    }
+
+    .champion:last-child::before {
+        bottom: calc(100% - 2.25rem);
+    }
+
+    .champion:not(:last-child)::after {
+        display: none;
+    }
+
+    .champion__marker {
+        position: relative;
+
+        grid-column: 1;
+        grid-row: 1 / span 2;
+
+        align-self: start;
+        justify-self: center;
+
+        width: 4rem;
+        height: 4rem;
+
+        margin-top: 0.25rem;
+    }
+
+    .champion__marker::before {
+        display: none;
+    }
+
+    .champion__marker::after {
+        width: 0.5rem;
+    }
+
+    .champion__marker span {
+        font-size: 0.8rem;
+    }
+
+    .champion__artwork,
+    .champion--art-right .champion__artwork {
+        grid-column: 2;
+        grid-row: 1;
+
+        width: 100%;
+    }
+
+    .champion__details,
+    .champion--art-right .champion__details {
+        grid-column: 2;
+        grid-row: 2;
+
+        text-align: left;
+
+        border-top: 0;
+    }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+    .champions-hall {
+        --entry-gap: 2.8rem;
+    }
+
+    .champions-timeline {
+        padding: 2rem 0.5rem;
+    }
+
+    .champion,
+    .champion--art-left,
+    .champion--art-right {
+        grid-template-columns: 3.2rem minmax(0, 1fr);
+    }
+
+    .champion::before,
+    .champion--art-left::before,
+    .champion--art-right::before {
+        left: 1.6rem;
+
+        width: 2px;
+    }
+
+    .champion:first-child::before {
+        top: 1.6rem;
+    }
+
+    .champion:last-child::before {
+        bottom: calc(100% - 1.6rem);
+    }
+
+    .champion__marker {
+        width: 3rem;
+        height: 3rem;
+
+        border-width: 1px;
+
+        box-shadow:
+            0 0 0 0.24rem rgba(9, 10, 11, 0.98),
+            0 0 0 0.3rem rgba(212, 166, 63, 0.18);
+    }
+
+    .champion__marker::after {
+        width: 0.35rem;
+    }
+
+    .champion__marker span {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 0.62rem;
+    }
+
+    .champion__details,
+    .champion--art-right .champion__details {
+        padding: 1.35rem;
+    }
+
+    .champions-hall .champion__team {
+        font-size: clamp(1.55rem, 8vw, 2.25rem);
+    }
+
+    .champion__stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .champion__stat {
+        padding: 0 0.5rem;
+    }
+
+    .champion__stat:first-child {
+        padding-left: 0;
+    }
+
+    .champion__stat dt {
+        font-size: 0.58rem;
+        letter-spacing: 0.08em;
+    }
+
+    .champion__stat dd {
+        font-size: clamp(0.92rem, 4vw, 1.1rem);
+    }
+}
+
+@media (max-width: 360px) {
+    .champion__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .champion__stat,
+    .champion__stat:first-child {
+        padding: 0.65rem 0;
+    }
+
+    .champion__stat:first-child {
+        padding-top: 0;
+    }
+
+    .champion__stat:last-child {
+        padding-bottom: 0;
+    }
+
+    .champion__stat + .champion__stat {
+        border-top: 1px solid var(--hall-soft-border);
+        border-left: 0;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .champions-hall.champions-reveal-active .champion {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}

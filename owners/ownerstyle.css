@@ -1,0 +1,2538 @@
+/* ownerstyle.css */
+
+/* EXPLORE MONOSPACE FONTS. Can get these as online fonts, but monospace will help keep boxes intact when importing excel data */
+
+
+
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+
+
+}
+
+/* Owners Phase 2: performance card grid */
+.row2.owner-performance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    align-items: stretch;
+    width: min(1390px, calc(100% - 32px));
+    margin: 0 auto 22px;
+}
+
+.owner-performance-grid .phase2-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #dbe2e8;
+    border-radius: 10px;
+    background: #fff;
+    color: #172b3e;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.08);
+}
+
+.owner-performance-grid .phase2-card__header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 44px;
+    padding: 7px 12px;
+    box-sizing: border-box;
+}
+
+.owner-performance-grid .phase2-card__header h2 {
+    min-width: 0;
+    margin: 0;
+    color: #102f4d;
+    font-size: clamp(0.9rem, 1.1vw, 1.02rem);
+    line-height: 1.15;
+}
+
+.owner-performance-grid .phase2-card__icon {
+    display: grid;
+    flex: 0 0 27px;
+    width: 27px;
+    height: 27px;
+    place-items: center;
+    border-radius: 50%;
+    background: #073f6c;
+    color: #fff;
+}
+
+.owner-performance-grid .phase2-card__icon svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.owner-performance-grid .phase2-card__body {
+    flex: 1;
+    padding: 0 12px 9px;
+}
+
+.owner-performance-grid .metric-list,
+.owner-performance-grid .streak-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.owner-performance-grid .metric-list {
+    justify-content: stretch;
+}
+
+.owner-performance-grid .metric-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 54px;
+    gap: 8px;
+    align-items: center;
+    flex: 1 1 0;
+    min-height: 26px;
+    padding: 2px 0;
+    box-sizing: border-box;
+}
+
+.owner-performance-grid .metric-row--separated {
+    margin-top: 4px;
+    padding-top: 7px;
+    border-top: 1px solid #dfe5ea;
+}
+
+.owner-performance-grid .metric-row__label {
+    min-width: 0;
+    color: #273d50;
+    font-size: 0.75rem;
+    line-height: 1.15;
+}
+
+.owner-performance-grid .metric-row > strong {
+    color: #142b40;
+    font-size: 0.9rem;
+    line-height: 1;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.owner-performance-grid .metric-row > p[id$='-rank'] {
+    display: block;
+    margin: 0;
+    padding: 0;
+    color: #6b7a88;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: right;
+    transform: none;
+}
+
+.owner-performance-grid #championship-appearances-rank {
+    transform: none;
+}
+
+.owner-performance-grid .metric-row > p[id$='-rank'] span {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    transform: none;
+}
+
+.owner-performance-grid .metric-row--positive > strong {
+    color: #16743a;
+}
+
+.owner-performance-grid .metric-row--negative > strong {
+    color: #bd252b;
+}
+
+.owner-performance-grid .metric-row--blue > strong {
+    color: #07569a;
+}
+
+.owner-performance-grid .streak-row {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr) 38px;
+    grid-template-areas:
+        "icon label value"
+        "icon detail detail";
+    column-gap: 7px;
+    row-gap: 2px;
+    align-items: center;
+    min-height: 47px;
+    padding: 5px 0;
+    box-sizing: border-box;
+    border-top: 1px solid #e2e7eb;
+    background: transparent;
+}
+
+.owner-performance-grid .streak-row:first-child {
+    border-top: 0;
+}
+
+.owner-performance-grid .streak-row__icon {
+    grid-area: icon;
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    font-size: 0.95rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.owner-performance-grid .streak-row h3 {
+    grid-area: label;
+    min-width: 0;
+    margin: 0;
+    color: #273d50;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.owner-performance-grid .streak-row strong,
+.owner-performance-grid .streak-row strong span {
+    grid-area: value;
+    margin: 0;
+    color: #123b5d;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.owner-performance-grid #current-streak {
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.owner-performance-grid .streak-row > p {
+    grid-area: detail;
+    margin: 0;
+    color: #526676;
+    font-size: 0.64rem;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.owner-performance-grid .streak-row--win,
+.owner-performance-grid .streak-row--win strong,
+.owner-performance-grid .streak-row--win strong span {
+    color: #18773b;
+}
+
+.owner-performance-grid .streak-row--loss,
+.owner-performance-grid .streak-row--loss strong,
+.owner-performance-grid .streak-row--loss strong span {
+    color: #c3272d;
+}
+
+.owner-performance-grid .streak-row--current,
+.owner-performance-grid .streak-row--current strong,
+.owner-performance-grid .streak-row--current strong span {
+    color: #185485;
+}
+
+.owner-performance-grid .streak-row--current {
+    grid-template-areas: "icon label value";
+}
+
+@media only screen and (max-width: 1100px) {
+    .row2.owner-performance-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media only screen and (max-width: 765px) {
+    .row2.owner-performance-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        width: min(100% - 24px, 680px);
+        margin: 0 auto 22px;
+    }
+
+    .owner-performance-grid .phase2-card__header {
+        min-height: 48px;
+        padding: 9px 13px;
+    }
+
+    .owner-performance-grid .phase2-card__header h2 {
+        font-size: 1.05rem;
+    }
+
+    .owner-performance-grid .phase2-card__body {
+        padding: 0 13px 11px;
+    }
+
+    .owner-performance-grid .metric-row {
+        grid-template-columns: minmax(0, 1fr) auto 62px;
+        min-height: 32px;
+    }
+
+    .owner-performance-grid .metric-row__label {
+        font-size: 0.84rem;
+    }
+
+    .owner-performance-grid .metric-row > strong {
+        font-size: 1rem;
+    }
+
+    .owner-performance-grid .metric-row > p[id$='-rank'] {
+        font-size: 0.76rem;
+    }
+
+    .owner-performance-grid .streak-row {
+        grid-template-columns: 30px minmax(0, 1fr) 42px;
+        row-gap: 3px;
+        min-height: 48px;
+    }
+
+    .owner-performance-grid .streak-row--current {
+        grid-template-areas: "icon label value";
+    }
+
+    .owner-performance-grid .streak-row h3 {
+        font-size: 0.82rem;
+    }
+
+    .owner-performance-grid .streak-row > p {
+        font-size: 0.72rem;
+        line-height: 1.35;
+        white-space: normal;
+    }
+}
+
+/* Owners Phase 3: season history */
+.row3 .all-years.season-history {
+    flex: 0 1 620px;
+    width: min(620px, calc(50% - 12px));
+    height: auto;
+    margin: 0 12px 10px 0;
+}
+
+.row3 > .season-history,
+.row3 > .game-records-container {
+    align-self: flex-start;
+}
+
+.season-history__card {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 14px 16px 12px;
+    border: 1px solid #dbe2e8;
+    border-radius: 10px;
+    background: #fff;
+    color: #172b3e;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.08);
+}
+
+.season-history__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.season-history__header h2 {
+    margin: 0;
+    color: #102f4d;
+    font-size: 1.08rem;
+    line-height: 1.2;
+}
+
+.season-history__icon {
+    display: grid;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: #073f6c;
+    color: #fff;
+}
+
+.season-history__icon svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.season-history__columns {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 58px 48px 68px;
+    gap: 8px;
+    padding: 0 6px 7px;
+    border-bottom: 1px solid #ccd6de;
+    color: #607180;
+    font-size: 0.66rem;
+    font-weight: 700;
+}
+
+.season-history__columns span:not(.season-history__team-heading) {
+    text-align: center;
+}
+
+.season-history__card .season-history__list {
+    display: block;
+    height: auto;
+    width: 100%;
+    flex-grow: 0;
+}
+
+.season-history__row {
+    display: grid;
+    grid-template-columns: 46px 38px minmax(0, 1fr) 58px 48px 68px;
+    gap: 8px;
+    align-items: center;
+    min-height: 52px;
+    padding: 5px 6px;
+    box-sizing: border-box;
+    border-bottom: 1px solid #e1e6ea;
+}
+
+.season-history__year,
+.season-history__record,
+.season-history__finish,
+.season-history__rank {
+    color: #20384d;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.season-history__team {
+    min-width: 0;
+    color: #172b3e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.season-history__image {
+    position: relative;
+    display: grid;
+    width: 38px;
+    height: 38px;
+    box-sizing: border-box;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #d5dde4;
+    border-radius: 8px;
+    background: #eff3f6;
+}
+
+.season-history__image-element {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 2px;
+    object-fit: contain;
+    object-position: center;
+}
+
+.season-history__image-element[hidden],
+.season-history__image.has-image .season-history__fallback {
+    display: none;
+}
+
+.season-history__fallback {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    background: #0b3b63;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.season-history__details {
+    display: none;
+}
+
+.season-history__empty {
+    margin: 14px 0 8px;
+    color: #687887;
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+.season-history__empty[hidden] {
+    display: none;
+}
+
+.season-history__controls {
+    padding-top: 12px;
+    text-align: center;
+}
+
+.season-history__controls[hidden] {
+    display: none;
+}
+
+.season-history__toggle {
+    min-height: 38px;
+    padding: 7px 14px;
+    border: 1px solid #2467b2;
+    border-radius: 8px;
+    background: #fff;
+    color: #07569a;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.season-history__toggle:hover {
+    background: #f2f7fc;
+}
+
+.season-history__toggle:focus-visible {
+    outline: 2px solid #073f6c;
+    outline-offset: 2px;
+}
+
+.season-history__note {
+    margin: 7px 0 0;
+    color: #687887;
+    font-size: 0.68rem;
+}
+
+@media only screen and (max-width: 765px) {
+    .row3 .all-years.season-history {
+        flex: none;
+        width: calc(100% - 24px);
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+    .season-history__card {
+        padding: 13px 12px 12px;
+    }
+
+    .season-history__header {
+        margin-bottom: 9px;
+    }
+
+    .season-history__header h2 {
+        font-size: 1.05rem;
+    }
+
+    .season-history__columns {
+        display: none;
+    }
+
+    .season-history__row {
+        grid-template-columns: 42px 38px minmax(0, 1fr) auto;
+        grid-template-areas:
+            "year image team record"
+            "year image details details";
+        column-gap: 8px;
+        row-gap: 3px;
+        min-height: 61px;
+        padding: 8px 4px;
+    }
+
+    .season-history__year {
+        grid-area: year;
+        padding: 6px 4px;
+        border-radius: 7px;
+        background: #f0f3f6;
+        font-size: 0.76rem;
+    }
+
+    .season-history__image {
+        grid-area: image;
+    }
+
+    .season-history__team {
+        grid-area: team;
+        font-size: 0.8rem;
+    }
+
+    .season-history__record {
+        grid-area: record;
+        font-size: 0.8rem;
+    }
+
+    .season-history__finish,
+    .season-history__rank {
+        display: none;
+    }
+
+    .season-history__details {
+        display: block;
+        grid-area: details;
+        min-width: 0;
+        color: #687887;
+        font-size: 0.7rem;
+        line-height: 1.25;
+    }
+
+    .season-history__toggle {
+        width: 100%;
+        font-size: 0.8rem;
+    }
+
+    .season-history__note {
+        font-size: 0.72rem;
+    }
+}
+
+/* Owners Phase 4: team game records */
+.row3 {
+    justify-content: center;
+}
+
+.row3 > .game-records-container.team-game-records {
+    display: block;
+    flex: 0 1 560px;
+    width: min(560px, calc(50% - 12px));
+    margin: 0 0 10px;
+    padding: 9px 16px 6px;
+    overflow: hidden;
+    border: 1px solid #dbe2e8;
+    border-top: 3px solid #c5161d;
+    border-radius: 10px;
+    background: #fff;
+    color: #172b3e;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.08);
+}
+
+.team-game-records__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.team-game-records__header {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+}
+
+.team-game-records__header h2 {
+    margin: 0;
+    color: #102f4d;
+    font-size: 1.08rem;
+    line-height: 1.18;
+    white-space: nowrap;
+}
+
+.team-game-records__icon {
+    display: grid;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: #073f6c;
+    color: #fff;
+}
+
+.team-game-records__icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.team-game-records #game-record-dropdown {
+    flex: 0 1 220px;
+    width: 220px;
+    min-height: 38px;
+    margin: 0;
+    padding: 7px 30px 7px 10px;
+    border: 1px solid #cbd5dd;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #17344f;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-align: left;
+}
+
+.team-game-records #game-record-dropdown:focus-visible {
+    outline: 2px solid #073f6c;
+    outline-offset: 2px;
+    border-color: #c5161d;
+}
+
+.team-game-records__results {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #d9e1e7;
+    border-radius: 8px;
+    background: #fff;
+    scrollbar-width: thin;
+}
+
+.team-game-records__results:focus-visible {
+    outline: 2px solid #073f6c;
+    outline-offset: 2px;
+}
+
+.team-game-records .game-records-table {
+    width: 100%;
+    min-width: 500px;
+    margin: 0;
+    border: 0;
+    border-collapse: collapse;
+    border-radius: 0;
+    table-layout: auto;
+    background: #fff;
+    color: #20384d;
+    font-family: Arial, sans-serif;
+    font-size: 0.74rem;
+    text-align: center;
+}
+
+.team-game-records .game-records-table th,
+.team-game-records .game-records-table td {
+    box-sizing: border-box;
+    padding: 7px 4px;
+    border: 0;
+    border-bottom: 1px solid #e1e6ea;
+    line-height: 1.15;
+    white-space: nowrap;
+}
+
+.team-game-records .game-records-table th {
+    background: #f0f4f7;
+    color: #40586d;
+    font-size: 0.66rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.team-game-records .game-records-table th:nth-child(1) {
+    min-width: 38px;
+}
+
+.team-game-records .game-records-table th:nth-child(2) {
+    min-width: 88px;
+}
+
+.team-game-records .game-records-table th:nth-child(3) {
+    min-width: 50px;
+}
+
+.team-game-records .game-records-table th:nth-child(4) {
+    min-width: 68px;
+}
+
+.team-game-records .game-records-table th:nth-child(5) {
+    min-width: 104px;
+    text-align: center;
+}
+
+.team-game-records .game-records-table td:nth-child(2) {
+    color: #0b4f82;
+    font-weight: 800;
+}
+
+.team-game-records .game-records-table td:last-child {
+    text-align: center;
+}
+
+.team-game-records .game-records-table tbody tr:nth-child(even) {
+    background: #f5f8fb;
+}
+
+.team-game-records .game-records-table tbody tr:hover {
+    background: #edf4fa !important;
+}
+
+.team-game-records .game-records-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+@media only screen and (max-width: 765px) {
+    .row3 > .game-records-container.team-game-records {
+        flex: none;
+        width: calc(100% - 24px);
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 13px 12px 6px;
+    }
+
+    .team-game-records__toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .team-game-records__header h2 {
+        font-size: 1.05rem;
+    }
+
+    .team-game-records #game-record-dropdown {
+        flex: none;
+        width: 100%;
+        min-height: 42px;
+        font-size: 0.84rem;
+    }
+
+    .team-game-records .game-records-table {
+        min-width: 520px;
+        font-size: 0.76rem;
+    }
+
+    .team-game-records .game-records-table th {
+        font-size: 0.68rem;
+    }
+}
+
+/* Owners Phase 5: H2H summary */
+section.h2h-summary.h2h-summary--redesigned {
+    width: min(1180px, calc(100% - 32px));
+    margin: 20px auto 70px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    border: 1px solid #dbe2e8;
+    border-top: 3px solid #c5161d;
+    border-radius: 10px;
+    background: #fff;
+    color: #172b3e;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.08);
+}
+
+.h2h-summary--redesigned .h2h-summary__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.h2h-summary--redesigned .h2h-summary__header h2 {
+    margin: 0;
+    font-size: 1.12rem;
+    line-height: 1.2;
+}
+
+.h2h-summary--redesigned .h2h-summary__header a {
+    color: #102f4d;
+    text-decoration: none;
+}
+
+.h2h-summary--redesigned .h2h-summary__header a:hover {
+    color: #07569a;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.h2h-summary--redesigned .h2h-summary__header a:focus-visible {
+    outline: 2px solid #073f6c;
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+.h2h-summary--redesigned .h2h-summary__icon {
+    display: grid;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 50%;
+    background: #073f6c;
+    color: #fff;
+}
+
+.h2h-summary--redesigned .h2h-summary__icon svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.h2h-summary--redesigned .h2h-summary__grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.h2h-summary--redesigned .h2h-summary__grid[hidden] {
+    display: none;
+}
+
+.h2h-summary--redesigned .h2h-summary__empty {
+    margin: 8px 0 4px;
+    padding: 16px 12px;
+    border: 1px dashed #cbd5dd;
+    border-radius: 8px;
+    background: #f7f9fb;
+    color: #687887;
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.h2h-summary--redesigned .h2h-summary__empty[hidden] {
+    display: none;
+}
+
+.h2h-summary--redesigned .owner-stats {
+    display: flex;
+    grid-column: span 2;
+    min-width: 0;
+    min-height: 60px;
+    margin: 0;
+    padding: 7px 8px;
+    box-sizing: border-box;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid #dde4e9;
+    border-left: 3px solid #aebbc5;
+    border-radius: 8px;
+    background: #f8fafb;
+    box-shadow: none;
+    color: #172b3e;
+}
+
+.h2h-summary--redesigned .owner-stats:nth-child(7) {
+    grid-column: 2 / span 2;
+}
+
+.h2h-summary--redesigned .owner-stats.is-winning {
+    border-left-color: #16823c;
+    background: #ebf7ef;
+}
+
+.h2h-summary--redesigned .owner-stats.is-losing {
+    border-left-color: #c92732;
+    background: #fff0f1;
+}
+
+.h2h-summary--redesigned .owner-stats.is-even {
+    border-left-color: #b77b00;
+    background: #fff6dc;
+}
+
+.h2h-summary--redesigned .owner-stats p,
+.h2h-summary--redesigned .owner-stats p span {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    color: #233b50;
+    font-size: 0.74rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.h2h-summary--redesigned .owner-stats .record {
+    display: flex;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: #0b3f67;
+    font-size: 1.02rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.h2h-summary--redesigned .owner-stats .record span,
+.h2h-summary--redesigned .owner-stats .record .dash {
+    margin: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+}
+
+.h2h-summary--redesigned .owner-stats .record[data-ties]:not([data-ties='0'])::after {
+    content: ' (' attr(data-ties) 'T)';
+    color: #687887;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+@media only screen and (max-width: 765px) {
+    section.h2h-summary.h2h-summary--redesigned {
+        width: calc(100% - 24px);
+        margin: 20px auto 55px;
+        padding: 11px 10px;
+    }
+
+    .h2h-summary--redesigned .h2h-summary__header {
+        margin-bottom: 9px;
+    }
+
+    .h2h-summary--redesigned .h2h-summary__header h2 {
+        font-size: 1.05rem;
+    }
+
+    .h2h-summary--redesigned .h2h-summary__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .h2h-summary--redesigned .owner-stats {
+        grid-column: auto;
+        min-height: 62px;
+        padding: 7px 6px;
+    }
+
+    .h2h-summary--redesigned .owner-stats:nth-child(7) {
+        grid-column: auto;
+    }
+
+    .h2h-summary--redesigned .owner-stats:last-child {
+        grid-column: 1 / -1;
+        width: calc((100% - 8px) / 2);
+        justify-self: center;
+    }
+
+    .h2h-summary--redesigned .owner-stats p,
+    .h2h-summary--redesigned .owner-stats p span {
+        font-size: 0.76rem;
+    }
+
+    .h2h-summary--redesigned .owner-stats .record {
+        font-size: 1rem;
+    }
+}
+
+/* Phase 1: unified owner profile */
+.owner-profile {
+    display: grid;
+    grid-template-columns: minmax(190px, 0.75fr) minmax(0, 2.25fr);
+    gap: 18px 24px;
+    align-items: start;
+    margin: 24px auto 28px;
+    padding: 24px;
+    width: min(1180px, calc(100% - 32px));
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #d8e0e9;
+    border-top: 4px solid #c5161d;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 14px 34px rgba(7, 35, 61, 0.12);
+}
+
+.owner-profile__selector {
+    grid-column: 1;
+}
+
+.owner-profile .owner-dropdown label {
+    display: block;
+    margin-bottom: 7px;
+    color: #43566a;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.owner-profile #owner-dropdown {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    margin: 0;
+    padding: 9px 38px 9px 12px;
+    border: 1px solid #aebdca;
+    border-radius: 9px;
+    background-color: #fff;
+    color: #0b2f50;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.owner-profile #owner-dropdown:focus-visible {
+    outline: 3px solid rgba(197, 22, 29, 0.25);
+    outline-offset: 2px;
+    border-color: #c5161d;
+}
+
+.owner-profile__identity {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    text-align: center;
+}
+
+.owner-profile .team-logo {
+    position: relative;
+    display: grid;
+    width: clamp(128px, 14vw, 174px);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border: 1px solid #c7d2dc;
+    border-radius: 24px;
+    background: #082f53;
+    box-shadow: inset 0 0 0 5px #fff, 0 7px 20px rgba(8, 47, 83, 0.16);
+}
+
+.owner-profile .team-logo-image,
+.owner-profile .team-logo-fallback {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+}
+
+.owner-profile .team-logo-image {
+    position: static;
+    z-index: 1;
+    display: block;
+    object-fit: cover;
+}
+
+.owner-profile .team-logo-image[hidden] {
+    display: none;
+}
+
+.owner-profile .team-logo-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    color: #fff;
+    background:
+        linear-gradient(145deg, transparent 42%, rgba(197, 22, 29, 0.95) 43% 51%, transparent 52%),
+        #082f53;
+}
+
+.owner-profile .team-logo-fallback__initials {
+    margin-top: 5px;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+}
+
+.owner-profile .team-name {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 14px 0 0;
+    padding: 0;
+    overflow: visible;
+    text-align: center;
+}
+
+.owner-profile__eyebrow {
+    display: block;
+    color: #66788a;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.owner-profile .team-name h2 {
+    margin: 5px 0 0;
+    overflow-wrap: anywhere;
+    color: #082f53;
+    font-size: clamp(1.25rem, 2.3vw, 1.85rem);
+    line-height: 1.12;
+}
+
+.owner-profile__primary {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+}
+
+.owner-profile .overall-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.owner-profile .stat-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    min-height: 84px;
+    height: auto;
+    padding: 12px 9px;
+    box-sizing: border-box;
+    border: 1px solid #dce4eb;
+    border-radius: 11px;
+    background: #f7f9fb;
+    text-align: center;
+}
+
+.owner-profile .stat-box p {
+    margin: 0 0 7px;
+    color: #5a6c7d;
+    font-size: 0.76rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.owner-profile .stat-box span[id$='-title'] {
+    font-size: inherit;
+}
+
+.owner-profile .stat-box .record {
+    margin: 0;
+    padding: 0;
+    transform: none;
+}
+
+.owner-profile .stat-box .record span {
+    padding: 0;
+    color: #123b5d;
+    font-size: clamp(1.45rem, 2.5vw, 2.05rem);
+    line-height: 1;
+}
+
+.owner-profile .stat-box--wins {
+    border-color: #b9dcc6;
+    background: #f0f8f3;
+}
+
+.owner-profile .stat-box--wins .record span {
+    color: #18733c;
+}
+
+.owner-profile .stat-box--losses {
+    border-color: #efc4c6;
+    background: #fff5f5;
+}
+
+.owner-profile .stat-box--losses .record span {
+    color: #b22128;
+}
+
+.owner-profile .stat-box--gold {
+    border-color: #e8d59a;
+    background: #fffaf0;
+}
+
+.owner-profile .stat-box--gold .record span {
+    color: #896600;
+}
+
+.owner-profile .summary-box {
+    grid-column: 1 / -1;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    border-top: 1px solid #e1e7ed;
+    border-radius: 0;
+    background: transparent;
+    color: #082f53;
+}
+
+.owner-profile__secondary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    padding-top: 16px;
+}
+
+.owner-profile .summary-stat {
+    min-width: 0;
+    padding: 4px 12px;
+    border-left: 1px solid #e1e7ed;
+    text-align: center;
+}
+
+.owner-profile .summary-stat:first-child {
+    border-left: 0;
+}
+
+.owner-profile .summary-stat h3 {
+    margin: 0 0 5px;
+    padding: 0;
+    transform: none;
+    color: #657789;
+    font-size: 0.76rem;
+    line-height: 1.2;
+}
+
+.owner-profile .summary-stat p {
+    margin: 0;
+}
+
+.owner-profile .summary-stat span {
+    display: block;
+    overflow: visible;
+    color: #123b5d;
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    font-weight: 800;
+    line-height: 1.2;
+    white-space: normal;
+}
+
+@media only screen and (max-width: 768px) {
+    .owner-profile {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        width: min(100% - 24px, 680px);
+        margin: 18px auto 24px;
+        padding: 20px;
+    }
+
+    .owner-profile__selector,
+    .owner-profile__identity,
+    .owner-profile__primary,
+    .owner-profile .summary-box {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .owner-profile__identity {
+        flex-direction: row;
+        gap: 18px;
+        text-align: left;
+    }
+
+    .owner-profile .team-logo {
+        flex: 0 0 clamp(104px, 25vw, 142px);
+        width: clamp(104px, 25vw, 142px);
+        border-radius: 20px;
+    }
+
+    .owner-profile .team-name {
+        margin: 0;
+        text-align: left;
+    }
+
+    .owner-profile .overall-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .owner-profile__secondary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        row-gap: 14px;
+    }
+
+    .owner-profile .summary-stat:nth-child(4) {
+        border-left: 0;
+    }
+}
+
+@media only screen and (max-width: 520px) {
+    .owner-profile {
+        width: calc(100% - 16px);
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .owner-profile__identity {
+        align-items: center;
+        gap: 14px;
+    }
+
+    .owner-profile .team-logo {
+        flex-basis: 96px;
+        width: 96px;
+        border-radius: 17px;
+    }
+
+    .owner-profile .overall-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .owner-profile .stat-box {
+        min-height: 76px;
+    }
+
+    .owner-profile__secondary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .owner-profile .summary-stat:nth-child(3),
+    .owner-profile .summary-stat:nth-child(5) {
+        border-left: 0;
+    }
+
+    .owner-profile .summary-stat:nth-child(4) {
+        border-left: 1px solid #e1e7ed;
+    }
+
+    .owner-profile .summary-stat:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+#owner-dropdown {
+    font-size: 1.6em;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 3px solid #000;
+    margin: 20px auto; /* Centered with margin on top and bottom for mobile */
+    display: block;
+    width: 100%; /* Adjusted for mobile to cover entire width */
+    box-sizing: border-box;
+    text-align: center;
+    font-weight: bold;
+}
+
+.owner-data-status {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 10px 0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #eef4fb;
+    color: #102a43;
+    font-weight: bold;
+    text-align: center;
+}
+
+.owner-data-status.is-loading {
+    background: #fff6d8;
+}
+
+.owner-data-status.is-empty {
+    background: #f3f3f3;
+}
+
+.owner-data-status.is-error {
+    background: #fde8e8;
+    color: #8a1010;
+}
+
+.row1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+.overall-stats {
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    box-sizing: border-box;
+    width: 100%; /* Takes full width on smaller screens */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: top;
+    font-weight: bold;
+    justify-content: space-between;
+    background-color: #00376b;
+    position: relative;
+}
+
+.overall-stats p {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.wins-box, .losses-box, .ties-box, .total-box, .win-percent-box {
+    flex: 1;  /* Flex grow */
+    text-align: center;
+    padding: 5px;
+    position: relative;
+    height: 85px;
+}
+.overall-stats .wins-box {
+    
+    padding: 5px;
+    border-radius: 5px;
+   text-align: center;
+}
+
+.overall-stats .losses-box {
+    padding: 5px;
+    border-radius: 5px;   
+}
+
+.overall-stats .ties-box {
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.overall-stats .total-box {
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.overall-stats .win-percent-box {
+    border-radius: 5px;
+    padding: 5px;
+
+}
+
+span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
+    font-size: 22px; /* Example size */
+    font-weight: bold;
+    padding-top: 0px;
+    margin-top: 0;
+}
+
+
+  
+
+
+
+
+
+
+
+
+.summary-box {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    flex-grow: 1;
+    color: #000;
+
+
+}
+
+
+
+
+
+
+.team-name {
+    font-size: 30px; /* Existing font size */
+    margin: 0; /* Reduces or eliminates margin around the text */
+    padding: 26px; /* Adjust padding to manage white space */
+    text-align: center; /* Keeps the text centered */
+    height: 60px; /* Fixed height to prevent box resizing */
+    overflow: hidden; /* Hides text that overflows the fixed height */
+    display: flex; /* Enables the use of flexbox properties */
+    align-items: center; /* Centers the text vertically */
+    justify-content: center; /* Centers the text horizontally */
+    text-overflow: ellipsis; /* Adds an ellipsis if the text overflows */
+    font-weight: bold;
+
+}
+
+.seasons {
+    overflow: hidden; /* Hides text that overflows the fixed height */
+    display: flex; /* Enables the use of flexbox properties */
+    flex-direction: column; /* Stacks children vertically */
+    justify-content: center; /* Centers content vertically */
+    text-align: center; /* Centers text horizontally */
+    width: 40%;
+    
+    
+}
+
+.seasons h3 {
+    font-size: 25px; /* Styling for the title, adjust as needed */
+    margin-bottom: -3%;
+
+}
+
+.seasons span {
+    font-size: 32px; /* Increases the font size of the value */
+    display: block; /* Ensures the span takes a full line */
+    overflow: hidden; /* Optional: hides overflow if necessary */
+    text-overflow: ellipsis; /* Adds an ellipsis to overflow text */
+    white-space: nowrap; /* Prevents the text from wrapping */
+    font-weight: bold;
+}
+
+
+.champs, .last-place, .ten-win {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Adjusts vertical alignment */
+    align-items: center; /* Centers content horizontally */
+    text-align: center;
+
+}
+.champs h4, .last-place h4, .ten-win h4 {
+    font-size: 25px; /* Size for the title */
+    margin: 0 0 0px 0; /* No extra space above and below */
+    padding: 0; /* Padding only at the bottom to create space between title and value */
+}
+
+.champs span, .last-place span, .ten-win span {
+    font-size: 45px; /* Larger font size for the value */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Prevents wrapping to ensure content fits in one line */
+    font-weight: bold;
+}
+
+.seasons, .team-name {
+    flex-basis: 50%;
+    text-align: center;
+
+}
+
+.champs, .last-place, .ten-win, .best-record, .worst-record, .average-record {
+    text-align: center;
+    flex: 1;
+}
+
+
+.row2 {
+    display: flex;
+    flex-direction: row;
+
+}
+
+
+
+#wstreakdetail, #lstreakdetail {
+    font-size: 13px;
+
+}
+
+#current-streak {
+   font-size: 28px;
+}
+
+
+
+
+
+
+
+
+
+.team-logo-image {
+    width: 150px; /* Keep or adjust size as needed */
+    display: block; /* Ensures the logo is centered on mobile */
+    margin: 0 auto; /* Centers the logo */
+    margin-top: 10px;
+
+}
+
+
+
+.row3 {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    margin-bottom: 20px;
+}
+
+.all-years {
+    width: 50%;
+    display: flex;
+    height: 100%;
+    margin-bottom: 0;
+    flex-grow: 1;
+    margin-right: 1%;
+
+}
+
+.all-years-table {
+    height: 100%;
+    flex-grow: 1;
+    
+}
+
+.game-records-container {
+    border: 3px solid #d30908; /* Adds a border around the entire container */
+    border-radius: 10px; /* Rounded corners for the container */
+    padding: 2px 1px; /* Padding inside the container */
+    box-sizing: border-box; /* Ensures padding doesn't increase the container's size */
+    display: flex; /* Use flexbox */
+    flex-direction: column;
+    width: 50%;
+    align-items: center; /* Center-align the items horizontally */
+    background: #00376b; /* Background color for the container */
+}
+
+.game-records-table {
+    border-collapse: collapse;
+    width: 100%; /* Adjusted to take full width inside the container */
+    table-layout: fixed; /* Ensures consistent column widths */
+    background: #ffffff;
+    border: 3px solid #000;
+    border-radius: 10px;
+    font-size: 18px;
+    overflow-x: auto; /* Allows table to scroll horizontally if needed */
+}
+
+.game-records-table th {
+    border: 2px solid #243a85; /* Example: a green border */
+    text-align: center;
+    padding: 3px;
+}
+
+.game-records-table th:nth-child(1) {
+    width: 10%; /* Example: Set the first column to take 20% of the table width */
+}
+
+.game-records-table th:nth-child(3) {
+    width: 15%; /* Example: Set the first column to take 20% of the table width */
+}
+
+.game-records-table th {
+    background-color: #021069; /* Dark green background for headers */
+    color: white;
+    
+  
+
+}
+
+.game-records-table tr:hover {
+    background-color: #bbbcbd !important; /* Light grey background on hover */
+}
+
+.game-records-table tr:nth-child(even) {
+    background-color: #9cc3f7;
+}
+
+.game-records-table {
+    overflow-x: auto; /* Allows table to scroll horizontally on small screens */
+    color: black; /* Dark grey color for text */
+    font-family: Arial, sans-serif; /* A more specific font choice */
+    border-radius: 6px;
+    text-align: center;
+    
+    
+}
+
+    .game-records-table th {
+	font-size: 12px;
+    }
+
+#game-record-dropdown {
+    width: 90%; /* Adjusted to fit better within the container on mobile */
+    padding: 10px;
+    margin: 20px auto; /* Centered with margin on top and bottom */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+/* Styling for names and records */
+.owner-stats p, .owner-stats span {
+    text-align: center;
+    margin: 7px 0;
+
+}
+
+.owner-stats p {
+    font-weight: bold;
+    font-size: 22px;
+
+}
+
+
+.owner-stats .record {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.owner-stats .record span {
+    padding: 0 2px;
+    margin-top: 2px;
+    font-size: 24px;
+
+}
+
+.owner-stats .dash {
+    padding: 0 3px; /* Slightly less padding for the dash */
+}
+
+/* --------------------------------------- MOBILE ------------------------------*/
+
+
+
+@media only screen and (max-width: 765px) {
+
+.row1 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.overall-stats {
+    width: 100%;
+    
+}
+
+.team-name {
+    font-size: 27px;
+
+    
+    
+}
+
+
+
+.row2 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 95%;
+    margin-left: 2.5%;
+}
+
+.row3 {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.all-years {
+    width: 95%;
+    margin-left: 2.5%
+}
+
+.game-records-container {
+    width: 95%;
+    margin-left: 2.5%;
+}
+
+.h2h-summary {
+    margin-top: 0;
+}
+
+/* Styling for names and records */
+.owner-stats p, .owner-stats span {
+    text-align: center;
+    margin: 7px 0;
+
+}
+
+.owner-stats p {
+    font-weight: bold;
+    font-size: 25px;
+
+}
+
+
+.owner-stats .record {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.owner-stats .record span {
+    padding: 0 2px;
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 32px;
+
+}
+
+.owner-stats .dash {
+    padding: 0 3px; /* Slightly less padding for the dash */
+}
+
+}
+
+/* Phase 1 refinement: compact profile band matching the approved mockup. */
+.row1.owner-profile-layout {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 4px;
+    align-items: center;
+    width: min(1220px, calc(100% - 32px));
+    margin: 18px auto 24px;
+}
+
+.owner-profile-layout .owner-profile__selector {
+    grid-column: 1;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #dce3e9;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.08);
+}
+
+.owner-profile__welcome,
+.owner-profile__descriptor,
+.owner-dropdown__label-blank {
+    display: none;
+}
+
+.owners-main--blank {
+    background-color: #fbfcfe;
+    background-image:
+        linear-gradient(145deg, rgba(8, 47, 83, 0.028) 0 1px, transparent 1px 54px),
+        linear-gradient(35deg, rgba(8, 47, 83, 0.018) 0 1px, transparent 1px 72px);
+    background-size: 76px 76px, 104px 104px;
+}
+
+.owners-main--blank .owner-data-status,
+.owners-main--blank .owner-profile-layout > .owner-profile,
+.owners-main--blank .owner-performance-grid,
+.owners-main--blank .row3,
+.owners-main--blank .h2h-summary {
+    display: none;
+}
+
+.owners-main--blank .row1.owner-profile-layout {
+    display: flex;
+    min-height: clamp(320px, 52vh, 520px);
+    margin-top: 12px;
+    margin-bottom: 28px;
+    align-items: center;
+    justify-content: center;
+}
+
+.owners-main--blank .owner-profile__selector {
+    position: relative;
+    isolation: isolate;
+    width: min(520px, 100%);
+    padding: 28px;
+    overflow: hidden;
+    border-top: 3px solid #c5161d;
+    border-radius: 14px;
+    box-shadow: 0 14px 38px rgba(7, 35, 61, 0.17);
+}
+
+.owners-main--blank .owner-profile__selector::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 8px;
+    pointer-events: none;
+    background: url('../artwork/logo.png') center / 250px auto no-repeat;
+    opacity: 0.065;
+}
+
+.owners-main--blank .owner-dropdown__label-default {
+    display: none;
+}
+
+.owners-main--blank .owner-dropdown__label-blank {
+    display: inline;
+}
+
+.owners-main--blank .owner-profile__welcome {
+    display: block;
+    margin: 0 0 7px;
+    color: #102f4d;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.owners-main--blank .owner-profile__descriptor {
+    display: block;
+    margin: 0 0 20px;
+    color: #657789;
+    font-size: 0.82rem;
+    font-weight: 650;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.owners-main--blank .owner-profile-layout .owner-dropdown label {
+    margin-bottom: 9px;
+    font-size: 0.78rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.owners-main--blank .owner-profile-layout #owner-dropdown {
+    min-height: 54px;
+    padding: 11px 42px 11px 14px;
+    font-size: 1.08rem;
+    text-align: center;
+}
+
+@media only screen and (min-width: 769px) {
+    .owners-main--blank .owner-profile__selector {
+        width: min(570px, 100%);
+        padding: 32px;
+    }
+
+    .owners-main--blank .owner-profile__welcome {
+        font-size: 1.26rem;
+    }
+
+    .owners-main--blank .owner-profile__descriptor {
+        font-size: 0.86rem;
+    }
+
+    .owners-main--blank .owner-profile-layout #owner-dropdown {
+        min-height: 58px;
+        font-size: 1.12rem;
+    }
+}
+
+.owner-profile-layout .owner-dropdown label {
+    display: block;
+    margin: 0 0 6px;
+    color: #27445f;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.owner-profile-layout #owner-dropdown {
+    display: block;
+    width: 100%;
+    min-height: 38px;
+    margin: 0;
+    padding: 7px 34px 7px 10px;
+    box-sizing: border-box;
+    border: 1px solid #b9c5cf;
+    border-radius: 7px;
+    background-color: #fff;
+    color: #102f4d;
+    font: inherit;
+    font-size: 0.94rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.owner-profile-layout #owner-dropdown:focus-visible {
+    outline: 2px solid #164f78;
+    outline-offset: 2px;
+    border-color: #c5161d;
+    box-shadow: 0 0 0 1px #fff;
+}
+
+.owner-profile-layout > .owner-profile {
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    column-gap: 14px;
+    row-gap: 0;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 5px 14px 5px 7px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #d8e0e6;
+    border-top: 1px solid #d8e0e6;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 3px 10px rgba(7, 35, 61, 0.09);
+}
+
+.owner-profile-layout .owner-profile__identity {
+    display: contents;
+}
+
+.owner-profile-layout .team-logo {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    position: relative;
+    display: grid;
+    width: 128px;
+    height: 120px;
+    aspect-ratio: auto;
+    overflow: hidden;
+    border: 1px solid #cbd5de;
+    border-radius: 20px;
+    background: #f2f5f7;
+    box-shadow: none;
+}
+
+.owner-profile-layout .team-logo-image,
+.owner-profile-layout .team-logo-fallback {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+}
+
+.owner-profile-layout .team-logo-image {
+    position: static;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 2px;
+    box-sizing: border-box;
+    object-fit: contain;
+    object-position: center center;
+    background: #f2f5f7;
+}
+
+.owner-profile-layout .team-logo-image[hidden] {
+    display: none;
+}
+
+.owner-profile-layout .team-logo-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    color: #fff;
+    background: #082f53;
+}
+
+.owner-profile-layout .team-logo-fallback__initials {
+    margin-top: 0;
+    font-size: 2.2rem;
+    font-weight: 900;
+}
+
+.owner-profile-layout .team-name {
+    grid-column: 2;
+    grid-row: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0 0 2px;
+    overflow: visible;
+    text-align: left;
+}
+
+.owner-profile-layout .owner-profile__eyebrow {
+    display: none;
+}
+
+.owner-profile-layout .team-name h2 {
+    position: relative;
+    margin: 0;
+    padding-bottom: 6px;
+    overflow-wrap: anywhere;
+    color: #111d2b;
+    font-size: clamp(1.35rem, 2.4vw, 1.9rem);
+    line-height: 1.08;
+}
+
+.owner-profile-layout .team-name h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 34px;
+    height: 3px;
+    border-radius: 2px;
+    background: #c5161d;
+}
+
+.owner-profile-layout .owner-profile__primary {
+    grid-column: 2;
+    grid-row: 2;
+    align-self: stretch;
+}
+
+.owner-profile-layout .overall-stats {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0;
+    align-items: stretch;
+    width: 100%;
+    height: auto;
+    padding: 0 0 2px;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.owner-profile-layout .stat-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    min-height: 42px;
+    height: auto;
+    padding: 3px 8px;
+    box-sizing: border-box;
+    border: 0;
+    border-left: 1px solid #e2e7eb;
+    border-radius: 0;
+    background: transparent;
+    text-align: center;
+}
+
+.owner-profile-layout .stat-box.seasons {
+    width: auto;
+    flex-basis: auto;
+}
+
+.owner-profile-layout .stat-box:first-child {
+    border-left: 0;
+}
+
+.owner-profile-layout .stat-box p {
+    margin: 0 0 3px;
+    color: #596775;
+    font-size: 0.67rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.owner-profile-layout .stat-box span[id$='-title'] {
+    font-size: inherit;
+}
+
+.owner-profile-layout .stat-box .record {
+    margin: 0;
+    padding: 0;
+    transform: none;
+}
+
+.owner-profile-layout .stat-box .record span {
+    padding: 0;
+    color: #16283a;
+    font-size: clamp(1.05rem, 1.8vw, 1.35rem);
+    font-weight: 800;
+    line-height: 1;
+}
+
+.owner-profile-layout .wins-box .record span {
+    color: #17823c;
+}
+
+.owner-profile-layout .losses-box .record span {
+    color: #c41f27;
+}
+
+.owner-profile-layout .ties-box .record span {
+    color: #b78300;
+}
+
+.owner-profile-layout .win-percent-box .record span {
+    color: #07569a;
+}
+
+.owner-profile-layout .summary-box {
+    grid-column: 2;
+    grid-row: 3;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid #dfe5ea;
+    border-radius: 0;
+    background: transparent;
+    color: #16283a;
+}
+
+.owner-profile-layout .owner-profile__secondary {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, 1.35fr);
+    gap: 0;
+    padding: 3px 0 0;
+}
+
+.owner-profile-layout .summary-stat {
+    min-width: 0;
+    padding: 2px 8px;
+    border-left: 1px solid #e2e7eb;
+    text-align: center;
+}
+
+.owner-profile-layout .summary-stat:first-child {
+    border-left: 0;
+}
+
+.owner-profile-layout .summary-stat h3 {
+    margin: 0 0 2px;
+    padding: 0;
+    transform: none;
+    color: #596775;
+    font-size: 0.64rem;
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.owner-profile-layout .summary-stat p {
+    margin: 0;
+}
+
+.owner-profile-layout .summary-stat span {
+    display: block;
+    overflow: visible;
+    color: #16283a;
+    font-size: clamp(0.9rem, 1.55vw, 1.12rem);
+    font-weight: 800;
+    line-height: 1.1;
+    white-space: normal;
+}
+
+.owner-profile-layout .summary-stat--gold span {
+    color: #b78300;
+}
+
+.owner-profile-layout .average-record span {
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+@media only screen and (max-width: 768px) {
+    .row1.owner-profile-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        width: min(100% - 24px, 680px);
+        margin: 16px auto 22px;
+    }
+
+    .owner-profile-layout .owner-profile__selector,
+    .owner-profile-layout > .owner-profile {
+        grid-column: 1;
+    }
+
+    .owner-profile-layout .owner-profile__selector {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .owner-profile-layout > .owner-profile {
+        grid-template-columns: 98px minmax(0, 1fr);
+        column-gap: 13px;
+        padding: 8px 12px 10px;
+    }
+
+    .owner-profile-layout .team-logo {
+        grid-row: 1;
+        width: 96px;
+        height: 89px;
+        border-radius: 15px;
+    }
+
+    .owner-profile-layout .team-name {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-self: center;
+        min-height: 89px;
+    }
+
+    .owner-profile-layout .owner-profile__primary,
+    .owner-profile-layout .summary-box {
+        grid-column: 1 / -1;
+    }
+
+    .owner-profile-layout .owner-profile__primary {
+        grid-row: 2;
+        margin-top: 7px;
+    }
+
+    .owner-profile-layout .summary-box {
+        grid-row: 3;
+    }
+
+    .owner-profile-layout .overall-stats,
+    .owner-profile-layout .owner-profile__secondary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .owner-profile-layout .overall-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .owner-profile-layout .wins-box {
+        grid-area: 1 / 1;
+    }
+
+    .owner-profile-layout .losses-box {
+        grid-area: 1 / 2;
+    }
+
+    .owner-profile-layout .ties-box {
+        grid-area: 2 / 1;
+    }
+
+    .owner-profile-layout .win-percent-box {
+        grid-area: 2 / 2;
+    }
+
+    .owner-profile-layout .total-box {
+        grid-area: 3 / 1;
+    }
+
+    .owner-profile-layout .seasons {
+        grid-area: 3 / 2;
+    }
+
+    .owner-profile-layout .wins-box,
+    .owner-profile-layout .ties-box,
+    .owner-profile-layout .total-box {
+        border-left: 0;
+    }
+
+    .owner-profile-layout .losses-box,
+    .owner-profile-layout .win-percent-box,
+    .owner-profile-layout .seasons {
+        border-left: 1px solid #e2e7eb;
+    }
+
+    .owner-profile-layout .stat-box:nth-child(4),
+    .owner-profile-layout .summary-stat:nth-child(4) {
+        border-left: 0;
+    }
+
+    .owner-profile-layout .stat-box,
+    .owner-profile-layout .summary-stat {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+
+    .owner-profile-layout .stat-box p {
+        font-size: 0.75rem;
+    }
+
+    .owner-profile-layout .stat-box .record span {
+        font-size: 1.15rem;
+    }
+
+    .owner-profile-layout .summary-stat h3 {
+        font-size: 0.72rem;
+    }
+
+    .owner-profile-layout .summary-stat span {
+        font-size: 1.02rem;
+    }
+
+    .owner-profile-layout .average-record span {
+        font-size: 0.96rem;
+    }
+
+    .owners-main--blank .row1.owner-profile-layout {
+        min-height: clamp(330px, 55vh, 500px);
+        margin-top: 8px;
+        margin-bottom: 24px;
+        padding-top: 24px;
+        box-sizing: border-box;
+        align-items: flex-start;
+    }
+
+    .owners-main--blank .owner-profile__selector {
+        width: min(100%, 480px);
+        padding: 24px 18px;
+    }
+
+    .owners-main--blank .owner-profile__selector::before {
+        background-size: 190px auto;
+    }
+
+    .owners-main--blank .owner-profile__welcome {
+        font-size: 1.12rem;
+    }
+
+    .owners-main--blank .owner-profile__descriptor {
+        margin-bottom: 18px;
+        font-size: 0.78rem;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    .row1.owner-profile-layout {
+        width: calc(100% - 16px);
+    }
+
+    .owners-main--blank .row1.owner-profile-layout {
+        justify-content: flex-start;
+    }
+
+    .owner-profile-layout > .owner-profile {
+        grid-template-columns: 87px minmax(0, 1fr);
+        column-gap: 11px;
+        border-radius: 9px;
+    }
+
+    .owner-profile-layout .team-logo {
+        width: 85px;
+        height: 78px;
+        border-radius: 13px;
+    }
+
+    .owner-profile-layout .team-name {
+        min-height: 78px;
+    }
+
+    .owner-profile-layout .team-name h2 {
+        font-size: 1.25rem;
+    }
+
+    .owner-profile-layout .overall-stats,
+    .owner-profile-layout .owner-profile__secondary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .owner-profile-layout .stat-box:nth-child(3),
+    .owner-profile-layout .stat-box:nth-child(5),
+    .owner-profile-layout .summary-stat:nth-child(3),
+    .owner-profile-layout .summary-stat:nth-child(5) {
+        border-left: 0;
+    }
+
+    .owner-profile-layout .stat-box:nth-child(4),
+    .owner-profile-layout .summary-stat:nth-child(4) {
+        border-left: 1px solid #e2e7eb;
+    }
+
+    .owner-profile-layout .wins-box,
+    .owner-profile-layout .ties-box,
+    .owner-profile-layout .total-box {
+        border-left: 0;
+    }
+
+    .owner-profile-layout .losses-box,
+    .owner-profile-layout .win-percent-box,
+    .owner-profile-layout .seasons {
+        border-left: 1px solid #e2e7eb;
+    }
+
+    .owner-profile-layout .summary-stat:last-child {
+        grid-column: auto;
+    }
+}

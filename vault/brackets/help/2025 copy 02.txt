@@ -1,0 +1,2367 @@
+(() => {
+  "use strict";
+
+  /* --------------------------------------------------------------------------
+     EDITABLE 2025 DATA
+
+     Add future seasons by copying the entire 2025 object and changing its key.
+     The page automatically builds the year dropdown from the keys in BRACKET_DATA.
+
+     Image paths are placeholders. They are relative to /brackets/index.html.
+     -------------------------------------------------------------------------- */
+
+  const placeholderStarters = (label) => [
+    { name: `${label} QB`, position: "QB", nflTeam: "BUF", points: 24.84 },
+    { name: `${label} RB One`, position: "RB", nflTeam: "ATL", points: 18.6 },
+    { name: `${label} RB Two`, position: "RB", nflTeam: "DET", points: 14.2 },
+    { name: `${label} WR One`, position: "WR", nflTeam: "MIN", points: 22.7 },
+    { name: `${label} WR Two`, position: "WR", nflTeam: "DAL", points: 12.9 },
+    { name: `${label} Tight End`, position: "TE", nflTeam: "KC", points: 11.4 },
+    { name: `${label} Flex`, position: "FLEX", nflTeam: "LAR", points: 16.3 },
+    { name: `${label} Defense`, position: "D/ST", nflTeam: "PIT", points: 8.0 },
+    { name: `${label} Kicker`, position: "K", nflTeam: "BAL", points: 9.0 }
+  ];
+
+  const placeholderBench = (label) => [
+    { name: `${label} Bench QB`, position: "QB", nflTeam: "GB", points: 17.52 },
+    { name: `${label} Bench RB`, position: "RB", nflTeam: "SEA", points: 10.1 },
+    { name: `${label} Bench WR`, position: "WR", nflTeam: "TB", points: 8.7 },
+    { name: `${label} Bench TE`, position: "TE", nflTeam: "ARI", points: 6.3 },
+    { name: `${label} Bench Flex`, position: "WR", nflTeam: "MIA", points: 4.8 }
+  ];
+
+  const lineup = (label) => ({
+    starters: placeholderStarters(label),
+    bench: placeholderBench(label)
+  });
+
+  const BRACKET_DATA = {
+    2025: {
+      format: "current",
+      teams: {
+        p1: {
+          name: "The Rome Man Empire",
+          owner: "Jordan",
+          art: "artwork/2025/p1.png"
+        },
+        p2: {
+          name: "Certified Pipers Association",
+          owner: "Max",
+          art: "artwork/2025/p2.png"
+        },
+        p3: {
+          name: "FS5 PENITENTIARY",
+          owner: "Bailey",
+          art: "artwork/2025/p3.png"
+        },
+        p4: {
+          name: "Pete and His Dirty Dawgs",
+          owner: "Will",
+          art: "artwork/2025/p4.png"
+        },
+        p5: {
+          name: "Georgassic Park",
+          owner: "David",
+          art: "artwork/2025/p5.png"
+        },
+        p6: {
+          name: "The Brown Mahomos",
+          owner: "Matthew",
+          art: "artwork/2025/p6.png"
+        },
+        c1: {
+          name: "Im So Brocked Up Right Now",
+          owner: "Chris",
+          art: "artwork/2025/c1.png"
+        },
+        c2: {
+          name: "Gallon of Allen",
+          owner: "Ethan",
+          art: "artwork/2025/c2.png"
+        },
+        c3: {
+          name: "Armory Road Trucks",
+          owner: "Mike",
+          art: "artwork/2025/c3.png"
+        },
+        c4: {
+          name: "Merry Christmas",
+          owner: "Brycen",
+          art: "artwork/2025/c4.png"
+        },
+        c5: {
+          name: "ROUGH DRAFT",
+          owner: "Keith",
+          art: "artwork/2025/c5.png"
+        },
+        c6: {
+          name: "Atlanta Nitro Hawgs",
+          owner: "Cody",
+          art: "artwork/2025/c6.png"
+        }
+      },
+
+      playoffs: {
+        label: "Playoffs",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "playoffs-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "p1"
+          },
+
+//2025_PQ1
+
+{
+  type: "matchup",
+  id: "PQ1",
+  round: "first",
+  slot: "first-upper",
+  roundName: "First Round",
+  bowlName: "Battle of the Bulge",
+  bowlArt: "artwork/2025/PQ1.png",
+
+  teams: [
+    {
+      teamId: "p4",
+      seed: 4,
+      score: 127.64,
+      touchdowns: 5,
+      winner: true,
+
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+
+    {
+      teamId: "p5",
+      seed: 5,
+      score: 110.90,
+      touchdowns: 2,
+      winner: false,
+
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+
+//2025_PQ2
+
+
+          {
+            type: "matchup",
+            id: "PQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "The Bloodbath Bowl",
+            bowlArt: "artwork/2025/PQ2.png",
+
+            teams: [
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 123.70,
+                touchdowns: 3,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 124.76,
+                touchdowns: 7,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+          {
+            type: "bye",
+            id: "playoffs-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "p2"
+          },
+
+
+//2025_PS1
+
+          {
+            type: "matchup",
+            id: "PS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "The R.A.N.D.O.M Bowl",
+            bowlArt: "artwork/2025/PS1.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 141.40,
+                touchdowns: 10,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 138.18,
+                touchdowns: 5,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+
+//2025_PS2
+          {
+            type: "matchup",
+            id: "PS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "The Jordan Lynch Super Bowl",
+            bowlArt: "artwork/2025/PS2.png",
+
+            teams: [
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 150.50,
+                touchdowns: 6,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 93.44,
+                touchdowns: 4,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+//2025_F1
+
+          {
+            type: "matchup",
+            id: "F1",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Championship",
+            bowlName: "The City of Homes Bowl",
+            bowlArt: "artwork/2025/F1.png",
+
+            teams: [
+              {
+                teamId: "p1",
+                seed: 1,
+                score: 143.86,
+                touchdowns: 8,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p2",
+                seed: 2,
+                score: 103.50,
+                touchdowns: 5,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+//2025_F3
+
+          {
+            type: "matchup",
+            id: "F3",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Third Place Game",
+            bowlName: "The Bronze Chair Bowl",
+            bowlArt: "artwork/2025/F3.png",
+
+            teams: [
+              {
+                teamId: "p4",
+                seed: 4,
+                score: 137.18,
+                touchdowns: 8,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p6",
+                seed: 6,
+                score: 92.12,
+                touchdowns: 1,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+//2025_F5
+
+          {
+            type: "matchup",
+            id: "F5",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Fifth Place Game",
+            bowlName: "The Crosby Studios Bowl",
+            bowlArt: "artwork/2025/F5.png",
+
+            teams: [
+              {
+                teamId: "p5",
+                seed: 5,
+                score: 84.00,
+                touchdowns: 2,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "p3",
+                seed: 3,
+                score: 103.88,
+                touchdowns: 4,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+        ],
+
+
+//END 2025 Playoffs
+
+        connections: [
+          {
+            from: "playoffs-bye-1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "PQ1",
+            to: "PS1",
+            result: "winner"
+          },
+          {
+            from: "playoffs-bye-2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PQ2",
+            to: "PS2",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS2",
+            to: "F1",
+            result: "winner"
+          },
+          {
+            from: "PS1",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PS2",
+            to: "F3",
+            result: "loser"
+          },
+          {
+            from: "PQ1",
+            to: "F5",
+            result: "loser"
+          },
+          {
+            from: "PQ2",
+            to: "F5",
+            result: "loser"
+          }
+        ]
+      },
+
+      consolation: {
+        label: "Consolation",
+
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+
+        cards: [
+          {
+            type: "bye",
+            id: "consolation-bye-1",
+            round: "first",
+            slot: "bye-top",
+            seed: 1,
+            teamId: "c1"
+          },
+
+//2025_CQ1
+
+          {
+            type: "matchup",
+            id: "CQ1",
+            round: "first",
+            slot: "first-upper",
+            roundName: "First Round",
+            bowlName: "First Round",
+            bowlArt: "artwork/2025/CQ1.png",
+
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 134.24,
+                touchdowns: 7,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 115.08,
+                touchdowns: 6,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+//2025_CQ2
+
+          {
+            type: "matchup",
+            id: "CQ2",
+            round: "first",
+            slot: "first-lower",
+            roundName: "First Round",
+            bowlName: "",
+            bowlArt: "artwork/2025/CQ2.png",
+
+            teams: [
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 138.78,
+                touchdowns: 9,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 109.80,
+                touchdowns: 9,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+          {
+            type: "bye",
+            id: "consolation-bye-2",
+            round: "first",
+            slot: "bye-bottom",
+            seed: 2,
+            teamId: "c2"
+          },
+
+//2025_CS1
+
+          {
+            type: "matchup",
+            id: "CS1",
+            round: "semifinals",
+            slot: "semi-upper",
+            roundName: "Semifinal",
+            bowlName: "Totino's Pizza Roll Bowl",
+            bowlArt: "artwork/2025/CS1.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 136.20,
+                touchdowns: 10,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 84.42,
+                touchdowns: 2,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+//2025_CS2
+
+          {
+            type: "matchup",
+            id: "CS2",
+            round: "semifinals",
+            slot: "semi-lower",
+            roundName: "Semifinal",
+            bowlName: "The Disco Feeler Bowl",
+            bowlArt: "artwork/2025/CS2.png",
+
+            teams: [
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 98.30,
+                touchdowns: 6,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 62.78,
+                touchdowns: 5,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+//2025_F7
+
+          {
+            type: "matchup",
+            id: "F7",
+            round: "finals",
+            slot: "final-championship",
+            roundName: "Consolation Championship",
+            bowlName: "Brycen Shut the Fuck Up Bowl",
+            bowlArt: "artwork/2025/F7.png",
+
+            teams: [
+              {
+                teamId: "c1",
+                seed: 1,
+                score: 111.32,
+                touchdowns: 9,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c2",
+                seed: 2,
+                score: 116.78,
+                touchdowns: 4,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+//2025_F9
+
+          {
+            type: "matchup",
+            id: "F9",
+            round: "finals",
+            slot: "final-third",
+            roundName: "Ninth Place Game",
+            bowlName: "The Pierogi Bowl",
+            bowlArt: "artwork/2025/F9.png",
+
+            teams: [
+              {
+                teamId: "c4",
+                seed: 4,
+                score: 79.74,
+                touchdowns: 4,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c3",
+                seed: 3,
+                score: 113.88,
+                touchdowns: 3,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+
+
+//2025_F11
+
+          {
+            type: "matchup",
+            id: "F11",
+            round: "finals",
+            slot: "final-fifth",
+            roundName: "Last Place Game",
+            bowlName: "The Malcolm Rhodes Memorial Bowl",
+            bowlArt: "artwork/2025/F11.png",
+
+            teams: [
+              {
+                teamId: "c5",
+                seed: 5,
+                score: 102.00,
+                touchdowns: 5,
+                winner: false,
+      lineup: {
+        starters: [
+          {name: "Jordan Love",position: "QB",nflTeam: "GB",points: 13.94},
+          {name: "Brian Robinson",position: "RB",nflTeam: "ATL",points: 29.50},
+          {name: "Omarion Hampton",position: "RB",nflTeam: "LAC",points: 7.50},
+          {name: "Davante Adams",position: "WR",nflTeam: "LAR",points: 11.10},
+          {name: "Jamaar Chase",position: "WR",nflTeam: "CIN",points: 23.20},
+          {name: "Dallas Goedert",position: "TE",nflTeam: "PHI",points: 25.00},
+          {name: "Michael Wilson",position: "WR",nflTeam: "ARI",points: 16.40},
+          {name: "Evan McPherson",position: "K",nflTeam: "CIN",points: 0.00},
+          {name: "Green Bay Packers",position: "DEF",nflTeam: "GB",points: 1.00}
+        ],
+
+        bench: [
+          {name: "Aaron Jones",position: "RB",nflTeam: "MIN",points: 9.50},
+          {name: "Jordan Mason",position: "RB",nflTeam: "MIN",points: 2.90},
+          {name: "Jayden Reed",position: "WR",nflTeam: "GB",points: 10.50},
+          {name: "Quentin Johnston",position: "WR",nflTeam: "LAC",points: 0.00},
+          {name: "Tetalroa McMillan",position: "WR",nflTeam: "CAR",points: 4.50},
+          {name: "Oronde Gadsen",position: "TE",nflTeam: "LAC",points: 10.10},
+        ]
+      }
+    },
+              {
+                teamId: "c6",
+                seed: 6,
+                score: 117.42,
+                touchdowns: 5,
+                winner: true,
+      lineup: {
+        starters: [
+          {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+          {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+          {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+          {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+          {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+          {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+          {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+          {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+          {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+        ],
+        bench: [
+          {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+          {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+          {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+          {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+          {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+          {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+        ]
+      }
+    },
+  ]
+},
+        ],
+
+        connections: [
+          {
+            from: "consolation-bye-1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "CQ1",
+            to: "CS1",
+            result: "winner"
+          },
+          {
+            from: "consolation-bye-2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CQ2",
+            to: "CS2",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS2",
+            to: "F7",
+            result: "winner"
+          },
+          {
+            from: "CS1",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CS2",
+            to: "F9",
+            result: "loser"
+          },
+          {
+            from: "CQ1",
+            to: "F11",
+            result: "loser"
+          },
+          {
+            from: "CQ2",
+            to: "F11",
+            result: "loser"
+          }
+        ]
+      }
+    }
+
+
+
+
+
+//BELOW BRACKET ENDS ALL BRACKET_DATA
+  };
+
+
+
+
+//END ALL BRACKET DATA
+
+  const SELECTORS = {
+    root: "[data-bracket-page]",
+    yearSelect: "[data-year-select]",
+    previousYear: "[data-year-previous]",
+    nextYear: "[data-year-next]",
+    bracketToggles: "[data-bracket-toggle]",
+    activeSeason: "[data-active-season]",
+    activeBracketTitle: "[data-active-bracket-title]",
+    mobileRoundTabs: "[data-mobile-round-tabs]",
+    bracketCanvas: "[data-bracket-canvas]",
+    bracketRounds: "[data-bracket-rounds]",
+    connectors: "[data-bracket-connectors]",
+    status: "[data-bracket-status]",
+    modal: "[data-matchup-modal]",
+    modalDialog: "[data-matchup-dialog]",
+    modalContent: "[data-matchup-content]",
+    modalClose: "[data-modal-close]"
+  };
+
+  const state = {
+    year: null,
+    bracket: "playoffs",
+    mobileRound: null,
+    openMatchupId: null,
+    lastFocusedElement: null,
+    connectorFrame: null
+  };
+
+  let elements = {};
+
+  function init() {
+    const root = document.querySelector(SELECTORS.root);
+
+    if (!root) {
+      return;
+    }
+
+    elements = {
+      root,
+      yearSelect: root.querySelector(SELECTORS.yearSelect),
+      previousYear: root.querySelector(SELECTORS.previousYear),
+      nextYear: root.querySelector(SELECTORS.nextYear),
+      bracketToggles: [
+        ...root.querySelectorAll(SELECTORS.bracketToggles)
+      ],
+      activeSeason: root.querySelector(SELECTORS.activeSeason),
+      activeBracketTitle: root.querySelector(
+        SELECTORS.activeBracketTitle
+      ),
+      mobileRoundTabs: root.querySelector(
+        SELECTORS.mobileRoundTabs
+      ),
+      bracketCanvas: root.querySelector(SELECTORS.bracketCanvas),
+      bracketRounds: root.querySelector(SELECTORS.bracketRounds),
+      connectors: root.querySelector(SELECTORS.connectors),
+      status: root.querySelector(SELECTORS.status),
+      modal: root.querySelector(SELECTORS.modal),
+      modalDialog: root.querySelector(SELECTORS.modalDialog),
+      modalContent: root.querySelector(SELECTORS.modalContent)
+    };
+
+    buildYearSelect();
+    bindEvents();
+    syncStateFromUrl();
+  }
+
+  function getYears() {
+    return Object.keys(BRACKET_DATA)
+      .map(Number)
+      .sort((a, b) => b - a);
+  }
+
+  function buildYearSelect() {
+    elements.yearSelect.innerHTML = getYears()
+      .map((year) => `<option value="${year}">${year}</option>`)
+      .join("");
+  }
+
+  function bindEvents() {
+    elements.yearSelect.addEventListener("change", () => {
+      changeYear(Number(elements.yearSelect.value));
+    });
+
+    elements.previousYear.addEventListener("click", () => {
+      stepYear(1);
+    });
+
+    elements.nextYear.addEventListener("click", () => {
+      stepYear(-1);
+    });
+
+    elements.bracketToggles.forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextBracket = button.dataset.bracketToggle;
+
+        if (nextBracket === state.bracket) {
+          return;
+        }
+
+        state.bracket = nextBracket;
+        state.mobileRound = null;
+
+        closeModal({
+          updateUrl: false,
+          restoreFocus: false
+        });
+
+        render();
+
+        writeUrl(
+          {
+            matchup: null
+          },
+          "push"
+        );
+      });
+    });
+
+    elements.bracketRounds.addEventListener("click", (event) => {
+      const card = event.target.closest("[data-matchup-id]");
+
+      if (!card) {
+        return;
+      }
+
+      openMatchup(card.dataset.matchupId, {
+        updateUrl: true
+      });
+    });
+
+    elements.mobileRoundTabs.addEventListener(
+      "click",
+      (event) => {
+        const button = event.target.closest(
+          "[data-mobile-round]"
+        );
+
+        if (!button) {
+          return;
+        }
+
+        state.mobileRound = button.dataset.mobileRound;
+        updateMobileRoundVisibility();
+      }
+    );
+
+    elements.root
+      .querySelectorAll(SELECTORS.modalClose)
+      .forEach((closeControl) => {
+        closeControl.addEventListener("click", () => {
+          closeModal({
+            updateUrl: true,
+            restoreFocus: true
+          });
+        });
+      });
+
+    elements.modalContent.addEventListener("click", (event) => {
+      const benchButton = event.target.closest(
+        "[data-bench-toggle]"
+      );
+
+      if (!benchButton) {
+        return;
+      }
+
+      const benchSection =
+        elements.modalContent.querySelector(
+          "[data-bench-section]"
+        );
+
+      const willOpen = benchSection.hidden;
+
+      benchSection.hidden = !willOpen;
+
+      benchButton.setAttribute(
+        "aria-expanded",
+        String(willOpen)
+      );
+
+      benchButton.textContent = willOpen
+        ? "Hide Bench Players"
+        : "View Bench Players";
+    });
+
+    document.addEventListener("keydown", handleKeydown);
+    window.addEventListener("resize", scheduleConnectorDraw);
+    window.addEventListener("popstate", syncStateFromUrl);
+  }
+
+  function syncStateFromUrl() {
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const years = getYears();
+    const requestedYear = Number(params.get("year"));
+    const requestedBracket = params.get("bracket");
+    const requestedMatchup = params.get("matchup");
+
+    state.year = BRACKET_DATA[requestedYear]
+      ? requestedYear
+      : years[0];
+
+    state.bracket = [
+      "playoffs",
+      "consolation"
+    ].includes(requestedBracket)
+      ? requestedBracket
+      : "playoffs";
+
+    state.mobileRound = null;
+
+    render();
+
+    if (
+      requestedMatchup &&
+      findMatchup(requestedMatchup)
+    ) {
+      openMatchup(requestedMatchup, {
+        updateUrl: false
+      });
+    } else {
+      closeModal({
+        updateUrl: false,
+        restoreFocus: false
+      });
+    }
+  }
+
+  function changeYear(year) {
+    if (!BRACKET_DATA[year] || year === state.year) {
+      return;
+    }
+
+    state.year = year;
+    state.mobileRound = null;
+
+    closeModal({
+      updateUrl: false,
+      restoreFocus: false
+    });
+
+    render();
+
+    writeUrl(
+      {
+        matchup: null
+      },
+      "push"
+    );
+  }
+
+  function stepYear(offset) {
+    const years = getYears();
+    const currentIndex = years.indexOf(state.year);
+    const nextYear = years[currentIndex + offset];
+
+    if (nextYear) {
+      changeYear(nextYear);
+    }
+  }
+
+  function render() {
+    const season = BRACKET_DATA[state.year];
+    const bracket = season[state.bracket];
+
+    elements.yearSelect.value = String(state.year);
+
+    updateYearArrows();
+    updateBracketToggle();
+
+    elements.activeSeason.textContent =
+      `${state.year} season`;
+
+    elements.activeBracketTitle.textContent =
+      bracket.label;
+
+    elements.status.textContent =
+      `${state.year} ${bracket.label} bracket loaded.`;
+
+    elements.bracketRounds.style.setProperty(
+      "--round-count",
+      bracket.rounds.length
+    );
+
+    elements.mobileRoundTabs.style.setProperty(
+      "--mobile-round-count",
+      bracket.rounds.length
+    );
+
+    renderRoundTabs(bracket);
+    renderRounds(season, bracket);
+    updateMobileRoundVisibility();
+    scheduleConnectorDraw();
+  }
+
+  function updateYearArrows() {
+    const years = getYears();
+    const currentIndex = years.indexOf(state.year);
+
+    elements.nextYear.disabled = currentIndex <= 0;
+    elements.previousYear.disabled =
+      currentIndex >= years.length - 1;
+  }
+
+  function updateBracketToggle() {
+    elements.bracketToggles.forEach((button) => {
+      const isActive =
+        button.dataset.bracketToggle === state.bracket;
+
+      button.classList.toggle("is-active", isActive);
+
+      button.setAttribute(
+        "aria-pressed",
+        String(isActive)
+      );
+    });
+  }
+
+  function renderRoundTabs(bracket) {
+    const validRound = bracket.rounds.some(
+      (round) => round.key === state.mobileRound
+    );
+
+    if (!state.mobileRound || !validRound) {
+      state.mobileRound = bracket.rounds[0].key;
+    }
+
+    elements.mobileRoundTabs.innerHTML =
+      bracket.rounds
+        .map((round) => {
+          const active =
+            round.key === state.mobileRound;
+
+          return `
+            <button
+              class="mobile-round-tabs__button${active ? " is-active" : ""}"
+              type="button"
+              role="tab"
+              aria-selected="${active}"
+              data-mobile-round="${escapeAttribute(round.key)}"
+            >
+              ${escapeHTML(round.label)}
+            </button>
+          `;
+        })
+        .join("");
+  }
+
+  function renderRounds(season, bracket) {
+    elements.bracketRounds.innerHTML =
+      bracket.rounds
+        .map((round) => {
+          const cards = bracket.cards.filter(
+            (card) => card.round === round.key
+          );
+
+          return `
+            <section
+              class="bracket-round"
+              data-round="${escapeAttribute(round.key)}"
+              aria-label="${escapeAttribute(round.label)}"
+            >
+              <h3 class="bracket-round__title">
+                ${escapeHTML(round.label)}
+              </h3>
+
+              ${cards
+                .map((card) => renderCard(season, card))
+                .join("")}
+            </section>
+          `;
+        })
+        .join("");
+  }
+
+  function renderCard(season, card) {
+    if (card.type === "bye") {
+      const team = season.teams[card.teamId];
+
+      return `
+        <div
+          class="matchup-card matchup-card--bye"
+          data-card-id="${escapeAttribute(card.id)}"
+          data-slot="${escapeAttribute(card.slot)}"
+        >
+          <div class="matchup-team">
+            <span class="matchup-team__seed">
+              ${escapeHTML(card.seed)}
+            </span>
+
+            <span class="matchup-team__name">
+              ${escapeHTML(team.name)}
+            </span>
+
+            <span class="matchup-card__bye-label">
+              Bye
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    const title = card.bowlName || card.roundName;
+
+    const headerStyle = card.bowlArt
+      ? ` style="--bowl-art: url('${escapeCssUrl(card.bowlArt)}')"`
+      : "";
+
+    return `
+      <button
+        class="matchup-card"
+        type="button"
+        data-card-id="${escapeAttribute(card.id)}"
+        data-matchup-id="${escapeAttribute(card.id)}"
+        data-slot="${escapeAttribute(card.slot)}"
+        aria-label="Open ${escapeAttribute(title)} matchup details"
+      >
+        <span class="matchup-card__header"${headerStyle}>
+          <span class="matchup-card__round">
+            ${escapeHTML(card.roundName)}
+          </span>
+
+          <span class="matchup-card__title">
+            ${escapeHTML(title)}
+          </span>
+        </span>
+
+        <span class="matchup-card__teams">
+          ${card.teams
+            .map((entry) =>
+              renderCompactTeam(
+                season.teams[entry.teamId],
+                entry
+              )
+            )
+            .join("")}
+        </span>
+      </button>
+    `;
+  }
+
+  function renderCompactTeam(team, entry) {
+    const artStyle = team.art
+      ? ` style="--team-art: url('${escapeCssUrl(team.art)}')"`
+      : "";
+
+    return `
+      <span
+        class="matchup-team${entry.winner ? " is-winner" : ""}"
+        ${artStyle}
+      >
+        <span class="matchup-team__seed">
+          ${escapeHTML(entry.seed)}
+        </span>
+
+        <span class="matchup-team__identity">
+          <span class="matchup-team__name">
+            ${escapeHTML(team.name)}
+          </span>
+
+          ${
+            entry.winner
+              ? '<span class="matchup-team__winner-label">Winner</span>'
+              : ""
+          }
+        </span>
+
+        <span class="matchup-team__score">
+          ${formatScore(entry.score)}
+        </span>
+      </span>
+    `;
+  }
+
+  function updateMobileRoundVisibility() {
+    elements.mobileRoundTabs
+      .querySelectorAll("[data-mobile-round]")
+      .forEach((button) => {
+        const active =
+          button.dataset.mobileRound ===
+          state.mobileRound;
+
+        button.classList.toggle("is-active", active);
+
+        button.setAttribute(
+          "aria-selected",
+          String(active)
+        );
+      });
+
+    elements.bracketRounds
+      .querySelectorAll("[data-round]")
+      .forEach((round) => {
+        round.classList.toggle(
+          "is-mobile-active",
+          round.dataset.round === state.mobileRound
+        );
+      });
+  }
+
+  function scheduleConnectorDraw() {
+    if (state.connectorFrame) {
+      cancelAnimationFrame(state.connectorFrame);
+    }
+
+    state.connectorFrame = requestAnimationFrame(() => {
+      state.connectorFrame = null;
+      drawConnectors();
+    });
+  }
+
+  function drawConnectors() {
+    if (
+      window.matchMedia("(max-width: 820px)").matches
+    ) {
+      elements.connectors.innerHTML = "";
+      return;
+    }
+
+    const bracket =
+      BRACKET_DATA[state.year][state.bracket];
+
+    const canvasRect =
+      elements.bracketCanvas.getBoundingClientRect();
+
+    const width = elements.bracketCanvas.clientWidth;
+    const height = elements.bracketCanvas.clientHeight;
+
+    elements.connectors.setAttribute(
+      "viewBox",
+      `0 0 ${width} ${height}`
+    );
+
+    elements.connectors.setAttribute(
+      "width",
+      String(width)
+    );
+
+    elements.connectors.setAttribute(
+      "height",
+      String(height)
+    );
+
+    const paths = bracket.connections.map(
+      (connection) => {
+        const from =
+          elements.bracketRounds.querySelector(
+            `[data-card-id="${cssEscape(connection.from)}"]`
+          );
+
+        const to =
+          elements.bracketRounds.querySelector(
+            `[data-card-id="${cssEscape(connection.to)}"]`
+          );
+
+        if (!from || !to) {
+          return "";
+        }
+
+        const fromRect = from.getBoundingClientRect();
+        const toRect = to.getBoundingClientRect();
+
+        const x1 =
+          fromRect.right - canvasRect.left;
+
+        const y1 =
+          fromRect.top +
+          fromRect.height / 2 -
+          canvasRect.top;
+
+        const x2 =
+          toRect.left - canvasRect.left;
+
+        const y2 =
+          toRect.top +
+          toRect.height / 2 -
+          canvasRect.top;
+
+        const midpoint =
+          x1 + Math.max(18, (x2 - x1) * 0.5);
+
+        const className =
+          connection.result === "loser"
+            ? "bracket-connector bracket-connector--loser"
+            : "bracket-connector";
+
+        return `
+          <path
+            class="${className}"
+            d="M ${x1} ${y1} H ${midpoint} V ${y2} H ${x2}"
+          />
+        `;
+      }
+    );
+
+    elements.connectors.innerHTML =
+      paths.join("");
+  }
+
+  function findMatchup(matchupId) {
+    const season = BRACKET_DATA[state.year];
+    const bracket = season[state.bracket];
+
+    return (
+      bracket.cards.find(
+        (card) =>
+          card.type === "matchup" &&
+          card.id === matchupId
+      ) || null
+    );
+  }
+
+  function openMatchup(matchupId, { updateUrl }) {
+    const matchup = findMatchup(matchupId);
+
+    if (!matchup) {
+      return;
+    }
+
+    const season = BRACKET_DATA[state.year];
+
+    state.openMatchupId = matchupId;
+    state.lastFocusedElement =
+      document.activeElement;
+
+    state.mobileRound = matchup.round;
+
+    updateMobileRoundVisibility();
+
+    elements.modalContent.innerHTML =
+      renderModalContent(season, matchup);
+
+    elements.modal.hidden = false;
+
+    document.body.classList.add(
+      "bracket-modal-open"
+    );
+
+    requestAnimationFrame(() => {
+      const closeButton =
+        elements.modal.querySelector(
+          "[data-modal-close]"
+        );
+
+      closeButton?.focus();
+    });
+
+    if (updateUrl) {
+      writeUrl(
+        {
+          matchup: matchupId
+        },
+        "push"
+      );
+    }
+  }
+
+  function closeModal({
+    updateUrl,
+    restoreFocus
+  }) {
+    if (!elements.modal || elements.modal.hidden) {
+      return;
+    }
+
+    elements.modal.hidden = true;
+    elements.modalContent.innerHTML = "";
+
+    document.body.classList.remove(
+      "bracket-modal-open"
+    );
+
+    state.openMatchupId = null;
+
+    if (updateUrl) {
+      writeUrl(
+        {
+          matchup: null
+        },
+        "replace"
+      );
+    }
+
+    if (
+      restoreFocus &&
+      state.lastFocusedElement instanceof HTMLElement
+    ) {
+      state.lastFocusedElement.focus();
+    }
+  }
+
+  function renderModalContent(season, matchup) {
+    const title = matchup.bowlName
+      ? `${matchup.roundName} — ${matchup.bowlName}`
+      : matchup.roundName;
+
+    const heroStyle = matchup.bowlArt
+      ? ` style="--bowl-art: url('${escapeCssUrl(matchup.bowlArt)}')"`
+      : "";
+
+    const [teamAEntry, teamBEntry] =
+      matchup.teams;
+
+    const teamA =
+      season.teams[teamAEntry.teamId];
+
+    const teamB =
+      season.teams[teamBEntry.teamId];
+
+    return `
+      <header
+        class="matchup-modal__hero"
+        ${heroStyle}
+      >
+        <p class="matchup-modal__eyebrow">
+          ${escapeHTML(matchup.roundName)}
+        </p>
+
+        <h2
+          class="matchup-modal__title"
+          id="matchup-modal-title"
+        >
+          ${escapeHTML(title)}
+        </h2>
+      </header>
+
+      <div class="matchup-modal__body">
+        <section
+          class="matchup-scoreboard"
+          aria-label="Final score"
+        >
+          ${renderScoreboardTeam(
+            teamA,
+            teamAEntry
+          )}
+
+          <div
+            class="matchup-scoreboard__versus"
+            aria-hidden="true"
+          >
+            FINAL
+          </div>
+
+          ${renderScoreboardTeam(
+            teamB,
+            teamBEntry
+          )}
+        </section>
+
+        <section
+          class="lineup-section"
+          aria-labelledby="starting-lineups-title"
+        >
+          <div class="lineup-section__heading">
+            <h3
+              class="lineup-section__title"
+              id="starting-lineups-title"
+            >
+              Starting Lineups
+            </h3>
+
+            <p class="lineup-section__note">
+              Player points only
+            </p>
+          </div>
+
+          <div class="lineup-grid">
+            ${renderLineupCard(
+              teamA.name,
+              teamAEntry.lineup.starters,
+              "Starters"
+            )}
+
+            ${renderLineupCard(
+              teamB.name,
+              teamBEntry.lineup.starters,
+              "Starters"
+            )}
+          </div>
+        </section>
+
+        <div class="bench-control">
+          <button
+            class="bench-control__button"
+            type="button"
+            data-bench-toggle
+            aria-expanded="false"
+          >
+            View Bench Players
+          </button>
+        </div>
+
+        <section
+          class="bench-section"
+          data-bench-section
+          hidden
+          aria-label="Bench players"
+        >
+          <div class="lineup-section__heading">
+            <h3 class="lineup-section__title">
+              Bench
+            </h3>
+
+            <p class="lineup-section__note">
+              
+            </p>
+          </div>
+
+          <div class="lineup-grid">
+            ${renderLineupCard(
+              teamA.name,
+              teamAEntry.lineup.bench,
+              "Bench"
+            )}
+
+            ${renderLineupCard(
+              teamB.name,
+              teamBEntry.lineup.bench,
+              "Bench"
+            )}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderScoreboardTeam(team, entry) {
+    const artStyle = team.art
+      ? ` style="--team-art: url('${escapeCssUrl(team.art)}')"`
+      : "";
+
+    return `
+      <article
+        class="matchup-scoreboard__team${entry.winner ? " is-winner" : ""}"
+        ${artStyle}
+      >
+        <p class="matchup-scoreboard__seed">
+          Seed ${escapeHTML(entry.seed)}
+          ${entry.winner ? " · Winner" : ""}
+        </p>
+
+        <h3 class="matchup-scoreboard__name">
+          ${escapeHTML(team.name)}
+        </h3>
+
+        <p class="matchup-scoreboard__owner">
+          Owner: ${escapeHTML(team.owner)}
+        </p>
+
+        <div class="matchup-scoreboard__stats">
+          <strong class="matchup-scoreboard__score">
+            ${formatScore(entry.score)}
+          </strong>
+
+          <span class="matchup-scoreboard__tds">
+            <strong>
+              ${escapeHTML(entry.touchdowns)}
+            </strong>
+
+            <span>
+              Touchdowns
+            </span>
+          </span>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderLineupCard(
+    teamName,
+    players,
+    label
+  ) {
+    return `
+      <article class="lineup-card">
+        <h4 class="lineup-card__heading">
+          ${escapeHTML(teamName)} — ${escapeHTML(label)}
+        </h4>
+
+        <table class="lineup-table">
+          <thead>
+            <tr>
+              <th scope="col">Player</th>
+              <th scope="col">Pos.</th>
+              <th scope="col">NFL</th>
+              <th scope="col">Pts.</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${players
+              .map(
+                (player) => `
+                  <tr>
+                    <td class="lineup-table__player">
+                      ${escapeHTML(player.name)}
+                    </td>
+
+                    <td>
+                      ${escapeHTML(player.position)}
+                    </td>
+
+                    <td>
+                      ${escapeHTML(player.nflTeam)}
+                    </td>
+
+                    <td>
+                      ${formatScore(player.points)}
+                    </td>
+                  </tr>
+                `
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </article>
+    `;
+  }
+
+  function handleKeydown(event) {
+    if (elements.modal?.hidden) {
+      return;
+    }
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+
+      closeModal({
+        updateUrl: true,
+        restoreFocus: true
+      });
+
+      return;
+    }
+
+    if (event.key !== "Tab") {
+      return;
+    }
+
+    const focusable = [
+      ...elements.modal.querySelectorAll(
+        'button:not([disabled]), [href], select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ].filter(
+      (element) =>
+        !element.hidden &&
+        element.offsetParent !== null
+    );
+
+    if (!focusable.length) {
+      return;
+    }
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (
+      event.shiftKey &&
+      document.activeElement === first
+    ) {
+      event.preventDefault();
+      last.focus();
+    } else if (
+      !event.shiftKey &&
+      document.activeElement === last
+    ) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function writeUrl({ matchup }, mode) {
+    const url = new URL(window.location.href);
+
+    url.searchParams.set(
+      "year",
+      String(state.year)
+    );
+
+    url.searchParams.set(
+      "bracket",
+      state.bracket
+    );
+
+    if (matchup) {
+      url.searchParams.set(
+        "matchup",
+        matchup
+      );
+    } else {
+      url.searchParams.delete("matchup");
+    }
+
+    const method =
+      mode === "replace"
+        ? "replaceState"
+        : "pushState";
+
+    window.history[method](
+      {
+        bracketPage: true
+      },
+      "",
+      url
+    );
+  }
+
+  function formatScore(value) {
+    const number = Number(value);
+
+    return Number.isFinite(number)
+      ? number.toFixed(2)
+      : escapeHTML(value);
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeAttribute(value) {
+    return escapeHTML(value);
+  }
+
+  function escapeCssUrl(value) {
+    return String(value ?? "").replace(
+      /[\\'"()\n\r]/g,
+      ""
+    );
+  }
+
+  function cssEscape(value) {
+    if (window.CSS?.escape) {
+      return window.CSS.escape(value);
+    }
+
+    return String(value).replace(
+      /([ #;?%&,.+*~\\':"!^$[\]()=>|/@])/g,
+      "\\$1"
+    );
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      init,
+      {
+        once: true
+      }
+    );
+  } else {
+    init();
+  }
+})();

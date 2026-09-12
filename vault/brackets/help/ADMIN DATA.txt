@@ -1,0 +1,38 @@
+ADMIN DATA  
+
+  2025: {
+      format: "current",
+      teams: {
+        p1: {name: "The Rome Man Empire",owner: "Jordan",art: "artwork/2025/p1.png"},
+        p2: {name: "Certified Pipers Association",owner: "Max",art: "artwork/2025/p2.png"},
+        p3: {name: "FS5 PENITENTIARY",owner: "Bailey",art: "artwork/2025/p3.png"},
+        p4: {name: "Pete and His Dirty Dawgs",owner: "Will",art: "artwork/2025/p4.png"},
+        p5: {name: "Georgassic Park",owner: "David",art: "artwork/2025/p5.png"},
+        p6: {name: "The Brown Mahomos",owner: "Matthew",art: "artwork/2025/p6.png"},
+        c1: {name: "Im So Brocked Up Right Now",owner: "Chris",art: "artwork/2025/c1.png"},
+        c2: {name: "Gallon of Allen",owner: "Ethan",art: "artwork/2025/c2.png"},
+        c3: {name: "Armory Road Trucks",owner: "Mike",art: "artwork/2025/c3.png"},
+        c4: {name: "Merry Christmas",owner: "Brycen",art: "artwork/2025/c4.png"},
+        c5: {name: "ROUGH DRAFT",owner: "Keith",art: "artwork/2025/c5.png"},
+        c6: {name: "Atlanta Nitro Hawgs",owner: "Cody",art: "artwork/2025/c6.png"}
+      },
+
+
+
+
+    2024: {
+      format: "current",
+      teams: {
+        p1: {name: "COUNT DRAFTULA",owner: "Keith",art: "artwork/2024/p1.png"},
+        p2: {name: "Raven Bros Circus",owner: "Jordan",art: "artwork/2024/p2.png"},
+        p3: {name: "Aubrey Road",owner: "Bailey",art: "artwork/2024/p3.png"},
+        p4: {name: "Armory Road Trucks",owner: "Mike",art: "artwork/2024/p4.png"},
+        p5: {name: "BPT-MPB",owner: "Brycen",art: "artwork/2024/p5.png"},
+        p6: {name: "Pete and His Dawgs",owner: "Will",art: "artwork/2024/p6.png"},
+        c1: {name: "Talladerrick Nights",owner: "David",art: "artwork/2024/c1.png"},
+        c2: {name: "JMFA The Empire Hitsticks Back",owner: "Ethan",art: "artwork/2024/c2.png"},
+        c3: {name: "Atlanta Nitro Hawgs",owner: "Cody",art: "artwork/2024/c3.png"},
+        c4: {name: "Mikes Financial Advisor",owner: "Max",art: "artwork/2024/c4.png"},
+        c5: {name: "The Stroud Boys",owner: "Matt",art: "artwork/2024/c5.png"},
+        c6: {name: "The Home Deebo",owner: "Chris",art: "artwork/2024/c6.png"}
+      },

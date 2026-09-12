@@ -1,0 +1,120 @@
+/* Foundation v2.1.4 http://foundation.zurb.com */
+/* Artfully masterminded by ZURB  */
+
+/* -------------------------------------------------- 
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Page Name 1
+:: Page Name 2
+*/
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+
+/* Base table styles */
+table th { 
+    font-weight: bold; 
+}
+table td, table th { 
+    padding: 9px 10px; 
+    text-align: center; 
+}
+
+/* Ensure consistent padding and border settings */
+table, .pinned table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+/* Style for the pinned table */
+.pinned table th, .pinned table td {
+    padding: 9px 10px; /* Ensure this matches the main table */
+    border-bottom: 1px solid #000; /* Ensure this matches the main table */
+    font-weight: bold;
+}
+
+/* Header styles */
+.pinned table th, table th, .finalpoints-table th {
+    background-color: #d30908; /* Dark grey background for header */
+    color: #fff; /* White text color */
+}
+
+/* Style for the scrollable table */
+.scrollable table th, .scrollable table td {
+    padding: 9px 10px; /* Ensure this matches the pinned table */
+    border-bottom: 1px solid #000; /* Ensure this matches the pinned table */
+}
+
+/* Row styles */
+table tr:nth-child(even) { 
+    background-color: #6caddf; /* Alternating light grey rows */
+}
+table tr:nth-child(odd) { 
+    background-color: #fff; /* Alternating white rows */
+}
+
+/* Row hover effect */
+table tr:hover { 
+    background-color: #7f9da1; /* Slightly darker grey on hover */
+}
+
+/* Table shadow */
+table, .pinned table {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow around the table */
+}
+
+
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+
+    table.single-game-table { margin-bottom: 0; }
+    .pinned { 
+        position: absolute; left: 0; top: 0; width: 15%; overflow: hidden; 
+        overflow-x: scroll; border-right: 1px solid #ccc; border-left: 1px solid #ccc; 
+    }
+    .pinned table { border-right: none; border-left: none; width: 100%; }
+    .pinned table th, .pinned table td { white-space: nowrap; }
+    .pinned td:last-child { border-bottom: 0; }
+    div.table-wrapper { 
+        position: relative; margin-bottom: 20px; overflow: hidden; border-right: 1px solid #ccc; 
+    }
+
+
+    div.table-wrapper div.scrollable { 
+        margin-left: 15%; overflow: scroll; overflow-y: hidden; 
+    }
+    table.single-game-table td, table.single-game-table th { 
+        position: relative; white-space: nowrap; overflow: hidden; 
+    }
+    /* Commenting out the problematic line */
+    table.single-game-table th:first-child, table.single-game-table td:first-child, table.single-game-table td:first-child, table.single-game-table.pinned td { display: none; }
+}
+
+@media only screen and (max-width: 767px) {
+    table.highest-position-table { margin-bottom: 0; }
+    .pinned { 
+        position: absolute; left: 0; top: 0; width: 15%; overflow: hidden; 
+        overflow-x: scroll; border-right: 1px solid #ccc; border-left: 1px solid #ccc; 
+    }
+    .pinned table { border-right: none; border-left: none; width: 100%; }
+    .pinned table th, .pinned table td { white-space: nowrap; }
+    .pinned td:last-child { border-bottom: 0; }
+    div.table-wrapper { 
+        position: relative; margin-bottom: 20px; overflow: hidden; border-right: 1px solid #ccc; 
+    }
+    div.table-wrapper div.scrollable { 
+        margin-left: 15%; overflow: scroll; overflow-y: hidden; 
+    }
+    table.highest-position-table td, table.highest-position-table th { 
+        position: relative; white-space: nowrap; overflow: hidden; 
+    }
+    /* Commenting out the problematic line */
+    table.highest-position-table th:first-child, table.highest-position-table td:first-child, table.highest-position-table td:first-child, table.highest-position-table.pinned td { display: none; }
+}
+
+

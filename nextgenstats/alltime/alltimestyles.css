@@ -1,0 +1,538 @@
+:root {
+    --at-bg: #040a12;
+    --at-panel: #0b1a2a;
+    --at-edge: rgba(91, 137, 177, 0.25);
+    --at-navy: #123f66;
+    --at-red: #b72b35;
+    --at-silver: #b8c5cf;
+    --at-text: #f3f6f9;
+    --at-muted: #96a9b7;
+    --at-table: #f4f5f6;
+    --at-table-alt: #edf0f2;
+    --at-ink: #142231;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: var(--at-bg);
+}
+
+body > main {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    max-width: none;
+    padding: 38px 24px 70px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background:
+        linear-gradient(135deg, transparent 0 48%, rgba(63, 103, 139, 0.055) 48% 49%, transparent 49% 100%),
+        radial-gradient(circle at 82% 2%, rgba(21, 77, 119, 0.35), transparent 31%),
+        linear-gradient(180deg, #091522 0%, var(--at-bg) 100%);
+    background-size: 84px 84px, auto, auto;
+}
+
+body > main::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(210, 220, 228, 0.045), transparent 24% 75%, rgba(44, 102, 148, 0.08));
+    pointer-events: none;
+}
+
+.alltime-hero,
+.records-grid {
+    width: min(100%, 1320px);
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.alltime-hero {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 1120px);
+    min-height: 190px;
+    margin-bottom: 26px;
+    padding: 20px 38px;
+    overflow: hidden;
+    border: 1px solid rgba(77, 127, 167, 0.32);
+    border-radius: 18px;
+    background:
+        linear-gradient(100deg, rgba(5, 14, 25, 0.98), rgba(15, 42, 65, 0.9) 50%, rgba(5, 14, 25, 0.98)),
+        repeating-linear-gradient(125deg, transparent 0 32px, rgba(255, 255, 255, 0.025) 32px 33px);
+    box-shadow: 0 20px 52px rgba(0, 0, 0, 0.32), inset 3px 0 rgba(202, 214, 223, 0.78), inset -3px 0 rgba(202, 214, 223, 0.78);
+}
+
+.alltime-hero::before,
+.alltime-hero::after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: linear-gradient(transparent, rgba(220, 229, 235, 0.72), transparent);
+}
+
+.alltime-hero::before { left: 11px; }
+.alltime-hero::after { right: 11px; }
+
+.logo-header {
+    display: block;
+    width: min(100%, 560px);
+    max-height: 190px;
+    object-fit: contain;
+    opacity: 1;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 15px rgba(190, 207, 219, 0.12));
+}
+
+.records-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 26px;
+}
+
+.row2 { margin-bottom: 26px; }
+
+.season-totals,
+.owner-totals,
+.playoff-records,
+.consolation-records,
+.championship-records,
+.lastplace-records {
+    position: relative;
+    min-width: 0;
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid var(--at-edge);
+    border-radius: 14px;
+    background: linear-gradient(155deg, rgba(15, 33, 52, 0.99), rgba(6, 18, 30, 0.99));
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.25), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.season-totals::before,
+.owner-totals::before,
+.playoff-records::before,
+.consolation-records::before,
+.championship-records::before,
+.lastplace-records::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    border-radius: 14px 0 0 14px;
+    background: linear-gradient(180deg, var(--at-silver), rgba(184, 197, 207, 0.14) 34%, transparent 72%);
+}
+
+.panel-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(270px, 300px);
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 9px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    color: var(--at-text);
+    font-size: clamp(1.2rem, 1.55vw, 1.45rem);
+    line-height: 1.15;
+}
+
+.category-control {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.control-label {
+    color: var(--at-muted);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+select {
+    width: 100%;
+    min-height: 37px;
+    padding: 7px 34px 7px 11px;
+    border: 1px solid #304d65;
+    border-radius: 7px;
+    color: #edf3f7;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #102131 url('data:image/svg+xml;utf8,<svg fill="%23b9cbd7" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 9px center;
+    appearance: none;
+    cursor: pointer;
+    text-overflow: ellipsis;
+}
+
+select:hover { border-color: #658ba8; }
+
+select:focus-visible,
+.active-filter input:focus-visible + label,
+.checkbox-owner input:focus-visible + label,
+.checkbox-playoffs input:focus-visible + label,
+.checkbox-consolation input:focus-visible + label,
+.checkbox-championship input:focus-visible + label,
+.checkbox-lastplace input:focus-visible + label,
+.scope-control input:focus-visible + label {
+    outline: 2px solid #c7d4dd;
+    outline-offset: 2px;
+}
+
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 9px;
+}
+
+.checkbox-owner,
+.checkbox-playoffs,
+.checkbox-consolation,
+.checkbox-championship,
+.checkbox-lastplace {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 9px;
+}
+
+.active-filter input,
+.checkbox-owner input,
+.checkbox-playoffs input,
+.checkbox-consolation input,
+.checkbox-championship input,
+.checkbox-lastplace input,
+.scope-control input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.active-filter label,
+.checkbox-owner label,
+.checkbox-playoffs label,
+.checkbox-consolation label,
+.checkbox-championship label,
+.checkbox-lastplace label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 4px 9px;
+    box-sizing: border-box;
+    border: 1px solid rgba(116, 145, 168, 0.42);
+    border-radius: 7px;
+    color: #91a4b2;
+    background: rgba(8, 22, 35, 0.52);
+    font-size: 0.66rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.active-filter label:hover,
+.checkbox-owner label:hover,
+.checkbox-playoffs label:hover,
+.checkbox-consolation label:hover,
+.checkbox-championship label:hover,
+.checkbox-lastplace label:hover {
+    border-color: rgba(145, 172, 192, 0.58);
+    background: rgba(15, 38, 57, 0.66);
+}
+
+.active-filter input:checked + label,
+.checkbox-owner input:checked + label,
+.checkbox-playoffs input:checked + label,
+.checkbox-consolation input:checked + label,
+.checkbox-championship input:checked + label,
+.checkbox-lastplace input:checked + label {
+    border-color: rgba(181, 198, 210, 0.58);
+    color: #fff;
+    background: #173d5d;
+    box-shadow: inset 0 -2px rgba(210, 220, 228, 0.72);
+}
+
+.scope-control {
+    display: inline-flex;
+    align-items: stretch;
+    padding: 2px;
+    border: 1px solid rgba(88, 125, 155, 0.34);
+    border-radius: 7px;
+    background: rgba(4, 13, 23, 0.48);
+}
+
+.scope-control:has(#season-combined[style*="display: none"]) {
+    display: none;
+}
+
+.scope-control label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    padding: 4px 8px;
+    border-radius: 5px;
+    color: #9eb0bd;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.scope-control input:checked + label {
+    color: #fff;
+    background: var(--at-navy);
+    box-shadow: inset 0 -2px rgba(210, 220, 228, 0.72);
+}
+
+input:disabled + label,
+select:disabled {
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    scrollbar-color: #4c718f #0b1825;
+}
+
+table {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    overflow: hidden;
+    border-radius: 8px;
+    color: var(--at-ink);
+    background: var(--at-table);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+th {
+    padding: 7px 6px;
+    border: 0;
+    border-bottom: 2px solid rgba(207, 218, 226, 0.86);
+    color: #f1f6fa;
+    background: var(--at-navy);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+}
+
+td {
+    padding: 5px 6px;
+    border: 0;
+    border-bottom: 1px solid #d8dee3;
+    color: var(--at-ink);
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+tbody tr:nth-child(even) { background: var(--at-table-alt); }
+tbody tr:hover { background: #e2e9ee; }
+th:first-child, td:first-child { width: 50px; }
+td:nth-child(2), td:nth-child(3) { font-weight: 800; }
+
+.table-status {
+    padding: 16px 8px;
+    color: #526879;
+    font-weight: 700;
+}
+
+.table-error { color: #922c34; }
+
+.panel-details {
+    margin: 9px 4px 0;
+    color: var(--at-muted);
+    font-size: 0.7rem;
+    font-weight: 400;
+    line-height: 1.38;
+}
+
+.postseason-divider {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 1120px);
+    min-height: 0;
+    margin: 24px auto;
+    padding: 10px 24px 9px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-block: 1px solid rgba(86, 127, 160, 0.2);
+    background: linear-gradient(90deg, transparent, rgba(13, 36, 57, 0.76) 20% 80%, transparent);
+}
+
+.postseason-divider::before,
+.postseason-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(202, 214, 223, 0.58));
+}
+
+.postseason-divider::after {
+    background: linear-gradient(90deg, rgba(202, 214, 223, 0.58), transparent);
+}
+
+.postseason-divider__content {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    width: min(100%, 430px);
+    margin-inline: 22px;
+}
+
+.postseason-divider__content h2 {
+    margin: 0;
+    color: var(--at-text);
+    font-size: 1.05rem;
+    line-height: 1.15;
+    letter-spacing: 0.04em;
+    text-align: center;
+}
+
+.postseason-artwork {
+    display: block;
+    width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+    opacity: 1;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.34));
+}
+
+@media (max-width: 1100px) {
+    .panel-heading {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .category-control { width: 100%; }
+}
+
+@media (max-width: 765px) {
+    body > main {
+        padding: 20px 10px 38px;
+        background-size: 64px 64px, auto, auto;
+    }
+
+    .alltime-hero {
+        min-height: 0;
+        margin-bottom: 20px;
+        padding: 13px 10px;
+    }
+
+    .logo-header {
+        width: min(100%, 440px);
+        max-height: 155px;
+    }
+
+    .records-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .row2 { margin-bottom: 14px; }
+
+    .season-totals,
+    .owner-totals,
+    .playoff-records,
+    .consolation-records,
+    .championship-records,
+    .lastplace-records {
+        padding: 15px 10px;
+    }
+
+    .panel-heading {
+        gap: 9px;
+        margin-bottom: 10px;
+    }
+
+    .panel-heading h2 { font-size: 1.18rem; }
+    select { min-height: 42px; font-size: 0.78rem; }
+
+    .checkbox-container {
+        align-items: stretch;
+        gap: 7px;
+    }
+
+    .active-filter label,
+    .checkbox-owner label,
+    .checkbox-playoffs label,
+    .checkbox-consolation label,
+    .checkbox-championship label,
+    .checkbox-lastplace label {
+        min-height: 36px;
+    }
+
+    .scope-control {
+        flex: 1 1 auto;
+    }
+
+    .scope-control label {
+        flex: 1 1 auto;
+        min-height: 32px;
+        padding-inline: 6px;
+    }
+
+    table {
+        min-width: 100%;
+        table-layout: auto;
+    }
+
+    th,
+    td {
+        padding-inline: 4px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    th { font-size: 0.67rem; }
+    td { font-size: 0.73rem; }
+    th:first-child, td:first-child { width: 40px; }
+
+    .postseason-divider {
+        margin-block: 20px;
+        padding-inline: 10px;
+    }
+
+    .postseason-divider__content {
+        width: min(100%, 330px);
+        margin-inline: 10px;
+    }
+
+    .postseason-divider__content h2 {
+        font-size: 0.96rem;
+    }
+
+    .postseason-artwork {
+        max-height: 82px;
+    }
+
+    .panel-details {
+        margin-top: 8px;
+        font-size: 0.71rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .scope-control label { font-size: 0.61rem; }
+}

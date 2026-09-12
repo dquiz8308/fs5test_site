@@ -1,0 +1,484 @@
+FS5 repository file tree
+.
++---artwork
+|   +---divisions.png
+|   +---h2hlogo.png
+|   +---hallofchampslogo.png
+|   +---header2.png
+|   +---header3.png
+|   +---logo.png
+|   +---logowhite.jpg
+|   +---NextGenFS5.png
+|   +---owners.png
+|   +---postseason.png
+|   +---season13logo.png
+|   +---season15logo.png
+|   +---sportsbookLogo.png
+|   +---vault.png
+|   \---welcomebanner.png
++---divisions
+|   +---artwork
+|   |   +---.gitkeep
+|   |   +---evans.png
+|   |   +---madras.png
+|   |   \---smokey-road.png
+|   +---divisions.css
+|   +---divisions.js
+|   \---index.html
++---docs
+|   +---archive
+|   |   +---design
+|   |   |   \---GLOBAL_INTERFACE_DESIGN_AUDIT.md
+|   |   +---supabase-migrations
+|   |   |   +---ALL_TIME_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   +---CURRENT_YEAR_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   +---H2H_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   +---NEXTGENSTATS_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   +---OWNERS_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   +---SEASON_RECORDS_SUPABASE_MIGRATION_AUDIT.md
+|   |   |   \---SUPABASE_MIGRATION_HISTORY.md
+|   |   +---README.md
+|   |   \---SITE_COMPLETION_HISTORY.md
+|   +---shared
+|   |   +---FS5_SEASON_ROLLOVER.md
+|   |   +---FS5_SHARED_DATA_CONTRACTS.md
+|   |   \---FS5_SYSTEM_BOUNDARIES.md
+|   +---CURRENT_STATUS.md
+|   +---DATA_STRUCTURES.md
+|   +---DECISIONS.md
+|   +---DESIGN_RULES.md
+|   +---FILE_TREE.txt
+|   +---PROJECT_CONTEXT.md
+|   +---SITE_STRUCTURE.md
+|   \---SUPABASE_WEBSITE_INTEGRATION.md
++---fs5book
+|   +---artwork
+|   |   +---members
+|   |   |   \---david.png
+|   |   +---backgroundSB.png
+|   |   +---fivebill.png
+|   |   \---fs5sb.JPG
+|   +---book-styles.css
+|   +---fs5book-login.js
+|   \---index.html
++---h2h
+|   +---artwork
+|   |   \---.gitkeep
+|   +---h2hstyle.css
+|   +---h2hsummary.js
+|   \---index.html
++---hallofchampions
+|   +---artwork
+|   |   +---2012.png
+|   |   +---2013.png
+|   |   +---2014.png
+|   |   +---2015.png
+|   |   +---2016.png
+|   |   +---2017.png
+|   |   +---2018.png
+|   |   +---2019.png
+|   |   +---2020.png
+|   |   +---2021.png
+|   |   +---2022.png
+|   |   +---2023.png
+|   |   +---2024.png
+|   |   +---2025.png
+|   |   +---header2.png
+|   |   \---header3.png
+|   +---commonchamp.css
+|   +---hall.css
+|   +---hall.js
+|   \---index.html
++---nextgenstats
+|   +---alltime
+|   |   +---artwork
+|   |   |   \---postseason.png
+|   |   +---alltimestyles.css
+|   |   +---checkbox-css.js
+|   |   +---index.html
+|   |   +---nongame-details.js
+|   |   +---nongame-other.js
+|   |   \---nonpoint-data.js
+|   +---artwork
+|   |   +---alltime-logo.png
+|   |   +---currentyear-logo.png
+|   |   +---seasons-logo.png
+|   |   \---singlegame-logo.png
+|   +---currentyear
+|   |   +---artwork
+|   |   |   \---.gitkeep
+|   |   +---currentyear-data.js
+|   |   +---currentyear-styles.css
+|   |   +---index.html
+|   |   \---responsive-tables.css
+|   +---seasonrecords
+|   |   +---artwork
+|   |   |   \---.gitkeep
+|   |   +---index.html
+|   |   +---responsive-tables.css
+|   |   +---season-data.js
+|   |   +---season-details.js
+|   |   \---season.css
+|   +---singlegame
+|   |   +---artwork
+|   |   |   \---.gitkeep
+|   |   +---index.html
+|   |   +---responsive-tables.css
+|   |   +---responsive-tables.js
+|   |   +---singlegamedata.js
+|   |   +---singlegamescript.js
+|   |   \---singlegamestyles.css
+|   +---index.html
+|   +---nextgen-script.js
+|   \---nextgen-styles.css
++---owners
+|   +---artwork
+|   |   +---ownerpics
+|   |   |   +---david.jpg
+|   |   |   \---david2.jpg
+|   |   +---profile-current
+|   |   |   +---bailey.png
+|   |   |   +---brycen.png
+|   |   |   +---chris.png
+|   |   |   +---cody.png
+|   |   |   +---david.png
+|   |   |   +---ethan.png
+|   |   |   +---jordan.png
+|   |   |   +---keith.png
+|   |   |   +---matthew.png
+|   |   |   +---max.png
+|   |   |   +---mike.png
+|   |   |   \---will.png
+|   |   +---profile-history
+|   |   |   +---bailey_2013.png
+|   |   |   +---bailey_2014.png
+|   |   |   +---bailey_2015.png
+|   |   |   +---bailey_2016.png
+|   |   |   +---bailey_2017.png
+|   |   |   +---bailey_2018.png
+|   |   |   +---bailey_2019.png
+|   |   |   +---bailey_2020.png
+|   |   |   +---bailey_2021.png
+|   |   |   +---bailey_2022.png
+|   |   |   +---bailey_2023.png
+|   |   |   +---bailey_2024.png
+|   |   |   +---bailey_2025.png
+|   |   |   +---brycen_2012.png
+|   |   |   +---brycen_2013.png
+|   |   |   +---brycen_2014.png
+|   |   |   +---brycen_2015.png
+|   |   |   +---brycen_2016.png
+|   |   |   +---brycen_2017.png
+|   |   |   +---brycen_2018.png
+|   |   |   +---brycen_2019.png
+|   |   |   +---brycen_2020.png
+|   |   |   +---brycen_2021.png
+|   |   |   +---brycen_2022.png
+|   |   |   +---brycen_2023.png
+|   |   |   +---brycen_2024.png
+|   |   |   +---brycen_2025.png
+|   |   |   +---chris_2012.png
+|   |   |   +---chris_2013.png
+|   |   |   +---chris_2014.png
+|   |   |   +---chris_2015.png
+|   |   |   +---chris_2016.png
+|   |   |   +---chris_2017.png
+|   |   |   +---chris_2018.png
+|   |   |   +---chris_2019.png
+|   |   |   +---chris_2020.png
+|   |   |   +---chris_2021.png
+|   |   |   +---chris_2022.png
+|   |   |   +---chris_2023.png
+|   |   |   +---chris_2024.png
+|   |   |   +---chris_2025.png
+|   |   |   +---cody_2012.png
+|   |   |   +---cody_2013.png
+|   |   |   +---cody_2014.png
+|   |   |   +---cody_2015.png
+|   |   |   +---cody_2019.png
+|   |   |   +---cody_2020.png
+|   |   |   +---cody_2021.png
+|   |   |   +---cody_2022.png
+|   |   |   +---cody_2023.png
+|   |   |   +---cody_2024.png
+|   |   |   +---cody_2025.png
+|   |   |   +---david_2012.png
+|   |   |   +---david_2013.png
+|   |   |   +---david_2014.png
+|   |   |   +---david_2015.png
+|   |   |   +---david_2016.png
+|   |   |   +---david_2017.png
+|   |   |   +---david_2018.png
+|   |   |   +---david_2019.png
+|   |   |   +---david_2020.png
+|   |   |   +---david_2021.png
+|   |   |   +---david_2022.png
+|   |   |   +---david_2023.png
+|   |   |   +---david_2024.png
+|   |   |   +---david_2025.png
+|   |   |   +---ethan_2017.png
+|   |   |   +---ethan_2018.png
+|   |   |   +---ethan_2019.png
+|   |   |   +---ethan_2020.png
+|   |   |   +---ethan_2021.png
+|   |   |   +---ethan_2022.png
+|   |   |   +---ethan_2023.png
+|   |   |   +---ethan_2024.png
+|   |   |   +---ethan_2025.png
+|   |   |   +---harrison_2015.png
+|   |   |   +---harrison_2016.png
+|   |   |   +---harrison_2017.png
+|   |   |   +---harrison_2018.png
+|   |   |   +---jordan_2012.png
+|   |   |   +---jordan_2013.png
+|   |   |   +---jordan_2014.png
+|   |   |   +---jordan_2015.png
+|   |   |   +---jordan_2016.png
+|   |   |   +---jordan_2017.png
+|   |   |   +---jordan_2018.png
+|   |   |   +---jordan_2019.png
+|   |   |   +---jordan_2020.png
+|   |   |   +---jordan_2021.png
+|   |   |   +---jordan_2022.png
+|   |   |   +---jordan_2023.png
+|   |   |   +---jordan_2024.png
+|   |   |   +---jordan_2025.png
+|   |   |   +---jt_2017.png
+|   |   |   +---jt_2018.png
+|   |   |   +---keith_2015.png
+|   |   |   +---keith_2016.png
+|   |   |   +---keith_2017.png
+|   |   |   +---keith_2018.png
+|   |   |   +---keith_2019.png
+|   |   |   +---keith_2020.png
+|   |   |   +---keith_2021.png
+|   |   |   +---keith_2022.png
+|   |   |   +---keith_2023.png
+|   |   |   +---keith_2024.png
+|   |   |   +---keith_2025.png
+|   |   |   +---matthew_2014.png
+|   |   |   +---matthew_2015.png
+|   |   |   +---matthew_2016.png
+|   |   |   +---matthew_2017.png
+|   |   |   +---matthew_2018.png
+|   |   |   +---matthew_2019.png
+|   |   |   +---matthew_2020.png
+|   |   |   +---matthew_2021.png
+|   |   |   +---matthew_2022.png
+|   |   |   +---matthew_2023.png
+|   |   |   +---matthew_2024.png
+|   |   |   +---matthew_2025.png
+|   |   |   +---max_2012.png
+|   |   |   +---max_2014.png
+|   |   |   +---max_2019.png
+|   |   |   +---max_2020.png
+|   |   |   +---max_2021.png
+|   |   |   +---max_2022.png
+|   |   |   +---max_2023.png
+|   |   |   +---max_2024.png
+|   |   |   +---max_2025.png
+|   |   |   +---mike_2013.png
+|   |   |   +---mike_2014.png
+|   |   |   +---mike_2016.png
+|   |   |   +---mike_2017.png
+|   |   |   +---mike_2018.png
+|   |   |   +---mike_2019.png
+|   |   |   +---mike_2020.png
+|   |   |   +---mike_2021.png
+|   |   |   +---mike_2022.png
+|   |   |   +---mike_2023.png
+|   |   |   +---mike_2024.png
+|   |   |   +---mike_2025.png
+|   |   |   +---parker_2012.png
+|   |   |   +---preston_2012.png
+|   |   |   +---preston_2013.png
+|   |   |   +---preston_2014.png
+|   |   |   +---preston_2015.png
+|   |   |   +---preston_2016.png
+|   |   |   +---sam_2014.png
+|   |   |   +---sam_2015.png
+|   |   |   +---sam_2016.png
+|   |   |   +---stewart_2013.png
+|   |   |   +---tyler_2012.png
+|   |   |   +---will_2012.png
+|   |   |   +---will_2013.png
+|   |   |   +---will_2014.png
+|   |   |   +---will_2015.png
+|   |   |   +---will_2016.png
+|   |   |   +---will_2017.png
+|   |   |   +---will_2018.png
+|   |   |   +---will_2019.png
+|   |   |   +---will_2020.png
+|   |   |   +---will_2021.png
+|   |   |   +---will_2022.png
+|   |   |   +---will_2023.png
+|   |   |   +---will_2024.png
+|   |   |   \---will_2025.png
+|   |   +---cody.PNG
+|   |   +---crosbystudios.jpg
+|   |   +---moorbius.jpg
+|   |   \---temp.png
+|   +---index.html
+|   +---ownerscript.js
+|   \---ownerstyle.css
++---vault
+|   +---archive
+|   |   +---2012
+|   |   |   +---artwork
+|   |   |   |   \---.gitkeep
+|   |   |   +---replay
+|   |   |   |   \---sw.js
+|   |   |   \---2012.html
+|   |   +---artwork
+|   |   |   +---images
+|   |   |   |   \---2012.png
+|   |   |   +---archive-icon-2012.png
+|   |   |   +---archive-icon-2013.png
+|   |   |   +---archive-icon-2014.png
+|   |   |   +---archive-icon-2015.png
+|   |   |   +---archive-icon-2016.png
+|   |   |   +---archive-icon-2017.png
+|   |   |   +---archive-icon-2018.png
+|   |   |   +---archive-icon-2019.png
+|   |   |   +---archive-icon-2020.png
+|   |   |   +---archive-icon-2021.png
+|   |   |   +---archive-icon-2022.png
+|   |   |   +---archive-icon-2023.png
+|   |   |   +---archive-icon-2024.png
+|   |   |   \---archive-icon-2025.png
+|   |   +---replay
+|   |   |   \---sw.js
+|   |   +---2012.html
+|   |   +---2013.html
+|   |   +---2014.html
+|   |   +---2015.html
+|   |   +---2016.html
+|   |   +---2017.html
+|   |   +---2018.html
+|   |   +---2019.html
+|   |   +---2020.html
+|   |   +---2021.html
+|   |   +---2022.html
+|   |   +---2023.html
+|   |   +---2024.html
+|   |   +---2025.html
+|   |   +---archive.css
+|   |   +---hide-chrome.txt
+|   |   +---index.html
+|   |   \---OLD2013.html
+|   +---artwork
+|   |   \---.gitkeep
+|   +---bowls
+|   |   +---artwork
+|   |   |   +---1_2024.png
+|   |   |   +---1_2025.png
+|   |   |   +---11_2024.png
+|   |   |   +---11_2025.png
+|   |   |   +---3_2025.png
+|   |   |   +---5_2024.png
+|   |   |   +---5_2025.png
+|   |   |   +---7_2024.png
+|   |   |   +---7_2025.png
+|   |   |   +---9_2024.png
+|   |   |   +---9_2025.png
+|   |   |   +---COSF1_2024.png
+|   |   |   +---COSF1_2025.png
+|   |   |   +---COSF2_2024.png
+|   |   |   +---COSF2_2025.png
+|   |   |   +---inseasontournament_2024.png
+|   |   |   +---inseasontournament_2025.png
+|   |   |   +---logo.jpg
+|   |   |   +---POSF1_2024.png
+|   |   |   +---POSF1_2025.png
+|   |   |   +---POSF2_2024.png
+|   |   |   +---POSF2_2025.png
+|   |   |   +---PQF3v6_2024.png
+|   |   |   +---PQF3v6_2025.png
+|   |   |   +---PQF4v5_2024.png
+|   |   |   +---PQF4v5_2025.png
+|   |   |   \---probowl_2025.png
+|   |   +---bowls.css
+|   |   +---bowls.js
+|   |   +---index.html
+|   |   \---nnstyles.css
+|   +---brackets
+|   |   +---artwork
+|   |   |   +---2024
+|   |   |   |   +---CS1.png
+|   |   |   |   +---CS2.png
+|   |   |   |   +---F1.png
+|   |   |   |   +---F11.png
+|   |   |   |   +---F3.png
+|   |   |   |   +---F5.png
+|   |   |   |   +---F7.png
+|   |   |   |   +---F9.png
+|   |   |   |   +---GP.jpg
+|   |   |   |   +---PS1.png
+|   |   |   |   \---PS2.png
+|   |   |   +---2025
+|   |   |   |   +---c6.PNG
+|   |   |   |   +---CS1.png
+|   |   |   |   +---CS2.png
+|   |   |   |   +---F1.png
+|   |   |   |   +---F11.png
+|   |   |   |   +---F3.png
+|   |   |   |   +---F5.png
+|   |   |   |   +---F7.png
+|   |   |   |   +---F9.png
+|   |   |   |   +---FS5_Logo_1-No background.png.jpg
+|   |   |   |   +---p4.PNG
+|   |   |   |   +---p5.png
+|   |   |   |   +---PQ1.png
+|   |   |   |   +---PQ2.png
+|   |   |   |   +---PS1.png
+|   |   |   |   \---PS2.png
+|   |   |   +---GP.jpg
+|   |   |   +---logo.png
+|   |   |   \---PQ1_2025.png
+|   |   +---help
+|   |   |   +---final_year_code
+|   |   |   |   +---2012.txt
+|   |   |   |   +---2013.txt
+|   |   |   |   +---2014.txt
+|   |   |   |   +---2015.txt
+|   |   |   |   +---2016.txt
+|   |   |   |   +---2017.txt
+|   |   |   |   +---2018.txt
+|   |   |   |   +---2019.txt
+|   |   |   |   +---2020.txt
+|   |   |   |   +---2021.txt
+|   |   |   |   +---2022.txt
+|   |   |   |   +---2023.txt
+|   |   |   |   +---2024.txt
+|   |   |   |   \---2025.txt
+|   |   |   +---2025 copy 01.txt
+|   |   |   +---2025 copy 02.txt
+|   |   |   +---2025 copy 03.txt
+|   |   |   +---2025 copy 04.txt
+|   |   |   +---2025 copy 05.txt
+|   |   |   +---ADMIN DATA.txt
+|   |   |   +---CHAT HELP.txt
+|   |   |   +---js copy 2025.txt
+|   |   |   \---MATCHUP THEME HELP.txt
+|   |   +---brackets.css
+|   |   +---brackets.js
+|   |   \---index.html
+|   +---drafts
+|   |   +---drafts.css
+|   |   +---drafts.js
+|   |   \---index.html
+|   +---probowl
+|   |   +---index.html
+|   |   +---probowl.css
+|   |   \---probowl.js
+|   +---index.html
+|   \---vault.css
++---.gitignore
++---AGENTS.md
++---common.css
++---footer-status.js
++---homepage.js
++---index.html
++---mobile-menu.js
++---styles.css
+\---supabase-config.js

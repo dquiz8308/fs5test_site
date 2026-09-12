@@ -1,0 +1,67 @@
+MATCHUP THEME HELP
+
+**************************BOWL GAME ART******************************************
+
+Use this prompt:
+
+I need a wide background image for a fantasy football matchup modal. I may either provide a reference image to adapt or describe a completely new scene.
+
+Create the artwork at 1600 × 600 px. It will be displayed using background-size: cover and will have a dark color tint/overlay applied on top, so the image should remain recognizable after being darkened.
+
+Design requirements:
+
+Use a wide cinematic composition.
+Do not include any words, logos, bowl names, scores, or other lettering.
+Keep the most important subject within the center 50% of the image width so it survives mobile cropping.
+Prefer placing the primary subject around the center or slightly right of center, because large white title text will cover much of the left side.
+Keep the upper-right corner relatively simple because a close button will appear there.
+Avoid placing important faces, objects, or details directly along the outer edges.
+Extend the scenery naturally across the full width so cropping does not create empty areas.
+Use clear silhouettes, moderate contrast, and recognizable shapes that remain visible beneath a dark navy or theme-colored overlay.
+Avoid an image that is already extremely dark; preserve enough midtones and highlights for the artwork to show through the tint.
+Keep the composition atmospheric and detailed, but not visually busy behind the title area.
+
+The image should function as background artwork rather than a standalone poster. The website will place the round name and bowl title over the left side in large white and gold lettering.
+
+Subject or reference: [INSERT DESCRIPTION OR ATTACH IMAGE]
+
+Generate only the finished background artwork.
+
+
+
+
+
+
+
+
+
+
+
+
+****************************COLOR THEME**************************************************************************************
+
+
+Use this prompt to help select a color theme, based off a picture provided. 
+
+
+I will provide an image representing a fantasy football bowl game. Analyze the image’s dominant colors and select a cohesive three-color theme for a website matchup modal.
+
+Choose:
+
+accent: the most distinctive highlight color for borders, stripes, and small details
+dark: a deep color suitable for headers, overlays, and white text
+soft: a light, muted color suitable for buttons, stat boxes, and backgrounds
+
+Keep the colors readable, visually balanced, and clearly connected to the image. Avoid overly bright or harsh colors. Make sure white text will have strong contrast against dark, and dark text will remain readable against soft.
+
+Return only one line in this exact JavaScript format, with no explanation:
+
+theme: {accent: "#c58a2c", dark: "#5b3418", soft: "#f2dfbd"},
+
+
+
+
+
+
+
+//COPY AND PASTE THE THEME LINE CODE UNDER BOWL GAME ART IN THE INDIVIDUAL MATCHUP IN brackets.js. 

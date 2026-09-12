@@ -1,0 +1,176 @@
+/* General Styles */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #6caddf; /* Light blue background */
+}
+
+main {
+
+}
+
+
+.welcome-banner {
+    width: 90%;
+    margin-left: 5%;
+    margin-bottom: 20px;
+}
+
+.season-logo {
+    width: 50%;
+    margin-left: 25%;
+}
+
+.titles {
+    display: flex;
+    flex-direction: column;
+    margin-left: 0%;
+    padding-top: 50px;
+}
+
+h2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 3em;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 0 5px #d6b018, 0 0 10px #d6b018, 0 0 20px #d6b018, 0 0 40px #d6b018, 0 0 80px #d6b018;
+    margin: 20px 0;
+    background-color: #0c00ba;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: -2%;
+}
+
+
+h3 {
+    padding-top: 0px;
+    margin-left: -5%;
+    margin-top: 4%
+}
+
+.fs5-logo {
+    width: 20%;
+    height: 260px;
+}
+
+.columns-container {
+    display: flex;
+    justify-content: space-between;
+    width: 90%; /* Ensure the container takes full width */
+    margin: 0 auto; /* Center the container if needed */
+    padding: 0; /* Add padding to the sides if necessary */
+    margin-bottom: 20px;
+}
+
+.column1, .column2 {
+    display: flex;
+    flex-direction: column;
+    gap: 0%;
+}
+
+.column1 {
+    margin-right: 0%; /* Optional: adjust spacing between columns */
+    width: 45%;
+    margin-top: 0%;
+    gap: 25px;
+}
+.column2 {
+    width: 45%;
+    margin-top: 0%;
+    gap: 25px;
+}
+
+
+.nextgen-logo {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+
+}
+
+.book-logo {
+    width: 100%;
+    height: auto;
+
+}
+
+.h2h-logo{
+    width: 100%;
+    height: auto;
+    margin-top: 0%;
+}
+
+
+.clickable-image {
+    position: relative;
+    display: inline-block; /* Ensure the anchor element is inline-block */
+}
+
+.clickable-image img {
+    display: block; /* Ensure the image takes the full width of the anchor */
+}
+
+.clickable-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #d6b01800; /* Start with a transparent background */
+    transition: background-color .3s ease; /* Smooth transition for the background color */
+    border-radius: 5px; /* Optional: add rounded corners */
+    z-index: 1; /* Ensure it appears over the image */
+}
+
+.clickable-image:hover::before {
+    background-color: #d6b0184d; /* Add the desired background color on hover */
+}
+
+
+
+@media (max-width: 768px) {
+
+.welcome-banner {
+    width: 95%;
+    margin-left: 2.5%;
+    margin-bottom: 20px;
+}
+
+.season-logo {
+    width: 80%;
+    margin-left: 10%;
+}
+
+.columns-container {
+    flex-direction: column;
+}
+
+.columns-container {
+    margin-bottom: 0 !important;
+    padding-bottom: 0px;
+}
+
+
+.column1 {
+    width: 100%;
+    margin-left: 0%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.column2 {
+    width: 100%;
+    margin-left: 0%;
+}
+
+main {
+    padding: 10px 0;
+    min-height: 130vh !important;
+}
+
+    
+}
+

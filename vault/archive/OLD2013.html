@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Season 2013</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/replaywebpage@2.4.0/ui.js"></script>
+
+  <style>
+    html, body { margin:0; height:100%; }
+    replay-web-page { width:100vw; height:100vh; display:block; }
+
+    /* Back link overlay */
+    .back {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 999999;
+      padding: 8px 10px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="archive.html">← Back to FastStrongFive</a>
+
+  <replay-web-page
+    embed="replayonly"
+    autoOpen="true"
+    source="wacz/2013test.wacz"
+    url="https://fantasy.nfl.com/league/864316/history/2013/standings"
+  ></replay-web-page>
+</body>
+</html>
+

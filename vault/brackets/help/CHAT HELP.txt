@@ -1,0 +1,293 @@
+   CHAT HELP
+
+
+
+Get the data from both teams. Format it like this exactly. Make each team a separate block of code in the chat. Keep the spacing of the example in front of each line. In the chat above and outside of the code, list the team name for which you're pulling.
+   
+
+
+
+
+
+
+                lineup: {
+                  starters: [
+                    {name: "Joe Burrow",position: "QB",nflTeam: "CIN",points: 5.50},
+                    {name: "De'Von Achane",position: "RB",nflTeam: "MIA",points: 18.70},
+                    {name: "Ashton Jeanty",position: "RB",nflTeam: "LV",points: 8.20},
+                    {name: "Jameson Williams",position: "WR",nflTeam: "DET",points: 26.40},
+                    {name: "George Pickens",position: "WR",nflTeam: "DAL",points: 6.30},
+                    {name: "George Kittle",position: "TE",nflTeam: "SF",points: 22.80},
+                    {name: "Kayshon Boutte",position: "WR",nflTeam: "NE",points: 4.00},
+                    {name: "Cam Little",position: "K",nflTeam: "JAX",points: 12.00},
+                    {name: "Denver Broncos",position: "DEF",nflTeam: "DEN",points: 7.00}
+                  ],
+                  bench: [
+                    {name: "Jerry Jeudy",position: "WR",nflTeam: "CLE",points: 4.20},
+                    {name: "Kyle Pitts",position: "TE",nflTeam: "ATL",points: 45.60},
+                    {name: "Alec Pierce",position: "WR",nflTeam: "IND",points: 2.60},
+                    {name: "Garrett Wilson",position: "WR",nflTeam: "NYJ",points: 0.00},
+                    {name: "Rachaad White",position: "RB",nflTeam: "TB",points: 3.60},
+                    {name: "Zach Charbonnet",position: "RB",nflTeam: "SEA",points: 3.10},
+                  ]
+                }
+
+
+
+
+
+
+
+
+
+
+LINKS
+
+
+2022 1 
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=12&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D4%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=12&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D1%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=12&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D12%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=12&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D3%2526week%253D15%2Creplace
+
+2022 2 
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D5%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D1%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D2%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D3%2526week%253D16%2Creplace
+
+2022 3 
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D4%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D9%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D2%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2022/teamgamecenter?teamId=3&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2022%2Fteamgamecenter%253FteamId%253D12%2526week%253D17%2Creplace
+
+
+
+
+
+2021 1 
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=9&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D5%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=9&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D12%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=9&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D9%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=9&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D2%2526week%253D15%2Creplace
+
+2021 2
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=2&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D4%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=2&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D13%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=2&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D7%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=2&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D1%2526week%253D16%2Creplace
+
+2021 3 
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D8%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D4%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D9%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D7%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2021/teamgamecenter?teamId=1&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2021%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+
+
+
+
+
+2020 1 
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=7&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D13%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=7&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D6%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=7&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D7%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=7&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D1%2526week%253D14%2Creplace
+
+2020 2 
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D9%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D2%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D10%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D1%2526week%253D15%2Creplace
+
+2020 3 
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D13%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D9%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D12%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D5%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D10%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2020/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2020%2Fteamgamecenter%253FteamId%253D7%2526week%253D16%2Creplace
+
+
+
+
+
+
+2019 1 
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=3&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D6%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=3&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D13%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=3&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D3%2526week%253D14%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=3&week=14#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D7%2526week%253D14%2Creplace
+
+2019 2 
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D8%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D13%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D4%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D7%2526week%253D15%2Creplace
+
+2019 3 
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D6%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D8%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D12%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D4%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D3%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2019/teamgamecenter?teamId=7&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2019%2Fteamgamecenter%253FteamId%253D10%2526week%253D16%2Creplace
+
+
+
+
+
+2018 1 
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=13&week=15
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=13&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D12%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=13&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D10%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=13&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D10%2526week%253D15%2Creplace
+
+2018 2 
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=6&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D8%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=6&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D9%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=6&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D2%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=6&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D4%2526week%253D16%2Creplace
+
+2018 3
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D1%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D8%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D2%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2018/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2018%2Fteamgamecenter%253FteamId%253D13%2526week%253D17%2Creplace
+
+
+
+
+
+2017 1
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=10&week=15
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=10&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D9%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=10&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D3%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=10&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D8%2526week%253D15%2Creplace
+
+2017 2
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=8&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D11%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=8&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D8%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=8&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D2%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=8&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D4%2526week%253D16%2Creplace
+
+2017 3
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D11%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D3%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D12%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D2%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2017/teamgamecenter?teamId=4&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2017%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+
+
+
+
+2016 1
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=8&week=15
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=8&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D2%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=8&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D4%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=8&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D10%2526week%253D15%2Creplace
+
+2016 2
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D12%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D10%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D5%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D5%2526week%253D16%2Creplace
+
+2016 1
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D4%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D12%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D11%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D8%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2016/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2016%2Fteamgamecenter%253FteamId%253D7%2526week%253D17%2Creplace
+
+
+
+
+
+2015 1
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D5%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D7%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D6%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D9%2526week%253D15%2Creplace
+
+2015 2
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=9&week=16
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=9&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D4%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=9&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D7%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=9&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D8%2526week%253D16%2Creplace
+
+2015 3
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D11%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D4%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D8%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D3%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2015/teamgamecenter?teamId=8&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2015%2Fteamgamecenter%253FteamId%253D6%2526week%253D17%2Creplace
+
+
+
+
+2014 1
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=6&week=15
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D4%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D3%2526week%253D15%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=6&week=15#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D1%2526week%253D15%2Creplace
+
+2014 2
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D12%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D1%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D5%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=1&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D2%2526week%253D16%2Creplace
+
+(***2014 3 F***)
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D7%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D12%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D3%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2014/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2014%2Fteamgamecenter%253FteamId%253D6%2526week%253D17%2Creplace
+
+
+
+
+(***2013 1 SF***) New year, new rankings. take your time. 
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=5&week=16
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=5&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D3%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=5&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D9%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=5&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D12%2526week%253D16%2Creplace
+
+(***2013 2 F***)
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=12&week=17
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=12&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D9%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=12&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D8%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2013/teamgamecenter?teamId=12&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2013%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+
+
+
+
+
+(***2012 1 SF***) New year, new rankings. take your time. 
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=10&week=16
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D6%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D3%2526week%253D16%2Creplace
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=10&week=16#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D2%2526week%253D16%2Creplace
+
+(***2012 2 F***)
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=2&week=17
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D10%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D5%2526week%253D17%2Creplace
+https://fantasy.nfl.com/league/864316/history/2012/teamgamecenter?teamId=2&week=17#teamMatchupFull=teamMatchupFull%2C%2Fleague%2F864316%2Fhistory%2F2012%2Fteamgamecenter%253FteamId%253D7%2526week%253D17%2Creplace
+
+
+
+
+
+

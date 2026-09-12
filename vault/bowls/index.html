@@ -1,0 +1,1875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FastStrongFive Fantasy Football</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../common.css">
+    <link rel="stylesheet" href="bowls.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="website-title">Bowl Games</h1>
+<button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </header>
+<nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
+        <div class="site-nav__brand">
+            <img src="../../artwork/logo.png" alt="FastStrongFive">
+        </div>
+        <div class="container site-nav__container">
+            <ul class="site-nav__list">
+                <li class="site-nav__item"><a class="site-nav__link" href="../../index.html"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../../owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../../h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
+                <li class="site-nav__item site-nav__item--has-submenu">
+                    <div class="site-nav__category-row">
+                        <a class="site-nav__link" href="../../nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
+                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="nextgen-submenu">
+                            <span class="site-nav__disclosure-label">Toggle NextGenStats submenu</span>
+                            <span class="site-nav__chevron" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <ul class="site-nav__submenu" id="nextgen-submenu">
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../nextgenstats/currentyear/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--calendar" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path class="site-nav__icon-accent" d="M4 9h16M8 3v4M16 3v4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg><span>2026 Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../nextgenstats/singlegame/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--football" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 18c-2-4 1-10 6-13s9-2 8 2c1 4-2 9-7 12s-9 3-7-1Z"/><path class="site-nav__icon-accent" d="m9 10 6 4M11 9l-1 2M13 11l-1 2M15 13l-1 2"/></svg><span>Single Game Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../nextgenstats/alltime/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--clock" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="site-nav__icon-accent" d="M12 7v5l3.5 2M8 3.8 6.5 2M16 3.8 17.5 2"/></svg><span>All-Time Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../nextgenstats/seasonrecords/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--season" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M5 10h14"/><path class="site-nav__icon-accent" d="m12 12.5.8 1.7 1.8.2-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.2z"/></svg><span>Season Records</span></a></li>
+                    </ul>
+                </li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../../fs5book/index.html"><svg class="site-nav__icon site-nav__icon--book" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5c3.2-1 5.8-.5 8 1.5v13c-2.2-2-4.8-2.5-8-1.5z"/><path d="M20 5.5c-3.2-1-5.8-.5-8 1.5v13c2.2-2 4.8-2.5 8-1.5z"/><path class="site-nav__icon-accent" d="M12 7v13"/></svg><span>FS5 SportsBook</span></a></li>
+                <li class="site-nav__item site-nav__item--has-submenu is-section-active">
+                    <div class="site-nav__category-row">
+                        <a class="site-nav__link is-section-active" href="../../vault/index.html"><svg class="site-nav__icon site-nav__icon--vault" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><rect class="site-nav__icon-accent" x="8.5" y="11" width="7" height="5" rx="1"/><path class="site-nav__icon-accent" d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Vault</span></a>
+                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="vault-submenu">
+                            <span class="site-nav__disclosure-label">Toggle Vault submenu</span>
+                            <span class="site-nav__chevron" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <ul class="site-nav__submenu" id="vault-submenu">
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../vault/archive/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--archive" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path class="site-nav__icon-accent" d="M4 5h16v4H4z"/><path d="M6 9v11h12V9M9 13h6"/></svg><span>Archive</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../vault/brackets/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--brackets" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM5 15h4v4H5zM15 10h4v4h-4zM9 7h3v5h3M9 17h3v-5"/><circle class="site-nav__icon-accent" cx="17" cy="12" r="1"/></svg><span>Brackets</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link is-active" href="../../vault/bowls/index.html" aria-current="page"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--bowl" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h14v3c0 4-2.5 7-7 8-4.5-1-7-4-7-8zM8 20h8M12 16v4"/><path class="site-nav__icon-accent" d="M5 7H2c0 3 1.5 5 4 5M19 7h3c0 3-1.5 5-4 5"/></svg><span>Bowl Games</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../vault/probowl/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--star" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/><path class="site-nav__icon-accent" d="m12 7 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Pro Bowl</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../../vault/drafts/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--drafts" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M9.33 5v14M14.67 5v14M4 9.67h16M4 14.33h16"/><path class="site-nav__icon-accent" d="M4 5h5.33v4.67H4zM9.33 9.67h5.34v4.66H9.33zM14.67 14.33H20V19h-5.33z"/></svg><span>Drafts</span></a></li>
+                    </ul>
+                </li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../../divisions/index.html"><svg class="site-nav__icon site-nav__icon--divisions" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect class="site-nav__icon-accent" x="14" y="14" width="6" height="6" rx="1"/></svg><span>Divisions</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../../hallofchampions/index.html"><svg class="site-nav__icon site-nav__icon--hall" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7z"/><path d="M8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/><path class="site-nav__icon-accent" d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span>Hall of Champions</span></a></li>
+            </ul>
+        </div>
+    </nav>
+<main>
+<div class="bowl-page">
+  <section class="bowl-intro" aria-labelledby="bowl-archive-title">
+    <div class="bowl-intro__copy">
+      <p class="bowl-intro__eyebrow">FASTSTRONGFIVE VAULT</p>
+      <h1 id="bowl-archive-title" class="bowl-intro__title">Bowl Archive</h1>
+      <p class="bowl-page__description">
+        Explore the history and ownership of every FS5 bowl game.
+      </p>
+    </div>
+  </section>
+
+  <div class="bowl-accordion" data-bowl-accordion>
+
+
+
+
+ <!-- ======================================================
+         MAIN CARD 0 (1st PLACE)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-first"
+        aria-expanded="false"
+        aria-controls="bowl-panel-first"
+      >
+        <span class="bowl-trigger__title">1st Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-first"
+        role="region"
+        aria-labelledby="bowl-trigger-first"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #173f73;
+                --card-text: #ffffff;
+                --card-accent: #ff9a2f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/1_2025.png"
+                  alt="Custom artwork for the 2025 first place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The City of Homes Bowl</h2>
+                  <p class="season-card__description">Welcome Home. The winner takes all League prizes, as well as a custom championship ring.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">The Rome Man Empire</span>
+                    </div>
+
+                    <span class="team__score">143.86</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Certified Pipers Association</span>
+                    <span class="team__score">103.50</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Mike. Valued at $430.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #173f73;
+                --card-text: #ffffff;
+                --card-accent: #ff9a2f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/1_2024.png"
+                  alt="Custom artwork for the 2024 first place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The City of Homes Bowl</h2>
+                  <p class="season-card__description">Welcome Home. The winner takes all League prizes, as well as a custom championship ring.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">COUNT DRAFTULA</span>
+                    </div>
+
+                    <span class="team__score">154.96</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Pete and His Dawgs</span>
+                    <span class="team__score">134.28</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Mike. Valued at $215.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- ======================================================
+         MAIN CARD 1 (3rd PLACE)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-third"
+        aria-expanded="false"
+        aria-controls="bowl-panel-third"
+      >
+        <span class="bowl-trigger__title">3rd Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-third"
+        role="region"
+        aria-labelledby="bowl-trigger-third"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #8a5a2b;
+                --card-text: #fffaf2;
+                --card-accent: #f2e6d3;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/3_2025.png"
+                  alt="Custom artwork for the 2025 third place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Bronze Chair Bowl</h2>
+                  <p class="season-card__description">Have you ever wanted to be a bronze chair? Winner recieves a bronze chair trophy.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Pete and his Dirty Dawgs</span>
+                    </div>
+
+                    <span class="team__score">137.18</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">The Brown Mahomos</span>
+                    <span class="team__score">92.12</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Ethan. Valued at $60.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #8a5a2b;
+                --card-text: #fffaf2;
+                --card-accent: #f2e6d3;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/3_2025.png"
+                  alt="Custom artwork for the 2024 third place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Bronze Chair Bowl</h2>
+                  <p class="season-card__description">Have you ever wanted to be a bronze chair? Winner receives a bronze chair trophy</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Armory Road Trucks</span>
+                    </div>
+
+                    <span class="team__score">178.18</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Raven Bros Circus</span>
+                    <span class="team__score">109.42</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Mike, subleased to Ethan. Valued at $60.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 2 - 5TH PLACE
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-fifth"
+        aria-expanded="false"
+        aria-controls="bowl-panel-fifth"
+      >
+        <span class="bowl-trigger__title">5th Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-fifth"
+        role="region"
+        aria-labelledby="bowl-trigger-fifth"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #1f2b46;
+                --card-text: #f4eee2;
+                --card-accent: #d99a58;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/5_2025.png"
+                  alt="Custom artwork for the 2025 fifth place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Crosby Studios Bowl</h2>
+                  <p class="season-card__description">Sponsored by the movie studio empire. The winner receives a movie gift card equal to their fantasy score, and memorabilia from the bowl MVP</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">FS5 PENITENTIARY</span>
+                    </div>
+
+                    <span class="team__score">103.88</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Georgassic Park</span>
+                    <span class="team__score">84.00</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by David. Valued at $100.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #1f2b46;
+                --card-text: #f4eee2;
+                --card-accent: #d99a58;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/5_2024.png"
+                  alt="Custom artwork for the 2024 fifth place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Crosby Studios Bowl</h2>
+                  <p class="season-card__description">Sponsored by the movie studio empire. The winner receives a movie gift card equal to their fantasy score, and memorabilia from the bowl MVP</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Aubrey Road</span>
+                    </div>
+
+                    <span class="team__score">134.82</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">BPT-MPB</span>
+                    <span class="team__score">93.78</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by David. Valued at $100.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 3 - 7TH PLACE
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-seventh"
+        aria-expanded="false"
+        aria-controls="bowl-panel-seventh"
+      >
+        <span class="bowl-trigger__title">7th Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-seventh"
+        role="region"
+        aria-labelledby="bowl-trigger-seventh"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #4a3324;
+                --card-text: #fff1d2;
+                --card-accent: #c98a3d;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/7_2025.png"
+                  alt="Custom artwork for the 2025 seventh place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">Brycen Shut the Fuck Up Bowl</h2>
+                  <p class="season-card__description">We all agree. Someone has to say it. Winner recieves ear plugs, duct tape, and a ball gag.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Gallon of Allen</span>
+                    </div>
+
+                    <span class="team__score">116.78</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Im So Brocked Up Right Now</span>
+                    <span class="team__score">111.32</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Chris. Valued at $90.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #17212a;
+                --card-text: #ffffff;
+                --card-accent: #d08a35;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/7_2024.png"
+                  alt="Custom artwork for the 2024 seventh place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The EDGE Bowl</h2>
+                  <p class="season-card__description">You’ve been close all season long. Time to let loose. Winner recieves a box of participation trophies.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">JMFA The Empire Hitsticks Back</span>
+                    </div>
+
+                    <span class="team__score">145.82</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">The Stroud Boys</span>
+                    <span class="team__score">94.40</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Chris. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+     <!-- ======================================================
+         MAIN CARD 4 - 9TH PLACE GAME
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-fourth"
+        aria-expanded="false"
+        aria-controls="bowl-panel-fourth"
+      >
+        <span class="bowl-trigger__title">9th Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-fourth"
+        role="region"
+        aria-labelledby="bowl-trigger-fourth"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #f1dfbd;
+                --card-text: #18324a;
+                --card-accent: #5f8f2f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/9_2025.png"
+                  alt="Custom artwork for the 2025 third place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Pierogi Bowl</h2>
+                  <p class="season-card__description">Hope you love pierogis! Winner receives the biggest bag of pierogi’s that can be found</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Armory Road Trucks</span>
+                    </div>
+
+                    <span class="team__score">113.86</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Merry Christmas</span>
+                    <span class="team__score">79.74</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Jordan. Valued at $110.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #f1dfbd;
+                --card-text: #18324a;
+                --card-accent: #5f8f2f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/9_2024.png"
+                  alt="Custom artwork for the 2024 third place bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Pierogi Bowl</h2>
+                  <p class="season-card__description">Hope you love pierogis! Winner receives the biggest bag of pierogi’s that can be found</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Atlanta Nitro Hawgs</span>
+                    </div>
+
+                    <span class="team__score">154.24</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Talladerrick Nights</span>
+                    <span class="team__score">123.58</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Jordan. Valued at $40.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 5 - PO QF 1 (4v5)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-five"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-five"
+      >
+        <span class="bowl-trigger__title">Playoff Quarterfinal (4 v. 5)</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-five"
+        role="region"
+        aria-labelledby="bowl-trigger-card-five"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #4a4b35;
+                --card-text: #f2f0e8;
+                --card-accent: #d8843f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/PQF4v5_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Battle of the Bulge</h2>
+                  <p class="season-card__description">The grittiest fight of your life. Winner receives custom bowl game dog tags. Loser will be asked nicely by the owner to write a surrender letter.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Pete and His Dirty Dawgs</span>
+                    </div>
+
+                    <span class="team__score">127.64</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Georgassic Park</span>
+                    <span class="team__score">110.90</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Cody. Valued at $30.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #4a4b35;
+                --card-text: #f2f0e8;
+                --card-accent: #d8843f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/PQF4v5_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Battle of the Bulge</h2>
+                  <p class="season-card__description">The grittiest fight of your life. Winner receives custom bowl game dog tags. Loser will be asked nicely by the owner to write a surrender letter.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Armory Road Trucks</span>
+                    </div>
+
+                    <span class="team__score">172.04</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">BPT-MPB</span>
+                    <span class="team__score">154.68</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Cody. Valued at $30.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 6 - PO QF #2 (3v6)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-six"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-six"
+      >
+        <span class="bowl-trigger__title">Playoff Quarterfinal (3 v. 6)</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-six"
+        role="region"
+        aria-labelledby="bowl-trigger-card-six"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #3a1514;
+                --card-text: #f3eadf;
+                --card-accent: #8a8a3f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/PQF3v6_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Bloodbath Bowl</h2>
+                  <p class="season-card__description">The most BRUTAL game of all time. Winner receives a t-shirt that is savagely brutal.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">The Brown Mahomos</span>
+                    </div>
+
+                    <span class="team__score">124.76</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">FS5 PENITENTIARY</span>
+                    <span class="team__score">123.70</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Keith. Valued at $30.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #3a1514;
+                --card-text: #f3eadf;
+                --card-accent: #8a8a3f;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/PQF3v6_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Bloodbath Bowl</h2>
+                  <p class="season-card__description">The most BRUTAL game of all time. Winner receives a t-shirt that is savagely brutal.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Pete and His Dawgs</span>
+                    </div>
+
+                    <span class="team__score">137.48</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Aubrey Road</span>
+                    <span class="team__score">101.56</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Keith. Valued at $30.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- ======================================================
+         MAIN CARD 7 - PO SEMI 1 (1 seed)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-seven"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-seven"
+      >
+        <span class="bowl-trigger__title">Playoff Semifinal (#1 seed)</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-seven"
+        role="region"
+        aria-labelledby="bowl-trigger-card-seven"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #5f5aa8;
+                --card-text: #fff4e6;
+                --card-accent: #f06ab3;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/POSF1_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">Rick Astley's Never Gonna Give You Up Domination of the Mind Bowl (R.A.N.D.O.M)</h2>
+                  <p class="season-card__description">Winner receives a personalized mystery box. Loser receives a Rick Astley graphic tee.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">The Rome Man Empire</span>
+                    </div>
+
+                    <span class="team__score">141.40</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Pete and his Dirty Dawgs</span>
+                    <span class="team__score">138.18</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Jordan/Keith. Valued at $60.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #5f5aa8;
+                --card-text: #fff4e6;
+                --card-accent: #f06ab3;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/POSF1_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">Rick Astley's Never Gonna Give You Up Domination of the Mind Bowl (R.A.N.D.O.M)</h2>
+                  <p class="season-card__description">Winner receives a personalized mystery box. Loser receives a Rick Astley graphic tee.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">COUNT DRAFTULA</span>
+                    </div>
+
+                    <span class="team__score">143.02</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Armory Road Trucks</span>
+                    <span class="team__score">125.08</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Mike, subleased to Jordan. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 8 - PO SEMI (2 seed)
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-eight"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-eight"
+      >
+        <span class="bowl-trigger__title">Playoff Semifinal (#2 seed)</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-eight"
+        role="region"
+        aria-labelledby="bowl-trigger-card-eight"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #20262b;
+                --card-text: #f5f1e8;
+                --card-accent: #b78b46;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/POSF2_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Jordan Lynch Super Bowl</h2>
+                  <p class="season-card__description">You win by losing. If you win this game, you’re destined to lose in the biggest game of your life.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Certified Pipers Association</span>
+                    </div>
+
+                    <span class="team__score">150.50</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">The Brown Mahomos</span>
+                    <span class="team__score">93.44</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Bailey/Max. Valued at $300.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #20262b;
+                --card-text: #f5f1e8;
+                --card-accent: #b78b46;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/POSF2_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Jordan Lynch Super Bowl</h2>
+                  <p class="season-card__description">You win by losing. If you win this game, you’re destined to lose in the biggest game of your life.</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Pete and His Dawgs</span>
+                    </div>
+
+                    <span class="team__score">150.32</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Raven Bros Circus</span>
+                    <span class="team__score">139.78</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Bailey/Max. Valued at $80.</p>
+                </div>
+              </div>
+            </article>>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 9 - CON Semi 1
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-nine"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-nine"
+      >
+        <span class="bowl-trigger__title">Consolation Semifinal (#1 seed) </span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-nine"
+        role="region"
+        aria-labelledby="bowl-trigger-card-nine"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #b92f1f;
+                --card-text: #fff4df;
+                --card-accent: #f2b632;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/COSF1_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">Totino’s Pizza Roll Bowl</h2>
+                  <p class="season-card__description">The hottest game on your tongue. Winner receives a bag of Totino’s Pizza Rolls</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Im So Brocked Up Right Now</span>
+                    </div>
+
+                    <span class="team__score">136.20</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Merry Christmas</span>
+                    <span class="team__score">84.42</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Matt. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #b92f1f;
+                --card-text: #fff4df;
+                --card-accent: #f2b632;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/COSF1_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">Totino’s Pizza Roll Bowl</h2>
+                  <p class="season-card__description">The hottest game on your tongue. Winner receives a bag of Totino’s Pizza Rolls</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">The Stroud Boys</span>
+                    </div>
+
+                    <span class="team__score">129.56</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Talladerrick Nights</span>
+                    <span class="team__score">108.74</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Matt. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 10 - CON Semi 2
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-card-ten"
+        aria-expanded="false"
+        aria-controls="bowl-panel-card-ten"
+      >
+        <span class="bowl-trigger__title">Consolation Semifinal (#2 seed)</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-card-ten"
+        role="region"
+        aria-labelledby="bowl-trigger-card-ten"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #351657;
+                --card-text: #fff8ff;
+                --card-accent: #e64dd5;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/COSF2_2025.png"
+                  alt="Custom artwork for the 2025 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The Disco Feeler Bowl</h2>
+                  <p class="season-card__description">You know you want to feel them. Winner receives two disco balls</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">Gallon of Allen</span>
+                    </div>
+
+                    <span class="team__score">98.30</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Armory Road Trucks</span>
+                    <span class="team__score">62.78</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Max. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2024 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #351657;
+                --card-text: #fff8ff;
+                --card-accent: #e64dd5;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/COSF2_2024.png"
+                  alt="Custom artwork for the 2024 bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The Disco Feeler Bowl</h2>
+                  <p class="season-card__description">You know you want to feel them. Winner receives two disco balls</p>
+                </div>
+
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+                      <span class="team__name">JMFA The Empire Hitsticks Back</span>
+                    </div>
+
+                    <span class="team__score">135.08</span>
+                  </div>
+
+                  <div class="matchup__versus">VS</div>
+
+                  <div class="team">
+                    <span class="team__name">Atlanta Nitro Hawgs</span>
+                    <span class="team__score">118.46</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Owned by Max. Valued at $50.</p>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- ======================================================
+         11TH PLACE GAME
+    ======================================================= -->
+    <section class="bowl-section">
+      <button class="bowl-trigger" type="button" id="bowl-trigger-eleventh" aria-expanded="false" aria-controls="bowl-panel-eleventh">
+        <span class="bowl-trigger__title">11th Place Game</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+      <div class="bowl-panel" id="bowl-panel-eleventh" role="region" aria-labelledby="bowl-trigger-eleventh" aria-hidden="true">
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+            <article class="season-card" style="--card-bg: #252a2d; --card-text: #f4f0e6; --card-accent: #a8864b;">
+              <div class="season-card__artwork">
+                <img src="artwork/11_2025.png" alt="Custom artwork for the 2025 eleventh place bowl" loading="lazy">
+              </div>
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">The MR Memorial Bowl</h2>
+                  <p class="season-card__description">Don’t be the absolute worst.</p>
+                </div>
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge"><span aria-hidden="true">★</span> Winner</span>
+                      <span class="team__name">Atlanta Nitro Hawgs</span>
+                    </div>
+                    <span class="team__score">117.42</span>
+                  </div>
+                  <div class="matchup__versus">VS</div>
+                  <div class="team">
+                    <span class="team__name">Rough Draft</span>
+                    <span class="team__score">102.00</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Not owned or valued.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="season-card" style="--card-bg: #252a2d; --card-text: #f4f0e6; --card-accent: #a8864b;">
+              <div class="season-card__artwork">
+                <img src="artwork/11_2024.png" alt="Custom artwork for the 2024 eleventh place bowl" loading="lazy">
+              </div>
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The MR Memorial Bowl</h2>
+                  <p class="season-card__description">Don’t be the absolute worst.</p>
+                </div>
+                <div class="matchup">
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge"><span aria-hidden="true">★</span> Winner</span>
+                      <span class="team__name">Mikes Financial Advisor</span>
+                    </div>
+                    <span class="team__score">129.68</span>
+                  </div>
+                  <div class="matchup__versus">VS</div>
+                  <div class="team">
+                    <span class="team__name">The Home Deebo</span>
+                    <span class="team__score">81.36</span>
+                  </div>
+                  <p class="season-card__description season-card__footer">Not owned or valued.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ======================================================
+         MAIN CARD 11 - IN-SEASON TOURNAMENT
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-inseason-tourney"
+        aria-expanded="false"
+        aria-controls="bowl-panel-inseason-tourney"
+      >
+        <span class="bowl-trigger__title">In-Season Tournament</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-inseason-tourney"
+        role="region"
+        aria-labelledby="bowl-trigger-inseason-tourney"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card season-card--tourney"
+              style="
+                --card-bg: #1b2730;
+                --card-text: #f7efe8;
+                --card-accent: #e07b38;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/inseasontournament_2025.png"
+                  alt="Custom artwork for the 2025 in-season tournament"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">3 Pump Championship</h2>
+                  <p class="season-card__description">
+                    You just couldn’t last long.
+                  </p>
+                </div>
+
+                <div class="tourney-list">
+
+                  <!-- Final Week -->
+                  <section class="tourney-stage tourney-stage--final">
+                    <h3 class="tourney-stage__title">Final Week</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team tourney-team--winner">
+                        <span class="winner-badge">
+                          <span aria-hidden="true">★</span>
+                          Winner
+                        </span>
+
+                        <span>Will (143.36)</span>
+                      </div>
+
+                      <div class="tourney-team">David (118.74) </div>
+                      <div class="tourney-team">Matthew (108.94)</div>
+                      <div class="tourney-team">Chris (101.44)</div>
+                    </div>
+                  </section>
+
+                  <!-- Week 2 -->
+                  <section class="tourney-stage">
+                    <h3 class="tourney-stage__title">Week 2 Eliminated</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team">Max (138.10)</div>
+                      <div class="tourney-team">Jordan (123.12)</div>
+                      <div class="tourney-team">Brycen (109.78)</div>
+                      <div class="tourney-team">Ethan (109.06)</div>
+                    </div>
+                  </section>
+
+                  <!-- Week 1 -->
+                  <section class="tourney-stage">
+                    <h3 class="tourney-stage__title">Week 1 Eliminated</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team">Bailey (97.52)</div>
+                      <div class="tourney-team">Cody (98.42)</div>
+                      <div class="tourney-team">Keith (94.46)</div>
+                      <div class="tourney-team">Mike (76.94)</div>
+                    </div>
+                  </section>
+
+                </div>
+                  <p class="season-card__description season-card__footer">Owned by Max. Valued at $60.</p>
+              </div>
+            </article>
+
+
+            <!-- 2024 -->
+            <article
+              class="season-card season-card--tourney"
+              style="
+                --card-bg: #253d59;
+                --card-text: #f5f7fa;
+                --card-accent: #d8a44c;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/inseasontournament_2024.png"
+                  alt="Custom artwork for the 2024 in-season tournament"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2024</span>
+                  <h2 class="season-card__name">The PreJack</h2>
+                  <p class="season-card__description">
+                    You finished way too early.
+                  </p>
+                </div>
+
+                <div class="tourney-list">
+
+                  <!-- Final Week -->
+                  <section class="tourney-stage tourney-stage--final">
+                    <h3 class="tourney-stage__title">Final Week</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team tourney-team--winner">
+                        <span class="winner-badge">
+                          <span aria-hidden="true">★</span>
+                          Winner
+                        </span>
+
+                        <span>Bailey (138.38)</span>
+                      </div>
+
+                      <div class="tourney-team">Mike (136.26)</div>
+                      <div class="tourney-team">Matt (134.30)</div>
+                      <div class="tourney-team">Max (122.74)</div>
+                    </div>
+                  </section>
+
+                  <!-- Week 2 -->
+                  <section class="tourney-stage">
+                    <h3 class="tourney-stage__title">Week 2 Eliminated</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team">Chris (113.68)</div>
+                      <div class="tourney-team">Brycen (110.28)</div>
+                      <div class="tourney-team">Jordan (82.54)</div>
+                      <div class="tourney-team">Cody (74.54)</div>
+                    </div>
+                  </section>
+
+                  <!-- Week 1 -->
+                  <section class="tourney-stage">
+                    <h3 class="tourney-stage__title">Week 1 Eliminated</h3>
+
+                    <div class="tourney-stage__teams">
+                      <div class="tourney-team">Keith (100.30)</div>
+                      <div class="tourney-team">Will (95.84)</div>
+                      <div class="tourney-team">David (89.82)</div>
+                      <div class="tourney-team">Ethan (70.54)</div>
+                    </div>
+                  </section>
+                </div>
+                  <p class="season-card__description season-card__footer">Owned by Max. Valued at $60.</p>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+    <!-- ======================================================
+         MAIN CARD 12 - PRO BOWL
+    ======================================================= -->
+    <section class="bowl-section">
+      <button
+        class="bowl-trigger"
+        type="button"
+        id="bowl-trigger-pro-bowl"
+        aria-expanded="false"
+        aria-controls="bowl-panel-pro-bowl"
+      >
+        <span class="bowl-trigger__title">Pro Bowl</span>
+        <span class="bowl-trigger__icon" aria-hidden="true"></span>
+      </button>
+
+      <div
+        class="bowl-panel"
+        id="bowl-panel-pro-bowl"
+        role="region"
+        aria-labelledby="bowl-trigger-pro-bowl"
+        aria-hidden="true"
+      >
+        <div class="bowl-panel__inner">
+          <div class="season-list">
+
+            <!-- 2025 -->
+            <article
+              class="season-card"
+              style="
+                --card-bg: #3a2b22;
+                --card-text: #fff8ed;
+                --card-accent: #e29b3b;
+              "
+            >
+              <div class="season-card__artwork">
+                <img
+                  src="artwork/probowl_2025.png"
+                  alt="Custom artwork for the 2025 Pro Bowl"
+                  loading="lazy"
+                >
+              </div>
+
+              <div class="season-card__details">
+                <div class="season-card__heading">
+                  <span class="season-card__year">2025</span>
+                  <h2 class="season-card__name">Pro Bowl</h2>
+
+                  <p class="season-card__description">
+                    First *unofficial* Pro Bowl
+                  </p>
+                </div>
+
+                <div class="matchup">
+
+                  <!-- Winning Division -->
+                  <div class="team team--winner">
+                    <div class="team__identity">
+                      <span class="winner-badge">
+                        <span aria-hidden="true">★</span>
+                        Winner
+                      </span>
+
+                      <span class="team__name">Smokey Road</span>
+                    </div>
+
+                    <span class="team__score">144.98</span>
+                  </div>
+
+                  <!-- Second Division -->
+                  <div class="team">
+                    <span class="team__name">Evans</span>
+                    <span class="team__score">134.80</span>
+                  </div>
+
+                  <!-- Third Division -->
+                  <div class="team">
+                    <span class="team__name">Madras</span>
+                    <span class="team__score">126.98</span>
+                  </div>
+
+                  <p class="season-card__description season-card__footer">
+                    Not owned or valued.
+                  </p>
+
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+
+
+
+
+  </div>
+</div>
+</main>
+
+
+
+    <footer>
+        <div class="container">
+            <p><span data-footer-permanent>FastStrongFive</span><span data-footer-status aria-live="polite">Founded 2012</span></p>
+        </div>
+    </footer>
+    <script src="bowls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../supabase-config.js"></script>
+    <script src="../../footer-status.js"></script>
+    <script src="../../mobile-menu.js"></script>
+</body>
+</html>
+

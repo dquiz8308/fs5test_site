@@ -1,0 +1,477 @@
+:root {
+    --sr-bg: #050a12;
+    --sr-panel: #0c1a2a;
+    --sr-edge: rgba(126, 159, 190, 0.24);
+    --sr-navy: #123b63;
+    --sr-red: #d31d25;
+    --sr-red-soft: #aa252c;
+    --sr-text: #f4f7fa;
+    --sr-muted: #9dacba;
+    --sr-table: #f5f6f7;
+    --sr-table-alt: #edf0f2;
+    --sr-ink: #152130;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: var(--sr-bg);
+}
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+body > main {
+    position: relative;
+    isolation: isolate;
+    width: 100%;
+    max-width: none;
+    padding: 38px 24px 70px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background:
+        linear-gradient(135deg, transparent 0 48%, rgba(68, 106, 142, 0.06) 48% 49%, transparent 49% 100%),
+        radial-gradient(circle at 82% 3%, rgba(21, 69, 108, 0.42), transparent 31%),
+        linear-gradient(180deg, #091522 0%, var(--sr-bg) 100%);
+    background-size: 84px 84px, auto, auto;
+}
+
+body > main::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(115deg, rgba(211, 29, 37, 0.085), transparent 24% 76%, rgba(33, 88, 132, 0.08));
+    pointer-events: none;
+}
+
+.season-hero,
+.records-grid {
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.season-hero {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: min(100%, 1120px);
+    min-height: 190px;
+    margin-bottom: 26px;
+    padding: 20px 38px;
+    overflow: hidden;
+    border: 1px solid rgba(132, 156, 178, 0.3);
+    border-radius: 18px;
+    background:
+        linear-gradient(100deg, rgba(7, 17, 30, 0.98), rgba(14, 40, 62, 0.88) 50%, rgba(7, 17, 30, 0.98)),
+        repeating-linear-gradient(125deg, transparent 0 32px, rgba(255, 255, 255, 0.025) 32px 33px);
+    box-shadow: 0 20px 52px rgba(0, 0, 0, 0.31), inset 3px 0 var(--sr-red), inset -3px 0 var(--sr-red);
+}
+
+.season-hero::before,
+.season-hero::after {
+    content: "";
+    position: absolute;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: linear-gradient(transparent, rgba(235, 55, 62, 0.76), transparent);
+}
+
+.season-hero::before { left: 11px; }
+.season-hero::after { right: 11px; }
+
+.logo-header {
+    display: block;
+    width: min(100%, 560px);
+    max-height: 190px;
+    object-fit: contain;
+    opacity: 1;
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.38)) drop-shadow(0 0 15px rgba(190, 25, 32, 0.16));
+}
+
+.year-selection {
+    position: absolute;
+    right: 22px;
+    bottom: 18px;
+    display: grid;
+    gap: 4px;
+    width: 118px;
+}
+
+.control-label {
+    color: var(--sr-muted);
+    font-size: 0.64rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+select {
+    width: 100%;
+    min-height: 37px;
+    padding: 7px 34px 7px 11px;
+    border: 1px solid #355269;
+    border-radius: 7px;
+    color: #edf5fa;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: #102131 url('data:image/svg+xml;utf8,<svg fill="%23c1cfd9" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 9px center;
+    appearance: none;
+    cursor: pointer;
+    text-overflow: ellipsis;
+}
+
+.year-dropdown {
+    min-height: 34px;
+    border-color: rgba(222, 59, 66, 0.65);
+    color: #fff;
+    background-color: #12263a;
+    font-size: 0.78rem;
+    text-align: center;
+}
+
+select:hover { border-color: #7999b2; }
+
+select:focus-visible,
+.checkbox-position input:focus-visible + label {
+    outline: 2px solid #ef5158;
+    outline-offset: 2px;
+}
+
+select:disabled {
+    cursor: wait;
+    opacity: 0.66;
+}
+
+.records-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 24px;
+    width: min(100%, 1320px);
+    margin-bottom: 24px;
+}
+
+.row3 { margin-bottom: 0; }
+
+.finalrank,
+.finalpoints,
+.single-game,
+.position-totals,
+.highest-position,
+.nonpoint {
+    position: relative;
+    min-width: 0;
+    padding: 22px;
+    overflow: hidden;
+    border: 1px solid var(--sr-edge);
+    border-radius: 14px;
+    background: linear-gradient(155deg, rgba(16, 34, 53, 0.99), rgba(7, 19, 31, 0.99));
+    box-shadow: 0 16px 34px rgba(0, 0, 0, 0.26), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.finalrank::before,
+.finalpoints::before,
+.single-game::before,
+.position-totals::before,
+.highest-position::before,
+.nonpoint::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 2px;
+    border-radius: 14px 0 0 14px;
+    background: linear-gradient(180deg, var(--sr-red), rgba(211, 29, 37, 0.13) 34%, transparent 72%);
+}
+
+.panel-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 220px);
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+.panel-heading--static {
+    display: block;
+    min-height: 35px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    color: var(--sr-text);
+    font-size: clamp(1.2rem, 1.65vw, 1.5rem);
+    line-height: 1.15;
+}
+
+.category-control {
+    display: grid;
+    gap: 5px;
+    min-width: 0;
+}
+
+.panel-heading--totals {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.position-controls {
+    display: flex;
+    align-items: end;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.position-controls .category-control { width: 132px; }
+
+.checkbox-position {
+    display: inline-grid;
+    grid-template-columns: repeat(3, auto);
+    padding: 2px;
+    border: 1px solid rgba(88, 125, 155, 0.34);
+    border-radius: 7px;
+    background: rgba(4, 13, 23, 0.48);
+}
+
+.checkbox-position input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox-position label {
+    display: grid;
+    place-items: center;
+    min-height: 27px;
+    padding: 4px 7px;
+    border-radius: 5px;
+    color: #9eb0bd;
+    font-size: 0.63rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.checkbox-position input:checked + label {
+    color: #fff;
+    background: var(--sr-navy);
+    box-shadow: inset 0 -2px var(--sr-red);
+}
+
+.checkbox-position input:disabled + label {
+    cursor: not-allowed;
+    opacity: 0.48;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+    scrollbar-color: #557996 #0b1825;
+}
+
+table {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    overflow: hidden;
+    border-radius: 8px;
+    color: var(--sr-ink);
+    background: var(--sr-table);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.16);
+}
+
+th {
+    padding: 7px 6px;
+    border: 0;
+    border-bottom: 2px solid var(--sr-red);
+    color: #f2f7fa;
+    background: var(--sr-navy);
+    font-size: 0.71rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+}
+
+td {
+    padding: 5px 6px;
+    border: 0;
+    border-bottom: 1px solid #d8dee3;
+    color: var(--sr-ink);
+    font-size: 0.77rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+tbody tr:nth-child(even) { background: var(--sr-table-alt); }
+tbody tr:hover { background: #e1e8ed; }
+th:first-child, td:first-child { width: 48px; }
+td:nth-child(2), td:nth-child(3) { font-weight: 800; }
+
+.finalrank-table th:nth-child(3) { width: 34%; }
+.finalpoints-table th:first-child,
+.finalpoints-table td:first-child { width: 42px; }
+.highest-position-table th:last-child { width: 25%; }
+
+.table-status {
+    padding: 16px 8px;
+    color: #526879;
+    font-style: normal;
+    font-weight: 700;
+    text-align: center;
+}
+
+.table-error { color: #9d262c; }
+
+.panel-details {
+    margin: 9px 4px 0;
+    color: var(--sr-muted);
+    font-size: 0.7rem;
+    font-weight: 400;
+    line-height: 1.38;
+    text-align: left;
+}
+
+.finalpoints-details:empty { display: none; }
+
+@media (max-width: 1100px) {
+    .panel-heading:not(.panel-heading--static) {
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        gap: 9px;
+    }
+
+    .panel-heading--totals .position-controls {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 765px) {
+    body > main {
+        padding: 20px 10px 38px;
+        background-size: 64px 64px, auto, auto;
+    }
+
+    .season-hero {
+        display: grid;
+        justify-items: center;
+        min-height: 0;
+        margin-bottom: 20px;
+        padding: 13px 10px 11px;
+    }
+
+    .logo-header {
+        width: min(100%, 430px);
+        max-height: 150px;
+    }
+
+    .year-selection {
+        position: static;
+        grid-template-columns: auto 88px;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+        margin-top: 6px;
+    }
+
+    .year-dropdown { min-height: 38px; }
+
+    .records-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .row3 { margin-bottom: 0; }
+
+    .finalrank,
+    .finalpoints,
+    .single-game,
+    .position-totals,
+    .highest-position,
+    .nonpoint {
+        padding: 16px 10px;
+    }
+
+    .panel-heading,
+    .panel-heading--static {
+        min-height: 0;
+        gap: 9px;
+        margin-bottom: 11px;
+    }
+
+    .panel-heading h2 { font-size: 1.18rem; }
+    .category-control, select { width: 100%; }
+    select { min-height: 42px; }
+
+    .position-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        width: 100%;
+    }
+
+    .position-controls .category-control { width: 100%; }
+
+    .checkbox-position {
+        grid-template-columns: repeat(3, 1fr);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .checkbox-position label {
+        min-height: 32px;
+        padding-inline: 5px;
+    }
+
+    table {
+        min-width: 100%;
+        table-layout: auto;
+    }
+
+    th,
+    td {
+        padding: 6px 4px;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    th { font-size: 0.66rem; }
+    td { font-size: 0.72rem; }
+    th:first-child, td:first-child { width: 38px; }
+
+    .finalpoints-table { min-width: 540px; }
+    .single-game-table:has(th:nth-child(5)) { min-width: 500px; }
+    .highest-position-table { min-width: 430px; }
+
+    .panel-details {
+        margin-top: 8px;
+        font-size: 0.71rem;
+    }
+}
+
+@media (max-width: 390px) {
+    .checkbox-position label { font-size: 0.6rem; }
+}
