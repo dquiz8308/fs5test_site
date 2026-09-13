@@ -32,14 +32,16 @@
 
     function api(path) {
         var url = "/.netlify/functions/sleeper?source=app&path=" + encodeURIComponent(path);
-        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } }).then(function (response) {
+        var controller = new AbortController();
+        var timeout = setTimeout(function () { controller.abort(); }, 10000);
+        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" }, signal: controller.signal }).then(function (response) {
             return response.text().then(function (text) {
                 var data = null;
                 try { data = text ? JSON.parse(text) : null; } catch (e) {}
                 if (!response.ok) throw new Error((data && data.error) || ("Sleeper API returned " + response.status));
                 return data;
             });
-        });
+        }).finally(function () { clearTimeout(timeout); });
     }
 
     function optionalApi(paths) {
@@ -419,7 +421,7 @@
     function loadLiveGameClock() {
         // This request is intentionally fire-and-forget. A third-party scoreboard
         // outage must never prevent Sleeper scores from rendering.
-        return fetch("/.netlify/functions/sleeper?source=clock", {
+        return fetch("/.netlify/functions/liveclock", {
             cache: "no-store",
             headers: { "Accept": "application/json" }
         }).then(function (response) {
@@ -677,19 +679,37 @@
     async function initialize() {
         setStatus("Connecting to Sleeper...");
         try {
-            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
-            var nflState = results[0] || {};
+            // Do not let the optional schedule feed hold up the page. The three
+            // required Sleeper calls are also independently time-limited.
+            var results = await Promise.allSettled([
+                api("/state/nfl"),
+                api("/league/" + LEAGUE_ID + "/rosters"),
+                api("/league/" + LEAGUE_ID + "/users"),
+                api("/schedule/nfl/regular/2026")
+            ]);
+
+            var nflState = results[0].status === "fulfilled" ? (results[0].value || {}) : {};
+            var rosterResult = results[1].status === "fulfilled" ? results[1].value : [];
+            var usersResult = results[2].status === "fulfilled" ? results[2].value : [];
+            var scheduleResult = results[3].status === "fulfilled" ? results[3].value : [];
+
             state.currentWeek = Number(nflState.display_week || nflState.week || 1);
             state.selectedWeek = state.currentWeek;
-            state.rosters = Array.isArray(results[1]) ? results[1] : [];
-            state.users = Array.isArray(results[2]) ? results[2] : [];
-            state.schedule = Array.isArray(results[3]) ? results[3] : [];
+            state.rosters = Array.isArray(rosterResult) ? rosterResult : [];
+            state.users = Array.isArray(usersResult) ? usersResult : [];
+            state.schedule = Array.isArray(scheduleResult) ? scheduleResult : [];
+
+            if (!state.rosters.length || !state.users.length) {
+                throw new Error("Sleeper roster data did not respond within 10 seconds.");
+            }
+
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
         } catch (error) {
             console.error("FS5 Sleeper initialization failed", error);
-            weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
+            weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error");
+            setStatus("Sleeper connection error", "error");
         }
     }
 
