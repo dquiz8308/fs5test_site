@@ -8,6 +8,8 @@ exports.handler = async function (event) {
   try { path = decodeURIComponent(path); } catch (_) {}
 
   if (!path.startsWith('/')) path = '/' + path;
+  // League/stats/projections/state endpoints use the /v1 prefix. Schedule does not.
+  if (!path.startsWith('/v1/') && !path.startsWith('/schedule/')) path = '/v1' + path;
   if (!/^\/(v1\/)?[A-Za-z0-9_?=&.\-\/]+$/.test(path)) {
     return json(400, { error: 'Invalid Sleeper API path.' });
   }
