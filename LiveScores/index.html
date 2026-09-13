@@ -3,98 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#00376b">
-    <link rel="apple-touch-icon" sizes="180x180" href="../artwork/logowhite.jpg">
-    <link rel="icon" type="image/jpeg" href="../artwork/logowhite.jpg">
-    <title>Live Scores | FastStrongFive</title>
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="../common.css">
-    <link rel="stylesheet" href="./livescores.css">
+    <title>FS5 Live Scores</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/artwork/fs5-ios-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/common.css">
+    <link rel="stylesheet" href="/livescores/livescores.css">
 </head>
 <body>
-<header>
-    <div class="container">
-        <img src="../artwork/logo.png" alt="FastStrongFive Logo" class="logo" style="display:none;">
-        <h1 class="website-title">Live Scores</h1>
-        <button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
-            <span class="bar"></span><span class="bar"></span><span class="bar"></span>
-        </button>
-    </div>
-</header>
+<header><div class="container"><h1 class="website-title">Live Scores</h1><button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button></div></header>
 <nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
         <div class="site-nav__brand">
-            <img src="../artwork/logo.png" alt="FastStrongFive">
+            <img src="artwork/logo.png" alt="FastStrongFive">
         </div>
         <div class="container site-nav__container">
             <ul class="site-nav__list">
-                <li class="site-nav__item"><a class="site-nav__link" href="../index.html"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="../owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="../h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link is-active" href="index.html" aria-current="page"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link is-active" href="/" aria-current="page"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
+                
+                <li class="site-nav__item"><a class="site-nav__link is-active" aria-current="page" href="/livescores/"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
                 <li class="site-nav__item site-nav__item--has-submenu">
                     <div class="site-nav__category-row">
-                        <a class="site-nav__link" href="../nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
+                        <a class="site-nav__link" href="/nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
                         <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="nextgen-submenu">
                             <span class="site-nav__disclosure-label">Toggle NextGenStats submenu</span>
                             <span class="site-nav__chevron" aria-hidden="true"></span>
                         </button>
                     </div>
                     <ul class="site-nav__submenu" id="nextgen-submenu">
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/currentyear/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--calendar" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path class="site-nav__icon-accent" d="M4 9h16M8 3v4M16 3v4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg><span>2026 Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/singlegame/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--football" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 18c-2-4 1-10 6-13s9-2 8 2c1 4-2 9-7 12s-9 3-7-1Z"/><path class="site-nav__icon-accent" d="m9 10 6 4M11 9l-1 2M13 11l-1 2M15 13l-1 2"/></svg><span>Single Game Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/alltime/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--clock" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="site-nav__icon-accent" d="M12 7v5l3.5 2M8 3.8 6.5 2M16 3.8 17.5 2"/></svg><span>All-Time Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/seasonrecords/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--season" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M5 10h14"/><path class="site-nav__icon-accent" d="m12 12.5.8 1.7 1.8.2-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.2z"/></svg><span>Season Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/nextgenstats/currentyear/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--calendar" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path class="site-nav__icon-accent" d="M4 9h16M8 3v4M16 3v4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg><span>2026 Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/nextgenstats/singlegame/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--football" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 18c-2-4 1-10 6-13s9-2 8 2c1 4-2 9-7 12s-9 3-7-1Z"/><path class="site-nav__icon-accent" d="m9 10 6 4M11 9l-1 2M13 11l-1 2M15 13l-1 2"/></svg><span>Single Game Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/nextgenstats/alltime/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--clock" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="site-nav__icon-accent" d="M12 7v5l3.5 2M8 3.8 6.5 2M16 3.8 17.5 2"/></svg><span>All-Time Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/nextgenstats/seasonrecords/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--season" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M5 10h14"/><path class="site-nav__icon-accent" d="m12 12.5.8 1.7 1.8.2-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.2z"/></svg><span>Season Records</span></a></li>
                     </ul>
                 </li>
-                <li class="site-nav__item"><a class="site-nav__link" href="../fs5book/index.html"><svg class="site-nav__icon site-nav__icon--book" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5c3.2-1 5.8-.5 8 1.5v13c-2.2-2-4.8-2.5-8-1.5z"/><path d="M20 5.5c-3.2-1-5.8-.5-8 1.5v13c2.2-2 4.8-2.5 8-1.5z"/><path class="site-nav__icon-accent" d="M12 7v13"/></svg><span>FS5 SportsBook</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/fs5book/index.html"><svg class="site-nav__icon site-nav__icon--book" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5c3.2-1 5.8-.5 8 1.5v13c-2.2-2-4.8-2.5-8-1.5z"/><path d="M20 5.5c-3.2-1-5.8-.5-8 1.5v13c2.2-2 4.8-2.5 8-1.5z"/><path class="site-nav__icon-accent" d="M12 7v13"/></svg><span>FS5 SportsBook</span></a></li>
                 <li class="site-nav__item site-nav__item--has-submenu">
                     <div class="site-nav__category-row">
-                        <a class="site-nav__link" href="../vault/index.html"><svg class="site-nav__icon site-nav__icon--vault" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><rect class="site-nav__icon-accent" x="8.5" y="11" width="7" height="5" rx="1"/><path class="site-nav__icon-accent" d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Vault</span></a>
+                        <a class="site-nav__link" href="/vault/index.html"><svg class="site-nav__icon site-nav__icon--vault" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><rect class="site-nav__icon-accent" x="8.5" y="11" width="7" height="5" rx="1"/><path class="site-nav__icon-accent" d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Vault</span></a>
                         <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="vault-submenu">
                             <span class="site-nav__disclosure-label">Toggle Vault submenu</span>
                             <span class="site-nav__chevron" aria-hidden="true"></span>
                         </button>
                     </div>
                     <ul class="site-nav__submenu" id="vault-submenu">
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/archive/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--archive" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path class="site-nav__icon-accent" d="M4 5h16v4H4z"/><path d="M6 9v11h12V9M9 13h6"/></svg><span>Archive</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/brackets/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--brackets" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM5 15h4v4H5zM15 10h4v4h-4zM9 7h3v5h3M9 17h3v-5"/><circle class="site-nav__icon-accent" cx="17" cy="12" r="1"/></svg><span>Brackets</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/bowls/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--bowl" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h14v3c0 4-2.5 7-7 8-4.5-1-7-4-7-8zM8 20h8M12 16v4"/><path class="site-nav__icon-accent" d="M5 7H2c0 3 1.5 5 4 5M19 7h3c0 3-1.5 5-4 5"/></svg><span>Bowl Games</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/probowl/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--star" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/><path class="site-nav__icon-accent" d="m12 7 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Pro Bowl</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/drafts/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--drafts" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M9.33 5v14M14.67 5v14M4 9.67h16M4 14.33h16"/><path class="site-nav__icon-accent" d="M4 5h5.33v4.67H4zM9.33 9.67h5.34v4.66H9.33zM14.67 14.33H20V19h-5.33z"/></svg><span>Drafts</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/vault/archive/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--archive" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path class="site-nav__icon-accent" d="M4 5h16v4H4z"/><path d="M6 9v11h12V9M9 13h6"/></svg><span>Archive</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/vault/brackets/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--brackets" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM5 15h4v4H5zM15 10h4v4h-4zM9 7h3v5h3M9 17h3v-5"/><circle class="site-nav__icon-accent" cx="17" cy="12" r="1"/></svg><span>Brackets</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/vault/bowls/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--bowl" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h14v3c0 4-2.5 7-7 8-4.5-1-7-4-7-8zM8 20h8M12 16v4"/><path class="site-nav__icon-accent" d="M5 7H2c0 3 1.5 5 4 5M19 7h3c0 3-1.5 5-4 5"/></svg><span>Bowl Games</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/vault/probowl/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--star" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/><path class="site-nav__icon-accent" d="m12 7 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Pro Bowl</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="/vault/drafts/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--drafts" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M9.33 5v14M14.67 5v14M4 9.67h16M4 14.33h16"/><path class="site-nav__icon-accent" d="M4 5h5.33v4.67H4zM9.33 9.67h5.34v4.66H9.33zM14.67 14.33H20V19h-5.33z"/></svg><span>Drafts</span></a></li>
                     </ul>
                 </li>
-                <li class="site-nav__item"><a class="site-nav__link" href="../divisions/index.html"><svg class="site-nav__icon site-nav__icon--divisions" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect class="site-nav__icon-accent" x="14" y="14" width="6" height="6" rx="1"/></svg><span>Divisions</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="../hallofchampions/index.html"><svg class="site-nav__icon site-nav__icon--hall" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7z"/><path d="M8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/><path class="site-nav__icon-accent" d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span>Hall of Champions</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/divisions/index.html"><svg class="site-nav__icon site-nav__icon--divisions" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect class="site-nav__icon-accent" x="14" y="14" width="6" height="6" rx="1"/></svg><span>Divisions</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/hallofchampions/index.html"><svg class="site-nav__icon site-nav__icon--hall" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7z"/><path d="M8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/><path class="site-nav__icon-accent" d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span>Hall of Champions</span></a></li>
             </ul>
         </div>
     </nav>
 <main class="live-main">
-    <div class="live-shell">
-        <section class="live-hero">
-            <div>
-                <p class="live-kicker">FASTSTRONGFIVE • SLEEPER</p>
-                <h1>Live Scores</h1>
-                <p class="live-subtitle">Current 2026 matchups, lineups, Sleeper accounts and a live score-based win predictor.</p>
-            </div>
-            <div id="live-status" class="live-status">Connecting to Sleeper…</div>
-        </section>
-        <section class="week-toolbar" aria-label="Week controls">
-            <div class="week-control"><label for="week-select">Week</label><select id="week-select" disabled></select></div>
-            <div id="week-context" class="week-context">Loading NFL week…</div>
-            <button id="refresh-button" class="refresh-button" type="button">Refresh</button>
-        </section>
-        <section class="scoreboard">
-            <div class="section-heading">
-                <div><p id="scoreboard-kicker" class="section-kicker">2026</p><h2 id="scoreboard-heading">Live Matchups</h2></div>
-                <span id="week-badge" class="section-badge">Week —</span>
-            </div>
-            <div id="empty-state" class="empty-state" hidden>No matchup data is available for this week.</div>
-            <div id="matchup-grid" class="matchup-grid" aria-live="polite" aria-busy="true"></div>
-            <p class="source-note"><strong>Data:</strong> scores, rosters, lineups and Sleeper account details come from Sleeper's public read-only API. The FS5 predictor is an on-site estimate based on the current score margin; it is not an official Sleeper projection.</p>
-        </section>
-    </div>
+<div class="live-shell">
+<section class="live-hero">
+  <div><p class="live-kicker">FastStrongFive · 2026</p><h1>Live Scores</h1><p class="live-subtitle">Real-time FS5 matchups, lineups, player scoring, projections, power rankings, and a model-driven win probability.</p></div>
+  <div id="live-status" class="live-status">Connecting to Sleeper…</div>
+</section>
+<section class="week-toolbar">
+  <div class="week-control"><label for="week-select">Week</label><select id="week-select" disabled></select></div>
+  <div id="week-context" class="week-context">Loading league data…</div>
+  <button id="refresh-button" class="refresh-button" type="button">Refresh</button>
+</section>
+<section class="power-rankings" aria-labelledby="power-heading">
+  <div class="section-heading"><div><p class="section-kicker">FS5 analytics</p><h2 id="power-heading">Live Power Rankings</h2></div><span class="section-badge">2026</span></div>
+  <p class="analytics-note">FS5 Power Score blends 50% win rate, 30% points for, and 20% point differential. It is a transparent league-strength model, not an official Sleeper ranking.</p>
+  <div id="power-ranking-list" class="power-ranking-list"><div class="empty-state">Loading power rankings…</div></div>
+</section>
+<section class="scoreboard" aria-labelledby="scoreboard-heading">
+  <div class="section-heading"><div><p id="scoreboard-kicker" class="section-kicker">WEEK</p><h2 id="scoreboard-heading">Regular Season</h2></div><span id="week-badge" class="section-badge">Week</span></div>
+  <div id="matchup-grid" class="matchup-grid" aria-live="polite" aria-busy="true"></div>
+  <div id="empty-state" class="empty-state" hidden>No matchup data is available for this week.</div>
+  <p class="source-note"><strong>Data:</strong> Sleeper public read-only API. Current player points are calculated from Sleeper weekly stat lines using the FS5 league scoring settings; projections use Sleeper's weekly projection feed. The win model is FS5's own calculation.</p>
+</section>
+</div>
 </main>
-<script src="../mobile-menu.js"></script>
-<script src="./livescores.js"></script>
-</body>
-</html>
+<div id="player-modal" class="player-modal" hidden aria-hidden="true"><div class="player-modal__backdrop" data-close-player></div><section class="player-modal__panel" role="dialog" aria-modal="true" aria-labelledby="player-modal-name"><button class="player-modal__close" type="button" data-close-player aria-label="Close player details">×</button><div id="player-modal-content"></div></section></div>
+<footer><div class="container"><p><span data-footer-permanent>FastStrongFive</span><span data-footer-status aria-live="polite">Founded 2012</span></p></div></footer>
+<script src="/footer-status.js"></script><script src="/mobile-menu.js"></script><script src="/livescores/livescores.js"></script>
+</body></html>
