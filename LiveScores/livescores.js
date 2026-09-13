@@ -63,38 +63,24 @@
         for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
             var key = OWNER_LOGO_KEYS[i];
             for (var j = 0; j < candidates.length; j++) {
-                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return "/artwork/profile-current/" + key + ".png";
+                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return "/owners/artwork/profile-current/" + key + ".png";
             }
         }
         return "/artwork/logo.png";
     }
 
-    function customSleeperLogo(user) {
-        // Sleeper's regular user.avatar is also populated for default Sleeper avatars.
-        // The league-user metadata avatar is the field used for a custom team upload.
-        var custom = user && user.metadata && user.metadata.avatar;
-        if (!custom) return "";
-        custom = String(custom).trim();
-        if (!custom) return "";
-        if (/^https?:\/\//i.test(custom)) return custom;
-        // Handle Sleeper upload paths if returned without the full URL.
-        if (/^uploads\//i.test(custom)) return "https://sleepercdn.com/" + custom;
-        return "";
-    }
-
+    // Always use the FS5 owner artwork for team images on Live Scores.
+    // This intentionally ignores Sleeper avatars, including generic/default Sleeper logos.
     function avatarUrl(user) {
-        // Only use a Sleeper image when Sleeper explicitly gives us a custom team upload.
-        // Otherwise use the FS5 owner logo.
-        return customSleeperLogo(user) || ownerLogoUrl(user);
+        return ownerLogoUrl(user);
     }
 
     function teamImage(info, className) {
         var img = document.createElement("img");
         img.className = className || "team-avatar";
-        img.src = info && info.avatar ? info.avatar : ownerLogoUrl(info && info.user);
+        img.src = ownerLogoUrl(info && info.user);
         img.alt = ""; img.width = 48; img.height = 48;
-        img.dataset.ownerFallback = info && info.ownerLogo ? info.ownerLogo : ownerLogoUrl(info && info.user);
-        img.onerror = function () { this.onerror = null; this.src = this.dataset.ownerFallback || "/artwork/logo.png"; };
+        img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
         return img;
     }
 
