@@ -56,52 +56,82 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
-    var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
+    // FS5 owner artwork filenames. These are the actual PNG filenames in
+    // /owners/artwork/profile-current/.
+    var OWNER_ARTWORK_KEYS = [
+        "bailey","brycen","chris","cody","david","ethan","jordan",
+        "keith","matthew","max","mike","will"
+    ];
 
-    // Stable Sleeper username -> FS5 owner mapping for accounts whose Sleeper
-    // username does not match the owner artwork filename.
-    var OWNER_KEY_BY_SLEEPER_USERNAME = {
+    // Sleeper usernames that do not match the FS5 artwork filename.
+    // This is only the bootstrap mapping. Once resolved, the roster_id is
+    // stored and becomes the durable identifier for the team.
+    var OWNER_ARTWORK_BY_USERNAME = {
         "diabeastus": "will",
         "atlnitrohawgs": "cody",
-        "thejamyricals": "matt",
+        "thejamyricals": "matthew",
         "armoryroadtrucks": "mike",
         "wornoutsocks": "keith",
         "fs5chair": "ethan",
         "btb1022": "bailey"
     };
 
-    // Once the league loads, this is populated as:
-    // Sleeper roster_id -> FS5 owner artwork key.
-    // Roster IDs are the stable identifier; usernames are only used to seed
-    // the mapping when a roster is first encountered.
-    var OWNER_KEY_BY_ROSTER_ID = {};
+    var OWNER_ARTWORK_BY_ROSTER_ID = {};
+    var OWNER_ROSTER_STORAGE_KEY = "fs5_owner_artwork_by_roster_v1";
 
     function normalizeSleeperUsername(value) {
         return String(value || "").toLowerCase().replace(/^@/, "").trim();
     }
 
-    function ownerKeyForUser(user) {
-        var username = normalizeSleeperUsername(user && user.username);
-        if (OWNER_KEY_BY_SLEEPER_USERNAME[username]) return OWNER_KEY_BY_SLEEPER_USERNAME[username];
+    function loadRosterArtworkMap() {
+        try {
+            var saved = JSON.parse(localStorage.getItem(OWNER_ROSTER_STORAGE_KEY) || "{}");
+            if (saved && typeof saved === "object") OWNER_ARTWORK_BY_ROSTER_ID = saved;
+        } catch (e) {
+            OWNER_ARTWORK_BY_ROSTER_ID = {};
+        }
+    }
 
-        var display = String(user && user.display_name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
-        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
-            var key = OWNER_LOGO_KEYS[i];
-            if (display === key || display.indexOf(key) !== -1) return key;
+    function saveRosterArtworkMap() {
+        try {
+            localStorage.setItem(OWNER_ROSTER_STORAGE_KEY, JSON.stringify(OWNER_ARTWORK_BY_ROSTER_ID));
+        } catch (e) {}
+    }
+
+    function ownerArtworkKeyForUser(user) {
+        var username = normalizeSleeperUsername(user && user.username);
+
+        // Explicit Sleeper username mapping wins.
+        if (OWNER_ARTWORK_BY_USERNAME[username]) {
+            return OWNER_ARTWORK_BY_USERNAME[username];
+        }
+
+        // For owners whose Sleeper username already resembles the artwork name.
+        var candidates = [
+            username,
+            String(user && user.display_name || "").toLowerCase().replace(/[^a-z0-9]/g, "")
+        ];
+
+        for (var i = 0; i < OWNER_ARTWORK_KEYS.length; i++) {
+            var key = OWNER_ARTWORK_KEYS[i];
+            for (var j = 0; j < candidates.length; j++) {
+                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return key;
+            }
         }
         return null;
     }
 
     function ownerLogoUrlForKey(key) {
-        return OWNER_LOGO_KEYS.indexOf(key) !== -1
+        return OWNER_ARTWORK_KEYS.indexOf(key) !== -1
             ? "/owners/artwork/profile-current/" + key + ".png"
             : "/artwork/logo.png";
     }
 
     function ownerLogoUrl(user) {
-        return ownerLogoUrlForKey(ownerKeyForUser(user));
+        return ownerLogoUrlForKey(ownerArtworkKeyForUser(user));
     }
 
+    // Live Scores never uses a Sleeper team/avatar image.
     function avatarUrl(user) {
         return ownerLogoUrl(user);
     }
@@ -125,33 +155,42 @@
         return String(metadataName || user.display_name || user.username || "FS5 Team").trim();
     }
 
+    loadRosterArtworkMap();
+
     function buildRosterMap() {
         var usersById = new Map();
         state.users.forEach(function (user) {
             if (user && user.user_id != null) usersById.set(String(user.user_id), user);
         });
+
         state.rosterMap = new Map();
+
         state.rosters.forEach(function (roster) {
-            // The roster_id is the durable key for this team. Resolve the
-            // artwork once from the Sleeper username, then use roster_id for
-            // every render thereafter.
-            var rosterKey = String(roster.roster_id);
-            var resolvedOwnerKey = OWNER_KEY_BY_ROSTER_ID[rosterKey];
-            if (!resolvedOwnerKey) {
-                var resolvedUser = usersById.get(String(roster.owner_id));
-                resolvedOwnerKey = ownerKeyForUser(resolvedUser);
-                if (resolvedOwnerKey) OWNER_KEY_BY_ROSTER_ID[rosterKey] = resolvedOwnerKey;
-            }
             if (!roster || roster.roster_id == null) return;
+
+            var rosterId = String(roster.roster_id);
             var user = usersById.get(String(roster.owner_id));
+
+            // First use the durable roster_id mapping. If this is a new
+            // roster, bootstrap it from the known Sleeper username mapping.
+            var ownerKey = OWNER_ARTWORK_BY_ROSTER_ID[rosterId];
+            if (!ownerKey) {
+                ownerKey = ownerArtworkKeyForUser(user);
+                if (ownerKey) {
+                    OWNER_ARTWORK_BY_ROSTER_ID[rosterId] = ownerKey;
+                    saveRosterArtworkMap();
+                }
+            }
+
             var settings = roster.settings || {};
-            state.rosterMap.set(String(roster.roster_id), {
+            state.rosterMap.set(rosterId, {
                 roster: roster,
                 user: user,
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
-                avatar: ownerLogoUrlForKey(OWNER_KEY_BY_ROSTER_ID[String(roster.roster_id)]),
-                ownerLogo: ownerLogoUrlForKey(OWNER_KEY_BY_ROSTER_ID[String(roster.roster_id)]),
+                avatar: ownerLogoUrlForKey(ownerKey),
+                ownerLogo: ownerLogoUrlForKey(ownerKey),
+                ownerKey: ownerKey,
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
                 ties: Number(settings.ties || 0),
