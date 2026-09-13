@@ -69,9 +69,23 @@
         return "/artwork/logo.png";
     }
 
+    function customSleeperLogo(user) {
+        // Sleeper's regular user.avatar is also populated for default Sleeper avatars.
+        // The league-user metadata avatar is the field used for a custom team upload.
+        var custom = user && user.metadata && user.metadata.avatar;
+        if (!custom) return "";
+        custom = String(custom).trim();
+        if (!custom) return "";
+        if (/^https?:\/\//i.test(custom)) return custom;
+        // Handle Sleeper upload paths if returned without the full URL.
+        if (/^uploads\//i.test(custom)) return "https://sleepercdn.com/" + custom;
+        return "";
+    }
+
     function avatarUrl(user) {
-        if (user && user.avatar) return "https://sleepercdn.com/avatars/thumbs/" + encodeURIComponent(user.avatar);
-        return ownerLogoUrl(user);
+        // Only use a Sleeper image when Sleeper explicitly gives us a custom team upload.
+        // Otherwise use the FS5 owner logo.
+        return customSleeperLogo(user) || ownerLogoUrl(user);
     }
 
     function teamImage(info, className) {
