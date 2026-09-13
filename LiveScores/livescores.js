@@ -14,7 +14,9 @@
         players: {},
         stats: {},
         projections: {},
-        matchups: []
+        matchups: [],
+        schedule: [],
+        liveGames: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -63,14 +65,15 @@
         for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
             var key = OWNER_LOGO_KEYS[i];
             for (var j = 0; j < candidates.length; j++) {
-                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return "/owners/artwork/profile-current/" + key + ".png";
+                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) {
+                    return "/owners/artwork/profile-current/" + key + ".png";
+                }
             }
         }
         return "/artwork/logo.png";
     }
 
-    // Always use the FS5 owner artwork for team images on Live Scores.
-    // This intentionally ignores Sleeper avatars, including generic/default Sleeper logos.
+    // Live Scores intentionally uses FS5 owner artwork instead of Sleeper avatars.
     function avatarUrl(user) {
         return ownerLogoUrl(user);
     }
@@ -78,7 +81,7 @@
     function teamImage(info, className) {
         var img = document.createElement("img");
         img.className = className || "team-avatar";
-        img.src = ownerLogoUrl(info && info.user);
+        img.src = info && info.ownerLogo ? info.ownerLogo : "/artwork/logo.png";
         img.alt = ""; img.width = 48; img.height = 48;
         img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
         return img;
@@ -274,6 +277,94 @@
         card.appendChild(section);
     }
 
+    async function loadExactLiveGames() {
+        try {
+            var response = await fetch("/.netlify/functions/sleeper?source=live", { cache: "no-store" });
+            if (!response.ok) return [];
+            var data = await response.json();
+            var events = Array.isArray(data && data.events) ? data.events : [];
+            state.liveGames = events.map(function (event) {
+                var competition = event.competitions && event.competitions[0];
+                var status = competition && competition.status ? competition.status : {};
+                var competitors = competition && competition.competitors ? competition.competitors : [];
+                return {
+                    home: (competitors.find(function(c){ return c.homeAway === "home"; }) || {}).team?.abbreviation?.toUpperCase() || "",
+                    away: (competitors.find(function(c){ return c.homeAway === "away"; }) || {}).team?.abbreviation?.toUpperCase() || "",
+                    state: String((status.type && status.type.state) || "").toLowerCase(),
+                    period: Number(status.period || 0),
+                    clock: status.displayClock || "",
+                    completed: !!(status.type && status.type.completed)
+                };
+            });
+            return state.liveGames;
+        } catch (e) {
+            state.liveGames = [];
+            return [];
+        }
+    }
+
+    function scheduleGameForTeam(team) {
+        if (!team || !state.schedule || !state.schedule.length) return null;
+        var t = String(team).toUpperCase();
+        return state.schedule.find(function (game) {
+            return String(game.home || "").toUpperCase() === t || String(game.away || "").toUpperCase() === t;
+        }) || null;
+    }
+
+    function playerAvailableTimePct(playerIds) {
+        var values = [];
+        (playerIds || []).filter(Boolean).forEach(function (id) {
+            var meta = playerMeta(id);
+            var team = String((meta && meta.team) || "").toUpperCase();
+            var game = state.liveGames.find(function(g) { return g.home === team || g.away === team; });
+
+            if (!game) {
+                var scheduled = scheduleGameForTeam(team);
+                if (!scheduled) return;
+                values.push(String(scheduled.status || "").toLowerCase() === "complete" ? 0 : 100);
+                return;
+            }
+
+            if (game.completed || game.state === "post") { values.push(0); return; }
+            if (game.state !== "in") { values.push(game.state === "pre" ? 100 : 0); return; }
+
+            // Exact NFL game-clock calculation: four 15-minute quarters.
+            var parts = String(game.clock || "0:00").split(":");
+            var minutes = Number(parts[0] || 0);
+            var seconds = Number(parts[1] || 0);
+            var period = Math.max(1, Math.min(4, Number(game.period || 1)));
+            var remaining = ((4 - period) * 15 * 60) + minutes * 60 + seconds;
+            values.push(Math.max(0, Math.min(100, remaining / (4 * 15 * 60) * 100)));
+        });
+        if (!values.length) return null;
+        return Math.round(values.reduce(function(a,b){ return a+b; },0) / values.length);
+    }
+
+    function appendPlayingTimeBar(text, starters) {
+        var pct = playerAvailableTimePct(starters);
+        if (pct == null) return;
+
+        var wrap = document.createElement("div");
+        wrap.className = "playing-time-wrap";
+        wrap.title = "Estimated available playing time remaining for active players";
+
+        var label = document.createElement("div");
+        label.className = "playing-time-label";
+        label.innerHTML = "<span>Available Playing Time</span><strong>" + pct + "%</strong>";
+
+        var track = document.createElement("div");
+        track.className = "playing-time-track";
+
+        var fill = document.createElement("div");
+        fill.className = "playing-time-fill";
+        fill.style.width = pct + "%";
+
+        track.appendChild(fill);
+        wrap.appendChild(label);
+        wrap.appendChild(track);
+        text.appendChild(wrap);
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
         kicker.textContent = "WEEK " + week;
@@ -312,6 +403,7 @@
                 var name = document.createElement("h3"); name.textContent = info ? info.teamName : "Roster " + matchup.roster_id; text.appendChild(name);
                 var account = document.createElement("span"); account.textContent = info && info.account ? info.account : ""; text.appendChild(account);
                 var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
+                appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
                 identity.appendChild(img); identity.appendChild(text);
                 var scoreBox = document.createElement("div"); scoreBox.className = "score-box"; scoreBox.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
                 team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
@@ -497,6 +589,7 @@
         weekContext.textContent = "Loading Week " + week + "...";
         try {
             var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
+            if (week === state.currentWeek) await loadExactLiveGames();
             state.selectedWeek = week; weekSelect.value = String(week);
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
@@ -512,12 +605,14 @@
     async function initialize() {
         setStatus("Connecting to Sleeper...");
         try {
-            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users")]);
+            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
             var nflState = results[0] || {};
             state.currentWeek = Number(nflState.display_week || nflState.week || 1);
             state.selectedWeek = state.currentWeek;
             state.rosters = Array.isArray(results[1]) ? results[1] : [];
             state.users = Array.isArray(results[2]) ? results[2] : [];
+            state.schedule = Array.isArray(results[3]) ? results[3] : [];
+            await loadExactLiveGames();
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
