@@ -6,23 +6,6 @@ exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
   const source = qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app'));
 
-  if (qs.source === 'live') {
-    try {
-      const response = await fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard', {
-        method: 'GET',
-        headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
-      });
-      const text = await response.text();
-      return {
-        statusCode: response.status,
-        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store, max-age=0' },
-        body: text
-      };
-    } catch (err) {
-      return json(502, { error: 'Live NFL clock feed unavailable.' });
-    }
-  }
-
   if (source === 'news') {
     return getPlayerNews(qs.player || '', qs.team || '');
   }
