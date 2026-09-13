@@ -58,22 +58,50 @@
 
     var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
 
-    function ownerLogoUrl(user) {
-        var candidates = [];
-        if (user && user.display_name) candidates.push(String(user.display_name).toLowerCase().replace(/[^a-z0-9]/g, ""));
-        if (user && user.username) candidates.push(String(user.username).toLowerCase().replace(/[^a-z0-9]/g, ""));
-        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
-            var key = OWNER_LOGO_KEYS[i];
-            for (var j = 0; j < candidates.length; j++) {
-                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) {
-                    return "/owners/artwork/profile-current/" + key + ".png";
-                }
-            }
-        }
-        return "/artwork/logo.png";
+    // Stable Sleeper username -> FS5 owner mapping for accounts whose Sleeper
+    // username does not match the owner artwork filename.
+    var OWNER_KEY_BY_SLEEPER_USERNAME = {
+        "diabeastus": "will",
+        "atlnitrohawgs": "cody",
+        "thejamyricals": "matt",
+        "armoryroadtrucks": "mike",
+        "wornoutsocks": "keith",
+        "fs5chair": "ethan",
+        "btb1022": "bailey"
+    };
+
+    // Once the league loads, this is populated as:
+    // Sleeper roster_id -> FS5 owner artwork key.
+    // Roster IDs are the stable identifier; usernames are only used to seed
+    // the mapping when a roster is first encountered.
+    var OWNER_KEY_BY_ROSTER_ID = {};
+
+    function normalizeSleeperUsername(value) {
+        return String(value || "").toLowerCase().replace(/^@/, "").trim();
     }
 
-    // Live Scores intentionally uses FS5 owner artwork instead of Sleeper avatars.
+    function ownerKeyForUser(user) {
+        var username = normalizeSleeperUsername(user && user.username);
+        if (OWNER_KEY_BY_SLEEPER_USERNAME[username]) return OWNER_KEY_BY_SLEEPER_USERNAME[username];
+
+        var display = String(user && user.display_name || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
+            var key = OWNER_LOGO_KEYS[i];
+            if (display === key || display.indexOf(key) !== -1) return key;
+        }
+        return null;
+    }
+
+    function ownerLogoUrlForKey(key) {
+        return OWNER_LOGO_KEYS.indexOf(key) !== -1
+            ? "/owners/artwork/profile-current/" + key + ".png"
+            : "/artwork/logo.png";
+    }
+
+    function ownerLogoUrl(user) {
+        return ownerLogoUrlForKey(ownerKeyForUser(user));
+    }
+
     function avatarUrl(user) {
         return ownerLogoUrl(user);
     }
@@ -104,6 +132,16 @@
         });
         state.rosterMap = new Map();
         state.rosters.forEach(function (roster) {
+            // The roster_id is the durable key for this team. Resolve the
+            // artwork once from the Sleeper username, then use roster_id for
+            // every render thereafter.
+            var rosterKey = String(roster.roster_id);
+            var resolvedOwnerKey = OWNER_KEY_BY_ROSTER_ID[rosterKey];
+            if (!resolvedOwnerKey) {
+                var resolvedUser = usersById.get(String(roster.owner_id));
+                resolvedOwnerKey = ownerKeyForUser(resolvedUser);
+                if (resolvedOwnerKey) OWNER_KEY_BY_ROSTER_ID[rosterKey] = resolvedOwnerKey;
+            }
             if (!roster || roster.roster_id == null) return;
             var user = usersById.get(String(roster.owner_id));
             var settings = roster.settings || {};
@@ -112,8 +150,8 @@
                 user: user,
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
-                avatar: avatarUrl(user),
-                ownerLogo: ownerLogoUrl(user),
+                avatar: ownerLogoUrlForKey(OWNER_KEY_BY_ROSTER_ID[String(roster.roster_id)]),
+                ownerLogo: ownerLogoUrlForKey(OWNER_KEY_BY_ROSTER_ID[String(roster.roster_id)]),
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
                 ties: Number(settings.ties || 0),
