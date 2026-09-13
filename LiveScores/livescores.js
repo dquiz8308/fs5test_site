@@ -1,7 +1,7 @@
 (function(){
 "use strict";
 const LEAGUE_ID="1387297022695993344", SEASON=2026, REFRESH_MS=45000;
-const BASE="https://api.sleeper.app/v1", DATA_BASE="https://api.sleeper.com";
+const BASE="https://api.sleeper.app/v1", DATA_BASE="https://api.sleeper.com/v1";
 const S={week:null,selected:null,league:null,rosters:[],users:[],players:{},stats:{},projections:{},schedule:[],matchups:[],scoring:{},teamMap:new Map()};
 const $=id=>document.getElementById(id), esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const api=async path=>{const r=await fetch(BASE+path,{cache:"no-store",headers:{"Accept":"application/json"}});if(!r.ok)throw Error("Sleeper API "+r.status);return r.json();};
@@ -21,7 +21,7 @@ function currentFor(id){return scoreStats(S.stats[id]);}
 function player(id){return S.players[id]||{player_id:id,first_name:id,last_name:"",position:"",fantasy_positions:[]};}
 function playerRow(id,starter){const p=player(id), cur=currentFor(id), proj=projectionFor(id);return `<button class="player-row ${starter?'is-starter':'is-bench'}" data-player="${esc(id)}"><img src="${esc(pimg(id))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="player-main"><strong>${esc((p.first_name||"")+" "+(p.last_name||""))}</strong><small>${esc(p.position||p.fantasy_positions?.[0]||"")} · ${esc(p.team||"")} ${p.injury_status?"· "+esc(p.injury_status):""}</small></span><span class="player-points"><b>${fmt(cur)}</b><small>${fmt(proj)} proj</small></span></button>`;}
 function gameStatus(teamAbbr){const games=S.schedule.filter(g=>g.home===teamAbbr||g.away===teamAbbr);return games.find(g=>g.status==="in_game")?.status||games.find(g=>g.status==="complete")?.status||games[0]?.status||"pre_game";}
-function teamProjected(roster,matchup){const ids=matchup.players||roster.players||[];let current=0,remaining=0,variance=0;for(const id of ids){const c=currentFor(id), pr=projectionFor(id);if((matchup.starters||[]).includes(id)){current+=c;const stat=S.stats[id];if(stat&&Object.keys(stat).length){const rem=Math.max(0,pr-c);remaining+=rem;variance+=Math.max(1,rem*.28)**2}else{remaining+=pr;variance+=Math.max(1,pr*.28)**2}}}return {current,projected:current+remaining,variance};}
+function teamProjected(roster,matchup){const ids=matchup.players||roster.players||[];let current=n(matchup.points),remaining=0,variance=0;for(const id of ids){if((matchup.starters||[]).includes(id)){const c=currentFor(id),pr=projectionFor(id);const stat=S.stats[id];const rem=stat&&Object.keys(stat).length?Math.max(0,pr-c):pr;remaining+=rem;variance+=Math.max(1,rem*.28)**2;}}return {current,projected:current+remaining,variance};}
 function winProb(a,b){const diff=a.projected-b.projected, sd=Math.sqrt(a.variance+b.variance)||1;let p=.5*(1+erf(diff/(sd*Math.sqrt(2))));return Math.min(.995,Math.max(.005,p));}
 function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+.3275911*x),a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429;return s*(1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));}
 function probBar(p){return `<div class="prob-wrap"><div class="prob-labels"><b>${(p*100).toFixed(0)}%</b><span>FS5 projected win probability</span><b>${((1-p)*100).toFixed(0)}%</b></div><div class="prob-track"><div class="prob-fill" style="width:${(p*100).toFixed(1)}%"></div><div class="prob-thumb" style="left:${(p*100).toFixed(1)}%"></div></div></div>`;}
@@ -32,31 +32,31 @@ function showPlayer(id){const p=player(id),cur=currentFor(id),proj=projectionFor
 document.addEventListener("click",e=>{const b=e.target.closest("[data-player]");if(b)showPlayer(b.dataset.player);if(e.target.closest("[data-close-player]")){$("player-modal").hidden=true;$ ("player-modal").setAttribute("aria-hidden","true");}});
 async function loadWeek(week){
   $("matchup-grid").setAttribute("aria-busy","true");
+  const seasonType=week>14?"post":"regular";
+  const apiWeek=week>14?week-14:week;
   try{
-    const seasonType=week>14?"post":"regular";
-    const apiWeek=week>14?week-14:week;
-    const matchupResult=await api(`/league/${LEAGUE_ID}/matchups/${week}`);
-    const [statsResult,projectionResult]=await Promise.allSettled([
-      dataApi(`/stats/nfl/${SEASON}/${apiWeek}?season_type=${seasonType}`),
-      dataApi(`/projections/nfl/${SEASON}/${apiWeek}?season_type=${seasonType}`)
-    ]);
+    // Matchups are the primary live-score source. Never let stats/projections failure hide them.
+    const matchups=await api(`/league/${LEAGUE_ID}/matchups/${week}`);
     S.selected=week;
-    S.matchups=matchupResult||[];
-    S.stats=statsResult.status==="fulfilled"?(statsResult.value||{}):{};
-    S.projections=projectionResult.status==="fulfilled"?(projectionResult.value||{}):{};
+    S.matchups=matchups||[];
+    S.stats={};
+    S.projections={};
     renderMatchups(S.matchups,week);
-    $("week-context").textContent=`${week===S.week?"Current week · live scoring + projections":"2026 season · historical matchup"} · auto refresh every 45 seconds`;
-    $("live-status").textContent=week===S.week?"Live · Sleeper connected":"Historical week";
-    $("live-status").className="live-status "+(week===S.week?"is-live":"");
-    if(statsResult.status!=="fulfilled"||projectionResult.status!=="fulfilled"){
-      console.warn("Sleeper player stats/projections unavailable",{stats:statsResult.reason,projections:projectionResult.reason});
-      $("week-context").textContent+=` · ${statsResult.status!=="fulfilled"?"player stats unavailable":""}${statsResult.status!=="fulfilled"&&projectionResult.status!=="fulfilled"?"; " :""}${projectionResult.status!=="fulfilled"?"projections unavailable":""}`;
-    }
+    $("week-context").textContent=`${week===S.week?'Current week · live scoring + projections':'2026 season · historical matchup'} · auto refresh every 45 seconds`;
+    $("live-status").textContent=week===S.week?'Live · Sleeper connected':'Historical week';
+    $("live-status").className='live-status '+(week===S.week?'is-live':'');
+
+    // These feeds are supplemental. Try them independently so one unavailable feed
+    // cannot break the live matchup/score display.
+    try{S.stats=await dataApi(`/stats/nfl/${seasonType}/${SEASON}/${apiWeek}`)||{};}catch(e){console.warn('Sleeper weekly stats unavailable:',e);}
+    try{S.projections=await dataApi(`/projections/nfl/${seasonType}/${SEASON}/${apiWeek}`)||{};}catch(e){console.warn('Sleeper weekly projections unavailable:',e);}
+    renderMatchups(S.matchups,week);
   }catch(e){
-    console.error(e);
-    $("live-status").textContent="Sleeper data error";
-    $("live-status").className="live-status is-error";
-    $("week-context").textContent="Unable to load matchup data. Try Refresh.";
+    console.error('Sleeper matchup error:',e);
+    $("live-status").textContent='Sleeper matchup data error';
+    $("live-status").className='live-status is-error';
+    $("week-context").textContent='Unable to load matchup data. Try Refresh.';
+    $("matchup-grid").innerHTML='<div class="empty-state">Sleeper matchup data could not be loaded. Please try Refresh.</div>';
   }
   $("matchup-grid").setAttribute("aria-busy","false");
 }
