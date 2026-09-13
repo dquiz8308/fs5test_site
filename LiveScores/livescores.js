@@ -15,7 +15,8 @@
         stats: {},
         projections: {},
         matchups: [],
-        schedule: []
+        schedule: [],
+        liveGames: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -356,11 +357,29 @@
         }) || null;
     }
 
+    function liveGameForTeam(team) {
+        var t = String(team || "").toUpperCase();
+        if (!t || !state.liveGames || !state.liveGames.length) return null;
+        return state.liveGames.find(function (game) {
+            return (game.teams || []).some(function (entry) {
+                return String(entry.abbreviation || "").toUpperCase() === t;
+            });
+        }) || null;
+    }
+
     function playerAvailableTimePct(playerIds) {
         var values = [];
         (playerIds || []).filter(Boolean).forEach(function (id) {
             var meta = playerMeta(id);
             var team = String((meta && meta.team) || "").toUpperCase();
+            var live = liveGameForTeam(team);
+            if (live && live.remainingPct != null) {
+                values.push(Number(live.remainingPct));
+                return;
+            }
+            // If the independent live feed is temporarily unavailable, use the
+            // Sleeper schedule only as a conservative fallback. This never blocks
+            // the page and is replaced automatically when the live feed returns.
             var game = scheduleGameForTeam(team);
             if (!game) return;
             var status = String(game.status || "").toLowerCase();
@@ -378,7 +397,7 @@
 
         var wrap = document.createElement("div");
         wrap.className = "playing-time-wrap";
-        wrap.title = "Estimated available playing time remaining for active players";
+        wrap.title = state.liveGames && state.liveGames.length ? "Available playing time based on the live NFL game clock" : "Playing time estimate based on game status";
 
         var label = document.createElement("div");
         label.className = "playing-time-label";
@@ -395,6 +414,27 @@
         wrap.appendChild(label);
         wrap.appendChild(track);
         text.appendChild(wrap);
+    }
+
+    function loadLiveGameClock() {
+        // This request is intentionally fire-and-forget. A third-party scoreboard
+        // outage must never prevent Sleeper scores from rendering.
+        return fetch("/.netlify/functions/sleeper?source=clock", {
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+        }).then(function (response) {
+            return response.text().then(function (text) {
+                if (!response.ok) throw new Error("Live clock feed returned " + response.status);
+                var data = text ? JSON.parse(text) : {};
+                state.liveGames = Array.isArray(data.games) ? data.games : [];
+                if (state.matchups && state.matchups.length && state.selectedWeek === state.currentWeek) {
+                    renderMatchups(state.matchups, state.selectedWeek);
+                }
+            });
+        }).catch(function (error) {
+            console.warn("FS5 independent live clock feed unavailable", error);
+            state.liveGames = [];
+        });
     }
 
     function renderMatchups(matchups, week) {
@@ -625,6 +665,7 @@
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
             setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
+            if (week === state.currentWeek) loadLiveGameClock();
             loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
         } catch (error) {
             console.error("FS5 Sleeper matchup request failed", error);
