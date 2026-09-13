@@ -1,175 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="apple-touch-icon" sizes="180x180" href="artwork/logowhite.jpg">
-    <link rel="icon" type="image/jpeg" href="artwork/logowhite.jpg">
-    <title>FastStrongFive Fantasy Football</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="common.css">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <img src="artwork/logo.png" alt="FastStrongFive Logo" class="logo" style="display:none;">
-
-            <h1 class="website-title">Home</h1>
-<button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
-        </div>
-    </header>
-<nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
-        <div class="site-nav__brand">
-            <img src="artwork/logo.png" alt="FastStrongFive">
-        </div>
-        <div class="container site-nav__container">
-            <ul class="site-nav__list">
-                <li class="site-nav__item"><a class="site-nav__link is-active" href="index.html" aria-current="page"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="livescores/index.html"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
-                <li class="site-nav__item site-nav__item--has-submenu">
-                    <div class="site-nav__category-row">
-                        <a class="site-nav__link" href="nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
-                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="nextgen-submenu">
-                            <span class="site-nav__disclosure-label">Toggle NextGenStats submenu</span>
-                            <span class="site-nav__chevron" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <ul class="site-nav__submenu" id="nextgen-submenu">
-                        <li><a class="site-nav__link site-nav__submenu-link" href="nextgenstats/currentyear/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--calendar" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path class="site-nav__icon-accent" d="M4 9h16M8 3v4M16 3v4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg><span>2026 Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="nextgenstats/singlegame/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--football" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 18c-2-4 1-10 6-13s9-2 8 2c1 4-2 9-7 12s-9 3-7-1Z"/><path class="site-nav__icon-accent" d="m9 10 6 4M11 9l-1 2M13 11l-1 2M15 13l-1 2"/></svg><span>Single Game Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="nextgenstats/alltime/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--clock" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="site-nav__icon-accent" d="M12 7v5l3.5 2M8 3.8 6.5 2M16 3.8 17.5 2"/></svg><span>All-Time Records</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="nextgenstats/seasonrecords/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--season" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M5 10h14"/><path class="site-nav__icon-accent" d="m12 12.5.8 1.7 1.8.2-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.2z"/></svg><span>Season Records</span></a></li>
-                    </ul>
-                </li>
-                <li class="site-nav__item"><a class="site-nav__link" href="fs5book/index.html"><svg class="site-nav__icon site-nav__icon--book" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5c3.2-1 5.8-.5 8 1.5v13c-2.2-2-4.8-2.5-8-1.5z"/><path d="M20 5.5c-3.2-1-5.8-.5-8 1.5v13c2.2-2 4.8-2.5 8-1.5z"/><path class="site-nav__icon-accent" d="M12 7v13"/></svg><span>FS5 SportsBook</span></a></li>
-                <li class="site-nav__item site-nav__item--has-submenu">
-                    <div class="site-nav__category-row">
-                        <a class="site-nav__link" href="vault/index.html"><svg class="site-nav__icon site-nav__icon--vault" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><rect class="site-nav__icon-accent" x="8.5" y="11" width="7" height="5" rx="1"/><path class="site-nav__icon-accent" d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Vault</span></a>
-                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="vault-submenu">
-                            <span class="site-nav__disclosure-label">Toggle Vault submenu</span>
-                            <span class="site-nav__chevron" aria-hidden="true"></span>
-                        </button>
-                    </div>
-                    <ul class="site-nav__submenu" id="vault-submenu">
-                        <li><a class="site-nav__link site-nav__submenu-link" href="vault/archive/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--archive" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path class="site-nav__icon-accent" d="M4 5h16v4H4z"/><path d="M6 9v11h12V9M9 13h6"/></svg><span>Archive</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="vault/brackets/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--brackets" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM5 15h4v4H5zM15 10h4v4h-4zM9 7h3v5h3M9 17h3v-5"/><circle class="site-nav__icon-accent" cx="17" cy="12" r="1"/></svg><span>Brackets</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="vault/bowls/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--bowl" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h14v3c0 4-2.5 7-7 8-4.5-1-7-4-7-8zM8 20h8M12 16v4"/><path class="site-nav__icon-accent" d="M5 7H2c0 3 1.5 5 4 5M19 7h3c0 3-1.5 5-4 5"/></svg><span>Bowl Games</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="vault/probowl/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--star" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/><path class="site-nav__icon-accent" d="m12 7 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Pro Bowl</span></a></li>
-                        <li><a class="site-nav__link site-nav__submenu-link" href="vault/drafts/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--drafts" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M9.33 5v14M14.67 5v14M4 9.67h16M4 14.33h16"/><path class="site-nav__icon-accent" d="M4 5h5.33v4.67H4zM9.33 9.67h5.34v4.66H9.33zM14.67 14.33H20V19h-5.33z"/></svg><span>Drafts</span></a></li>
-                    </ul>
-                </li>
-                <li class="site-nav__item"><a class="site-nav__link" href="divisions/index.html"><svg class="site-nav__icon site-nav__icon--divisions" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect class="site-nav__icon-accent" x="14" y="14" width="6" height="6" rx="1"/></svg><span>Divisions</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="hallofchampions/index.html"><svg class="site-nav__icon site-nav__icon--hall" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7z"/><path d="M8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/><path class="site-nav__icon-accent" d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span>Hall of Champions</span></a></li>
-            </ul>
-        </div>
-    </nav>
-    <main class="home-main">
-        <div class="home-shell">
-            <div class="home-wordmark" aria-label="FastStrongFive, established 2012">
-                <div class="home-wordmark__name"><strong>FastStrong</strong><em>Five</em></div>
-                <div class="home-wordmark__meta" aria-hidden="true">
-                    <span class="home-wordmark__line"></span><span class="home-wordmark__star">&#9733;</span><span>EST. 2012</span><span class="home-wordmark__star">&#9733;</span><span class="home-wordmark__line"></span>
-                </div>
-            </div>
-
-            <!-- Manually set only this value: preseason, regular, postseason, or completed. -->
-            <section class="home-season" aria-labelledby="current-season-heading" data-home-season-status="preseason">
-                <h2 class="home-season__heading" id="current-season-heading">Current Season</h2>
-                <div class="home-season__feature">
-                    <div class="home-season__crest-wrap">
-                        <img src="artwork/season15logo.png" alt="FastStrongFive Season XV crest" class="home-season__crest">
-                    </div>
-                    <nav class="home-season__actions" aria-label="Current season destinations">
-                        <a class="home-season__button home-season__button--primary" href="nextgenstats/seasonrecords/index.html">2025 Records <span aria-hidden="true">&rsaquo;</span></a>
-                        <a class="home-season__button home-season__button--postseason" href="vault/brackets/index.html">Playoffs <span aria-hidden="true">&rsaquo;</span></a>
-                        <a class="home-season__button home-season__button--postseason" href="vault/probowl/index.html">Pro Bowl <span aria-hidden="true">&rsaquo;</span></a>
-                    </nav>
-                </div>
-                <div class="home-season__stats">
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="4.5" y="7.5" width="23" height="20" rx="2.5"/><path d="M4.5 12.5h23M10 4.5v6M22 4.5v6M10 17h3M16 17h3M22 17h1M10 22h3M16 22h3M22 22h1"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Season</dt><dd>XV</dd></dl>
-                    </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="7" y="6.5" width="18" height="22" rx="2.5"/><path d="M12 6.5V4h8v2.5M11 15l3 3 7-7M11 23h10"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Status</dt><dd>Complete</dd></dl>
-                    </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M6 5v11h20V5M16 16v11M11 27h10M6 10h5M21 10h5"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Reigning Champion</dt><dd>The Rome Man Empire</dd></dl>
-                    </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.5 9-6 10-3.5-1-6-4-6-10zM10 8H5c0 5 2 8 6.5 8M22 8h5c0 5-2 8-6.5 8M16 20v5M11 28h10M12 25h8"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Pro Bowl Winner</dt><dd>Smokey Road</dd></dl>
-                    </div>
-                </div>
-            </section>
-
-            <p class="home-intro">The official home of FastStrongFive fantasy football&mdash;league history, records, rivalries, postseason archives, and the FS5 SportsBook.</p>
-
-            <section class="home-explore" aria-labelledby="explore-heading">
-                <div class="home-section-heading">
-                    <span aria-hidden="true"></span>
-                    <h2 id="explore-heading">Explore FS5</h2>
-                    <span aria-hidden="true"></span>
-                </div>
-                <div class="home-card-grid">
-                    <a class="home-card" href="fs5book/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/sportsbookLogo.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>FS5 SportsBook</strong><span>Odds, props, and action for the FastStrongFive.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="nextgenstats/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/NextGenFS5.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Next Gen Stats</strong><span>Advanced stats, analytics, and league insights.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="owners/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/owners.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Owners</strong><span>Team owners and their complete history.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="h2h/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/h2hlogo.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Head to Head</strong><span>Rivalries, matchups, and head-to-head results.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="vault/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/vault.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Vault</strong><span>Every past season secured.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="divisions/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/divisions.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Divisions</strong><span>Division standings, rivalries, and breakdowns.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="hallofchampions/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/hallofchampslogo.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Hall of Champions</strong><span>The Legacy of the Champions.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                    <a class="home-card" href="vault/bowls/index.html">
-                        <span class="home-card__art home-card__art--image"><img src="artwork/postseason.png" alt="" loading="lazy"></span>
-                        <span class="home-card__content"><strong>Bowl Games</strong><span>Bowl matchups, history, and ownership.</span><span class="home-card__arrow" aria-hidden="true">&rsaquo;</span></span>
-                    </a>
-                </div>
-            </section>
-
-            <div class="home-welcome">
-                <img src="artwork/welcomebanner.png" alt="Welcome to the Fast Strong Five Fantasy Football League" class="home-welcome__image" loading="lazy">
-            </div>
-        </div>
-    </main>
-    <footer>
-        <div class="container">
-            <p><span data-footer-permanent>FastStrongFive</span><span data-footer-status aria-live="polite">Founded 2012</span></p>
-        </div>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
-    <script src="footer-status.js"></script>
-    <script src="homepage.js"></script>
-    <script src="mobile-menu.js"></script>
-</body>
-</html>
-
+(function () {
+  "use strict";
+  var LEAGUE_ID="1387297022695993344", SEASON=2026, REFRESH_MS=45000;
+  var TEAM_NAMES={Brycen:"Brycen",Will:"Will",David:"David",Jordan:"Jordan",Chris:"Chris",Bailey:"Bailey",Mike:"Mike",Keith:"Keith",Ethan:"Ethan",Matthew:"Matthew",Cody:"Cody",Max:"Max"};
+  var PROFILE_PATH={Brycen:"brycen.png",Will:"will.png",David:"david.png",Jordan:"jordan.png",Chris:"chris.png",Bailey:"bailey.png",Mike:"mike.png",Keith:"keith.png",Ethan:"ethan.png",Matthew:"matthew.png",Cody:"cody.png",Max:"max.png"};
+  var state={currentWeek:null,selectedWeek:null,rosters:[],users:[],players:{},rosterMap:new Map()};
+  var $=function(id){return document.getElementById(id)};
+  function api(path){return fetch("https://api.sleeper.app/v1"+path,{cache:"no-store"}).then(function(r){if(!r.ok)throw new Error("Sleeper API "+r.status);return r.json()})}
+  function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function teamName(user){var c=[user&&user.metadata&&user.metadata.team_name,user&&user.display_name,user&&user.username].filter(Boolean);for(var i=0;i<c.length;i++){var k=Object.keys(TEAM_NAMES).find(function(n){return norm(n)===norm(c[i])});if(k)return TEAM_NAMES[k]}for(var j=0;j<c.length;j++){var matches=Object.keys(TEAM_NAMES).filter(function(n){return norm(c[j]).indexOf(norm(n))===0||norm(n).indexOf(norm(c[j]))===0});if(matches.length===1)return TEAM_NAMES[matches[0]]}return (user&&(user.display_name||user.username))||"FS5 Team"}
+  function buildRosterMap(){var users=new Map();state.users.forEach(function(u){users.set(String(u.user_id),u)});state.rosterMap=new Map();state.rosters.forEach(function(r){var u=users.get(String(r.owner_id));var tn=teamName(u);state.rosterMap.set(String(r.roster_id),{roster:r,user:u||null,teamName:tn,sleeperName:u?(u.display_name||u.username||"Unknown Sleeper account"):"Unknown Sleeper account"})})}
+  function esc(s){return String(s==null?"":s)}
+  function score(v){var n=Number(v);return Number.isFinite(n)?n.toFixed(2):"0.00"}
+  function setStatus(t,k){var e=$("live-status");e.textContent=t;e.className="live-status"+(k?" is-"+k:"")}
+  function weeks(){var s=$("week-select");s.replaceChildren();for(var w=1;w<=17;w++){var o=document.createElement("option");o.value=w;o.textContent="Week "+w;s.appendChild(o)}s.disabled=false;s.value=state.selectedWeek}
+  function imgFor(info){var u=info.user||{};if(u.avatar)return "https://sleepercdn.com/avatars/"+u.avatar;return "../owners/artwork/profile-current/"+(PROFILE_PATH[info.teamName]||"will.png")}
+  function player(id){return state.players[String(id)]||{full_name:"Player "+id,position:"—",team:null}}
+  function playerRow(id,pts){var p=player(id),row=document.createElement("div");row.className="player-row";row.innerHTML='<span class="player-pos">'+esc(p.position||"—")+'</span><span><span class="player-name">'+esc(p.full_name||"Unknown Player")+'</span>'+(p.team?'<span class="player-nfl"> · '+esc(p.team)+'</span>':'')+'</span><span class="player-points">'+(pts==null?"":score(pts))+'</span>';return row}
+  function lineupBlock(matchup){var wrap=document.createElement("div");wrap.className="lineups";var toggle=document.createElement("button");toggle.type="button";toggle.className="lineup-toggle";toggle.setAttribute("aria-expanded","false");toggle.textContent="Lineup & Bench";var content=document.createElement("div");content.className="lineup-content";toggle.addEventListener("click",function(){var open=toggle.getAttribute("aria-expanded")==="true";toggle.setAttribute("aria-expanded",String(!open));content.classList.toggle("is-open",!open)});var starters=Array.isArray(matchup.starters)?matchup.starters:[], all=Array.isArray(matchup.players)?matchup.players:[], bench=all.filter(function(id){return starters.indexOf(id)===-1});var st=document.createElement("div");st.className="lineup-group-title";st.textContent="Starting lineup";content.appendChild(st);if(starters.length){starters.forEach(function(id){content.appendChild(playerRow(id,null))})}else{var none=document.createElement("div");none.className="player-row";none.textContent="No starters reported";content.appendChild(none)}if(bench.length){var bt=document.createElement("div");bt.className="lineup-group-title";bt.textContent="Bench";content.appendChild(bt);bench.forEach(function(id){content.appendChild(playerRow(id,null))})}wrap.appendChild(toggle);wrap.appendChild(content);return wrap}
+  function predictor(a,b,infoA,infoB){var sa=Number(a.points||0),sb=Number(b.points||0),diff=sa-sb;var pa=50+40*Math.tanh(diff/20);pa=Math.max(5,Math.min(95,pa));var pb=100-pa;var wrap=document.createElement("div");wrap.className="predictor";var top=document.createElement("div");top.className="predictor__top";var title=document.createElement("span");title.className="predictor__title";title.textContent="Live predictor";var winner=document.createElement("span");winner.className="predictor__winner";winner.textContent=diff===0?"Too close to call":(diff>0?infoA.teamName:infoB.teamName)+" favored";top.appendChild(title);top.appendChild(winner);var bar=document.createElement("div");bar.className="predictor__bar";var x=document.createElement("div");x.className="predictor__a";x.style.width=pa+"%";var y=document.createElement("div");y.className="predictor__b";y.style.width=pb+"%";bar.appendChild(x);bar.appendChild(y);var labels=document.createElement("div");labels.className="predictor__labels";labels.innerHTML='<span>'+esc(infoA.teamName)+" "+pa.toFixed(0)+"%</span><span>"+pb.toFixed(0)+"% "+esc(infoB.teamName)+"</span>";wrap.appendChild(top);wrap.appendChild(bar);wrap.appendChild(labels);return wrap}
+  function render(matchups,week){var grid=$("matchup-grid"),empty=$("empty-state");grid.replaceChildren();empty.hidden=matchups.length!==0;grid.hidden=matchups.length===0;grid.setAttribute("aria-busy","false");$("scoreboard-kicker").textContent="WEEK "+week;$("scoreboard-heading").textContent=week<=14?"Regular Season":"Postseason";$("week-badge").textContent="Week "+week;var groups=new Map();matchups.forEach(function(m){if(m.matchup_id==null)return;var k=String(m.matchup_id);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(m)});Array.from(groups.entries()).sort(function(a,b){return Number(a[0])-Number(b[0])}).forEach(function(e){if(e[1].length<2)return;var teams=e[1].slice(0,2), card=document.createElement("article");card.className="matchup-card";var head=document.createElement("div");head.className="matchup-card__head";var lab=document.createElement("span");lab.className="matchup-card__label";lab.textContent="Matchup "+e[0];var st=document.createElement("span");st.className="matchup-card__state"+(week===state.currentWeek?" is-current":"");st.textContent=week===state.currentWeek?"LIVE":(week<state.currentWeek?"FINAL":"UPCOMING");head.appendChild(lab);head.appendChild(st);card.appendChild(head);var sorted=teams.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0)});var a=sorted[0],b=sorted[1],infoA=state.rosterMap.get(String(a.roster_id))||{teamName:"Roster "+a.roster_id,sleeperName:"",user:null},infoB=state.rosterMap.get(String(b.roster_id))||{teamName:"Roster "+b.roster_id,sleeperName:"",user:null};[a,b].forEach(function(m,idx){var info=idx===0?infoA:infoB, team=document.createElement("div");team.className="matchup-team"+(Number(m.points||0)>Number((idx===0?b:a).points||0)?" is-winning":"");var top=document.createElement("div");top.className="team-top";var avatar=document.createElement("img");avatar.className="team-avatar";avatar.alt=info.teamName+" team image";avatar.src=imgFor(info);avatar.onerror=function(){this.onerror=null;this.src="../owners/artwork/profile-current/will.png"};var id=document.createElement("div");var nm=document.createElement("p");nm.className="team-name";nm.textContent=info.teamName;var sn=document.createElement("p");sn.className="sleeper-name";sn.textContent="Sleeper: "+(info.sleeperName||"Unknown account");id.appendChild(nm);id.appendChild(sn);var sw=document.createElement("div");var sc=document.createElement("div");sc.className="team-score";sc.textContent=score(m.points);sw.appendChild(sc);if(Number(m.points||0)>Number((idx===0?b:a).points||0)){var lead=document.createElement("div");lead.className="leading";lead.textContent="LEADING";sw.appendChild(lead)}top.appendChild(avatar);top.appendChild(id);top.appendChild(sw);team.appendChild(top);card.appendChild(team);if(idx===0){card.appendChild(predictor(a,b,infoA,infoB));card.appendChild(lineupBlock(a));var vs=document.createElement("div");vs.className="vs-divider";var v=document.createElement("span");v.textContent="VS";vs.appendChild(v);card.appendChild(vs)}else{card.appendChild(lineupBlock(b))}});grid.appendChild(card)})}
+  async function loadWeek(week){$("matchup-grid").setAttribute("aria-busy","true");$("week-context").textContent="Loading Week "+week+"…";try{var m=await api("/league/"+LEAGUE_ID+"/matchups/"+week);state.selectedWeek=week;$("week-select").value=week;render(Array.isArray(m)?m:[],week);$("week-context").textContent=(week===state.currentWeek?"Current week · ":"2026 season · ")+(week<=14?"Regular Season":"Postseason");setStatus(week===state.currentWeek?"Live · refreshes every 45 seconds":"Historical week",week===state.currentWeek?"live":"")}catch(e){$("matchup-grid").replaceChildren();$("matchup-grid").hidden=true;$("empty-state").hidden=false;$("empty-state").textContent="Sleeper matchup data could not be loaded. Please try again.";$("matchup-grid").setAttribute("aria-busy","false");setStatus("Sleeper connection error","error");console.error(e)}}
+  async function init(){setStatus("Connecting to Sleeper…");try{var r=await Promise.all([api("/state/nfl"),api("/league/"+LEAGUE_ID+"/rosters"),api("/league/"+LEAGUE_ID+"/users"),api("/players/nfl")]);var ns=r[0];state.currentWeek=Number(ns.display_week||ns.week||1);state.selectedWeek=state.currentWeek;state.rosters=Array.isArray(r[1])?r[1]:[];state.users=Array.isArray(r[2])?r[2]:[];state.players=r[3]||{};buildRosterMap();weeks();await loadWeek(state.currentWeek)}catch(e){setStatus("Sleeper connection error","error");$("week-context").textContent="Unable to connect to Sleeper.";$("empty-state").hidden=false;$("matchup-grid").hidden=true;$("empty-state").textContent="The live scoreboard could not connect to Sleeper. Please refresh the page.";console.error(e)}}
+  $("week-select").addEventListener("change",function(){loadWeek(Number(this.value))});$("refresh-button").addEventListener("click",function(){state.selectedWeek?loadWeek(state.selectedWeek):init()});init();setInterval(function(){if(state.selectedWeek===state.currentWeek)loadWeek(state.currentWeek)},REFRESH_MS);
+})();
