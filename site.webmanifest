@@ -3,7 +3,20 @@
   "short_name": "FS5",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#00376b",
-  "theme_color": "#00376b",
-  "icons": [{"src":"/artwork/fs5-ios-icon.png","sizes":"180x180","type":"image/png"}]
+  "background_color": "#ffffff",
+  "theme_color": "#003f73",
+  "icons": [
+    {
+      "src": "/artwork/fs5-ios-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/artwork/fs5-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
