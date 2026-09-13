@@ -55,11 +55,11 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
-    // Mirror the exact owner artwork used by the Owners page.
-    // The artwork lives at /owners/artwork/profile-current/<owner>.png.
-    var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
-    // Definitive FS5 Sleeper -> website artwork mapping.
-    // These are the Sleeper usernames from the FS5 league.
+    // Match the Owners tab exactly: use the existing owner artwork under
+    // /owners/artwork/profile-current/<owner>.png.
+    // Sleeper only supplies the username, so we translate that username to
+    // the FS5 owner name; the image path itself is the same path the Owners
+    // page uses.
     var OWNER_LOGO_BY_USERNAME = {
         "diabeastus": "will",
         "atlnitrohawgs": "cody",
@@ -76,32 +76,21 @@
     };
 
     function normalizeOwnerKey(value) {
-        return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+        return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
     }
 
     function ownerLogoUrl(user) {
-        if (!user) return "/artwork/logo.png";
-
-        // Prefer the known Sleeper username mapping so generic Sleeper avatars
-        // can never override the FS5 owner artwork.
-        var username = normalizeOwnerKey(user.username);
-        if (username && OWNER_LOGO_BY_USERNAME[username]) {
-            return "/owners/artwork/profile-current/" + OWNER_LOGO_BY_USERNAME[username] + ".png";
+        var username = normalizeOwnerKey(user && user.username);
+        var owner = OWNER_LOGO_BY_USERNAME[username];
+        if (!owner) {
+            return "/artwork/logo.png";
         }
 
-        // For the remaining owners, mirror the Owners tab's owner-name lookup.
-        var displayName = normalizeOwnerKey(user.display_name);
-        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
-            var key = OWNER_LOGO_KEYS[i];
-            if (displayName === key || displayName.indexOf(key) !== -1) {
-                return "/owners/artwork/profile-current/" + key + ".png";
-            }
-        }
-
-        return "/artwork/logo.png";
+        // This is intentionally relative, exactly like owners/ownerscript.js:
+        // teamLogoImage.src = 'artwork/profile-current/' + owner + '.png';
+        return "../owners/artwork/profile-current/" + owner + ".png";
     }
 
-    // Live Scores intentionally uses FS5 owner artwork instead of Sleeper avatars.
     function avatarUrl(user) {
         return ownerLogoUrl(user);
     }
