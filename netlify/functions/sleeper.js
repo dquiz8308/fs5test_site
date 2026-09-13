@@ -10,6 +10,14 @@ exports.handler = async function (event) {
     return getPlayerNews(qs.player || '', qs.team || '');
   }
 
+  // Independent live-game clock feed. This is deliberately separate from
+  // Sleeper so a slow/failed third-party scoreboard can never block the
+  // Live Scores page from loading. ESPN's public scoreboard exposes the
+  // current quarter and displayed game clock.
+  if (source === 'clock') {
+    return getLiveGameClock();
+  }
+
   if (source === 'players') {
     return getRequestedPlayers(qs.ids || '');
   }
@@ -57,6 +65,75 @@ exports.handler = async function (event) {
   }
   return json(502, { error: lastError, path, source });
 };
+
+
+async function getLiveGameClock() {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 3500);
+  const url = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard';
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' },
+      signal: controller.signal
+    });
+    const text = await response.text();
+    if (!response.ok) return json(502, { error: `ESPN scoreboard returned ${response.status}.` });
+    const payload = JSON.parse(text || '{}');
+    const games = (payload.events || []).map(normalizeEspnGame).filter(Boolean);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'public, max-age=15, stale-while-revalidate=30'
+      },
+      body: JSON.stringify({ source: 'espn', updated: new Date().toISOString(), games })
+    };
+  } catch (err) {
+    const message = err && err.name === 'AbortError' ? 'ESPN scoreboard timed out.' : (err && err.message ? err.message : 'Unable to load live game clock.');
+    return json(504, { error: message });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function normalizeEspnGame(event) {
+  const competition = event && event.competitions && event.competitions[0];
+  const status = competition && competition.status ? competition.status : (event && event.status) || {};
+  if (!competition) return null;
+  const competitors = competition.competitors || [];
+  const teams = competitors.map(function (c) {
+    const t = c.team || {};
+    return { abbreviation: t.abbreviation || '', id: t.id || '', name: t.displayName || t.name || '' };
+  });
+  const period = Number(status.period || 0);
+  const displayClock = String(status.displayClock || '');
+  const state = String((status.type && status.type.state) || '').toLowerCase();
+  const shortDetail = String((status.type && status.type.shortDetail) || '');
+  const completed = state === 'post' || /final/i.test(shortDetail);
+  const pregame = state === 'pre';
+  const inGame = state === 'in';
+  let remainingSeconds = null;
+  if (completed) remainingSeconds = 0;
+  else if (pregame) remainingSeconds = 3600;
+  else if (inGame) {
+    const match = displayClock.match(/^(\d+):(\d{2})$/);
+    const clockSeconds = match ? Number(match[1]) * 60 + Number(match[2]) : 0;
+    if (period >= 1 && period <= 4) remainingSeconds = Math.max(0, (4 - period) * 900 + clockSeconds);
+    else if (period >= 5) remainingSeconds = Math.max(0, 600 + clockSeconds);
+    else remainingSeconds = 0;
+  }
+  return {
+    id: String(event.id || competition.id || ''),
+    teams,
+    state: inGame ? 'in_game' : (completed ? 'complete' : (pregame ? 'pre_game' : state || 'unknown')),
+    period,
+    displayClock,
+    detail: shortDetail,
+    remainingSeconds,
+    remainingPct: remainingSeconds == null ? null : Math.max(0, Math.min(100, Math.round(remainingSeconds / 36)))
+  };
+}
 
 async function getRequestedPlayers(idsParam) {
   const ids = String(idsParam || '')
