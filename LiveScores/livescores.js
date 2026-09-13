@@ -56,16 +56,13 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
-    // FS5 owner artwork filenames. These are the actual PNG filenames in
-    // /owners/artwork/profile-current/.
+    // FS5 owner artwork. Live Scores uses these PNGs, never Sleeper avatars.
     var OWNER_ARTWORK_KEYS = [
         "bailey","brycen","chris","cody","david","ethan","jordan",
         "keith","matthew","max","mike","will"
     ];
 
-    // Sleeper usernames that do not match the FS5 artwork filename.
-    // This is only the bootstrap mapping. Once resolved, the roster_id is
-    // stored and becomes the durable identifier for the team.
+    // Explicit Sleeper usernames supplied for the FS5 owners.
     var OWNER_ARTWORK_BY_USERNAME = {
         "diabeastus": "will",
         "atlnitrohawgs": "cody",
@@ -76,37 +73,22 @@
         "btb1022": "bailey"
     };
 
+    // Durable roster-id cache. Username mapping is always checked first so a
+    // stale browser cache can never override a known FS5 mapping.
     var OWNER_ARTWORK_BY_ROSTER_ID = {};
-    var OWNER_ROSTER_STORAGE_KEY = "fs5_owner_artwork_by_roster_v1";
 
     function normalizeSleeperUsername(value) {
         return String(value || "").toLowerCase().replace(/^@/, "").trim();
     }
 
-    function loadRosterArtworkMap() {
-        try {
-            var saved = JSON.parse(localStorage.getItem(OWNER_ROSTER_STORAGE_KEY) || "{}");
-            if (saved && typeof saved === "object") OWNER_ARTWORK_BY_ROSTER_ID = saved;
-        } catch (e) {
-            OWNER_ARTWORK_BY_ROSTER_ID = {};
-        }
-    }
-
-    function saveRosterArtworkMap() {
-        try {
-            localStorage.setItem(OWNER_ROSTER_STORAGE_KEY, JSON.stringify(OWNER_ARTWORK_BY_ROSTER_ID));
-        } catch (e) {}
-    }
-
     function ownerArtworkKeyForUser(user) {
         var username = normalizeSleeperUsername(user && user.username);
 
-        // Explicit Sleeper username mapping wins.
         if (OWNER_ARTWORK_BY_USERNAME[username]) {
             return OWNER_ARTWORK_BY_USERNAME[username];
         }
 
-        // For owners whose Sleeper username already resembles the artwork name.
+        // Owners whose Sleeper username/display name already matches an artwork key.
         var candidates = [
             username,
             String(user && user.display_name || "").toLowerCase().replace(/[^a-z0-9]/g, "")
@@ -121,27 +103,40 @@
         return null;
     }
 
-    function ownerLogoUrlForKey(key) {
-        return OWNER_ARTWORK_KEYS.indexOf(key) !== -1
-            ? "/owners/artwork/profile-current/" + key + ".png"
-            : "/artwork/logo.png";
-    }
+    function ownerArtworkCandidates(key) {
+        if (OWNER_ARTWORK_KEYS.indexOf(key) === -1) {
+            return ["/artwork/logo.png"];
+        }
 
-    function ownerLogoUrl(user) {
-        return ownerLogoUrlForKey(ownerArtworkKeyForUser(user));
-    }
-
-    // Live Scores never uses a Sleeper team/avatar image.
-    function avatarUrl(user) {
-        return ownerLogoUrl(user);
+        // Primary path is the known owner-page location. The additional paths
+        // make this resilient if the artwork folder is moved later.
+        return [
+            "/owners/artwork/profile-current/" + key + ".png",
+            "/owners/artwork/" + key + ".png",
+            "/artwork/profile-current/" + key + ".png"
+        ];
     }
 
     function teamImage(info, className) {
         var img = document.createElement("img");
         img.className = className || "team-avatar";
-        img.src = info && info.ownerLogo ? info.ownerLogo : "/artwork/logo.png";
         img.alt = ""; img.width = 48; img.height = 48;
-        img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
+
+        var key = info && info.ownerKey;
+        var candidates = ownerArtworkCandidates(key);
+        var index = 0;
+
+        img.src = candidates[index];
+
+        img.onerror = function () {
+            index += 1;
+            if (index < candidates.length) {
+                this.src = candidates[index];
+            } else {
+                this.onerror = null;
+                this.src = "/artwork/logo.png";
+            }
+        };
         return img;
     }
 
@@ -171,15 +166,15 @@
             var rosterId = String(roster.roster_id);
             var user = usersById.get(String(roster.owner_id));
 
-            // First use the durable roster_id mapping. If this is a new
-            // roster, bootstrap it from the known Sleeper username mapping.
-            var ownerKey = OWNER_ARTWORK_BY_ROSTER_ID[rosterId];
-            if (!ownerKey) {
-                ownerKey = ownerArtworkKeyForUser(user);
-                if (ownerKey) {
-                    OWNER_ARTWORK_BY_ROSTER_ID[rosterId] = ownerKey;
-                    saveRosterArtworkMap();
-                }
+            // IMPORTANT: always resolve the current username first. This fixes
+            // old cached mappings and still lets roster_id act as the durable
+            // identifier once the owner has been resolved.
+            var ownerKey = ownerArtworkKeyForUser(user);
+
+            if (ownerKey) {
+                OWNER_ARTWORK_BY_ROSTER_ID[rosterId] = ownerKey;
+            } else {
+                ownerKey = OWNER_ARTWORK_BY_ROSTER_ID[rosterId] || null;
             }
 
             var settings = roster.settings || {};
@@ -188,8 +183,8 @@
                 user: user,
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
-                avatar: ownerLogoUrlForKey(ownerKey),
-                ownerLogo: ownerLogoUrlForKey(ownerKey),
+                avatar: null,
+                ownerLogo: null,
                 ownerKey: ownerKey,
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
