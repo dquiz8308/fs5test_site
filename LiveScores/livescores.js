@@ -55,20 +55,42 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
+    // Mirror the exact owner artwork used by the Owners page.
+    // The artwork lives at /owners/artwork/profile-current/<owner>.png.
     var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
+    var OWNER_LOGO_BY_USERNAME = {
+        "diabeastus": "will",
+        "atlnitrohawgs": "cody",
+        "thejamyricals": "matthew",
+        "armoryroadtrucks": "mike",
+        "wornoutsocks": "keith",
+        "fs5chair": "ethan",
+        "btb1022": "bailey"
+    };
+
+    function normalizeOwnerKey(value) {
+        return String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+    }
 
     function ownerLogoUrl(user) {
-        var candidates = [];
-        if (user && user.display_name) candidates.push(String(user.display_name).toLowerCase().replace(/[^a-z0-9]/g, ""));
-        if (user && user.username) candidates.push(String(user.username).toLowerCase().replace(/[^a-z0-9]/g, ""));
+        if (!user) return "/artwork/logo.png";
+
+        // Prefer the known Sleeper username mapping so generic Sleeper avatars
+        // can never override the FS5 owner artwork.
+        var username = normalizeOwnerKey(user.username);
+        if (username && OWNER_LOGO_BY_USERNAME[username]) {
+            return "/owners/artwork/profile-current/" + OWNER_LOGO_BY_USERNAME[username] + ".png";
+        }
+
+        // For the remaining owners, mirror the Owners tab's owner-name lookup.
+        var displayName = normalizeOwnerKey(user.display_name);
         for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
             var key = OWNER_LOGO_KEYS[i];
-            for (var j = 0; j < candidates.length; j++) {
-                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) {
-                    return "/owners/artwork/profile-current/" + key + ".png";
-                }
+            if (displayName === key || displayName.indexOf(key) !== -1) {
+                return "/owners/artwork/profile-current/" + key + ".png";
             }
         }
+
         return "/artwork/logo.png";
     }
 
