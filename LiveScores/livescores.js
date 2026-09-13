@@ -337,11 +337,65 @@
         modal.hidden = false; document.body.classList.add("modal-open"); $("matchup-modal-close").focus();
     }
 
+    function loadPlayerNews(id) {
+        var p = playerMeta(id) || {};
+        var name = playerName(id);
+        var team = p.team || '';
+        var section = document.createElement('section');
+        section.className = 'player-news';
+        section.innerHTML = '<div class="player-news__head"><h4>Latest News</h4><span>Recent web coverage</span></div><div class="player-news__body"><p class="muted">Loading news…</p></div>';
+        var body = section.querySelector('.player-news__body');
+        fetch('/.netlify/functions/sleeper?source=news&player=' + encodeURIComponent(name) + '&team=' + encodeURIComponent(team), { cache: 'no-store', headers: { 'Accept': 'application/json' } })
+            .then(function (response) {
+                return response.text().then(function (text) {
+                    var data = {};
+                    try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+                    if (!response.ok) throw new Error(data.error || 'Unable to load player news.');
+                    return data;
+                });
+            })
+            .then(function (data) {
+                var items = Array.isArray(data.items) ? data.items : [];
+                body.replaceChildren();
+                if (!items.length) {
+                    body.innerHTML = '<p class="muted">No recent news found for this player.</p>';
+                    return;
+                }
+                items.forEach(function (item) {
+                    var article = document.createElement('article');
+                    article.className = 'player-news__item';
+                    var link = document.createElement('a');
+                    link.href = item.link || '#'; link.target = '_blank'; link.rel = 'noopener noreferrer';
+                    link.textContent = item.title || 'Latest player news';
+                    var meta = document.createElement('div');
+                    meta.className = 'player-news__meta';
+                    var source = item.source || 'News';
+                    var date = item.pubDate ? new Date(item.pubDate) : null;
+                    var dateText = date && !isNaN(date.getTime()) ? date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+                    meta.textContent = source + (dateText ? ' · ' + dateText : '');
+                    article.appendChild(link); article.appendChild(meta); body.appendChild(article);
+                });
+            })
+            .catch(function (error) {
+                body.innerHTML = '<p class="muted">News is temporarily unavailable. ' + esc(error.message || '') + '</p>';
+            });
+        return section;
+    }
+
     function openPlayerModal(id) {
         var modal = $("player-modal"); if (!modal) return;
         var p = playerMeta(id); var body = $("player-modal-body");
         var stats = state.stats && state.stats[String(id)] || {};
-        body.innerHTML = '<div class="player-detail"><img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Projection ' + formatScore(getProjection(id)) + '</span></div></div></div><dl class="player-meta"><div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div></dl><h4>Weekly Stats</h4><pre class="player-stats">' + esc(JSON.stringify(stats, null, 2)) + '</pre>';
+        body.replaceChildren();
+        var detail = document.createElement('div'); detail.className = 'player-detail';
+        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Projection ' + formatScore(getProjection(id)) + '</span></div></div>';
+        body.appendChild(detail);
+        var meta = document.createElement('dl'); meta.className = 'player-meta';
+        meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';
+        body.appendChild(meta);
+        body.appendChild(loadPlayerNews(id));
+        var statsHeading = document.createElement('h4'); statsHeading.textContent = 'Weekly Stats'; body.appendChild(statsHeading);
+        var statsPre = document.createElement('pre'); statsPre.className = 'player-stats'; statsPre.textContent = JSON.stringify(stats, null, 2); body.appendChild(statsPre);
         modal.hidden = false; document.body.classList.add("modal-open"); $("player-modal-close").focus();
     }
 
