@@ -54,9 +54,34 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
+    var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
+
+    function ownerLogoUrl(user) {
+        var candidates = [];
+        if (user && user.display_name) candidates.push(String(user.display_name).toLowerCase().replace(/[^a-z0-9]/g, ""));
+        if (user && user.username) candidates.push(String(user.username).toLowerCase().replace(/[^a-z0-9]/g, ""));
+        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
+            var key = OWNER_LOGO_KEYS[i];
+            for (var j = 0; j < candidates.length; j++) {
+                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return "/artwork/profile-current/" + key + ".png";
+            }
+        }
+        return "/artwork/logo.png";
+    }
+
     function avatarUrl(user) {
         if (user && user.avatar) return "https://sleepercdn.com/avatars/thumbs/" + encodeURIComponent(user.avatar);
-        return "/artwork/logo.png";
+        return ownerLogoUrl(user);
+    }
+
+    function teamImage(info, className) {
+        var img = document.createElement("img");
+        img.className = className || "team-avatar";
+        img.src = info && info.avatar ? info.avatar : ownerLogoUrl(info && info.user);
+        img.alt = ""; img.width = 48; img.height = 48;
+        img.dataset.ownerFallback = info && info.ownerLogo ? info.ownerLogo : ownerLogoUrl(info && info.user);
+        img.onerror = function () { this.onerror = null; this.src = this.dataset.ownerFallback || "/artwork/logo.png"; };
+        return img;
     }
 
     function playerImageUrl(playerId) {
@@ -85,6 +110,7 @@
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
                 avatar: avatarUrl(user),
+                ownerLogo: ownerLogoUrl(user),
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
                 ties: Number(settings.ties || 0),
@@ -281,7 +307,7 @@
                 var info = state.rosterMap.get(String(matchup.roster_id));
                 var team = document.createElement("div"); team.className = "matchup-team";
                 var identity = document.createElement("div"); identity.className = "team-identity";
-                var img = document.createElement("img"); img.className = "team-avatar"; img.src = info && info.avatar ? info.avatar : "/artwork/logo.png"; img.alt = ""; img.width = 48; img.height = 48; img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
+                var img = teamImage(info, "team-avatar");
                 var text = document.createElement("div");
                 var name = document.createElement("h3"); name.textContent = info ? info.teamName : "Roster " + matchup.roster_id; text.appendChild(name);
                 var account = document.createElement("span"); account.textContent = info && info.account ? info.account : ""; text.appendChild(account);
