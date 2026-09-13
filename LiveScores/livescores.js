@@ -15,8 +15,7 @@
         stats: {},
         projections: {},
         matchups: [],
-        schedule: [],
-        liveGames: []
+        schedule: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -32,16 +31,14 @@
 
     function api(path) {
         var url = "/.netlify/functions/sleeper?source=app&path=" + encodeURIComponent(path);
-        var controller = new AbortController();
-        var timeout = setTimeout(function () { controller.abort(); }, 10000);
-        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" }, signal: controller.signal }).then(function (response) {
+        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } }).then(function (response) {
             return response.text().then(function (text) {
                 var data = null;
                 try { data = text ? JSON.parse(text) : null; } catch (e) {}
                 if (!response.ok) throw new Error((data && data.error) || ("Sleeper API returned " + response.status));
                 return data;
             });
-        }).finally(function () { clearTimeout(timeout); });
+        });
     }
 
     function optionalApi(paths) {
@@ -58,87 +55,34 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
-    // FS5 owner artwork. Live Scores uses these PNGs, never Sleeper avatars.
-    var OWNER_ARTWORK_KEYS = [
-        "bailey","brycen","chris","cody","david","ethan","jordan",
-        "keith","matthew","max","mike","will"
-    ];
+    var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
 
-    // Explicit Sleeper usernames supplied for the FS5 owners.
-    var OWNER_ARTWORK_BY_USERNAME = {
-        "diabeastus": "will",
-        "atlnitrohawgs": "cody",
-        "thejamyricals": "matthew",
-        "armoryroadtrucks": "mike",
-        "wornoutsocks": "keith",
-        "fs5chair": "ethan",
-        "btb1022": "bailey"
-    };
-
-    // Durable roster-id cache. Username mapping is always checked first so a
-    // stale browser cache can never override a known FS5 mapping.
-    var OWNER_ARTWORK_BY_ROSTER_ID = {};
-
-    function normalizeSleeperUsername(value) {
-        return String(value || "").toLowerCase().replace(/^@/, "").trim();
-    }
-
-    function ownerArtworkKeyForUser(user) {
-        var username = normalizeSleeperUsername(user && user.username);
-
-        if (OWNER_ARTWORK_BY_USERNAME[username]) {
-            return OWNER_ARTWORK_BY_USERNAME[username];
-        }
-
-        // Owners whose Sleeper username/display name already matches an artwork key.
-        var candidates = [
-            username,
-            String(user && user.display_name || "").toLowerCase().replace(/[^a-z0-9]/g, "")
-        ];
-
-        for (var i = 0; i < OWNER_ARTWORK_KEYS.length; i++) {
-            var key = OWNER_ARTWORK_KEYS[i];
+    function ownerLogoUrl(user) {
+        var candidates = [];
+        if (user && user.display_name) candidates.push(String(user.display_name).toLowerCase().replace(/[^a-z0-9]/g, ""));
+        if (user && user.username) candidates.push(String(user.username).toLowerCase().replace(/[^a-z0-9]/g, ""));
+        for (var i = 0; i < OWNER_LOGO_KEYS.length; i++) {
+            var key = OWNER_LOGO_KEYS[i];
             for (var j = 0; j < candidates.length; j++) {
-                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) return key;
+                if (candidates[j] === key || candidates[j].indexOf(key) !== -1) {
+                    return "/owners/artwork/profile-current/" + key + ".png";
+                }
             }
         }
-        return null;
+        return "/artwork/logo.png";
     }
 
-    function ownerArtworkCandidates(key) {
-        if (OWNER_ARTWORK_KEYS.indexOf(key) === -1) {
-            return ["/artwork/logo.png"];
-        }
-
-        // Primary path is the known owner-page location. The additional paths
-        // make this resilient if the artwork folder is moved later.
-        return [
-            "/owners/artwork/profile-current/" + key + ".png",
-            "/owners/artwork/" + key + ".png",
-            "/artwork/profile-current/" + key + ".png"
-        ];
+    // Live Scores intentionally uses FS5 owner artwork instead of Sleeper avatars.
+    function avatarUrl(user) {
+        return ownerLogoUrl(user);
     }
 
     function teamImage(info, className) {
         var img = document.createElement("img");
         img.className = className || "team-avatar";
+        img.src = info && info.ownerLogo ? info.ownerLogo : "/artwork/logo.png";
         img.alt = ""; img.width = 48; img.height = 48;
-
-        var key = info && info.ownerKey;
-        var candidates = ownerArtworkCandidates(key);
-        var index = 0;
-
-        img.src = candidates[index];
-
-        img.onerror = function () {
-            index += 1;
-            if (index < candidates.length) {
-                this.src = candidates[index];
-            } else {
-                this.onerror = null;
-                this.src = "/artwork/logo.png";
-            }
-        };
+        img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
         return img;
     }
 
@@ -152,42 +96,23 @@
         return String(metadataName || user.display_name || user.username || "FS5 Team").trim();
     }
 
-    loadRosterArtworkMap();
-
     function buildRosterMap() {
         var usersById = new Map();
         state.users.forEach(function (user) {
             if (user && user.user_id != null) usersById.set(String(user.user_id), user);
         });
-
         state.rosterMap = new Map();
-
         state.rosters.forEach(function (roster) {
             if (!roster || roster.roster_id == null) return;
-
-            var rosterId = String(roster.roster_id);
             var user = usersById.get(String(roster.owner_id));
-
-            // IMPORTANT: always resolve the current username first. This fixes
-            // old cached mappings and still lets roster_id act as the durable
-            // identifier once the owner has been resolved.
-            var ownerKey = ownerArtworkKeyForUser(user);
-
-            if (ownerKey) {
-                OWNER_ARTWORK_BY_ROSTER_ID[rosterId] = ownerKey;
-            } else {
-                ownerKey = OWNER_ARTWORK_BY_ROSTER_ID[rosterId] || null;
-            }
-
             var settings = roster.settings || {};
-            state.rosterMap.set(rosterId, {
+            state.rosterMap.set(String(roster.roster_id), {
                 roster: roster,
                 user: user,
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
-                avatar: null,
-                ownerLogo: null,
-                ownerKey: ownerKey,
+                avatar: avatarUrl(user),
+                ownerLogo: ownerLogoUrl(user),
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
                 ties: Number(settings.ties || 0),
@@ -359,38 +284,41 @@
         }) || null;
     }
 
-    function liveGameForTeam(team) {
-        var t = String(team || "").toUpperCase();
-        if (!t || !state.liveGames || !state.liveGames.length) return null;
-        return state.liveGames.find(function (game) {
-            return (game.teams || []).some(function (entry) {
-                return String(entry.abbreviation || "").toUpperCase() === t;
-            });
-        }) || null;
-    }
-
     function playerAvailableTimePct(playerIds) {
         var values = [];
         (playerIds || []).filter(Boolean).forEach(function (id) {
             var meta = playerMeta(id);
-            var team = String((meta && meta.team) || "").toUpperCase();
-            var live = liveGameForTeam(team);
-            if (live && live.remainingPct != null) {
-                values.push(Number(live.remainingPct));
-                return;
-            }
-            // If the independent live feed is temporarily unavailable, use the
-            // Sleeper schedule only as a conservative fallback. This never blocks
-            // the page and is replaced automatically when the live feed returns.
+            var team = meta && meta.team;
             var game = scheduleGameForTeam(team);
             if (!game) return;
+
             var status = String(game.status || "").toLowerCase();
-            if (status === "complete" || status === "post") values.push(0);
-            else if (status === "in_game" || status === "in" || status === "in_progress") values.push(50);
-            else values.push(100);
+            if (status === "complete") {
+                values.push(0);
+                return;
+            }
+            if (status === "pre_game" || status === "scheduled" || status === "pregame") {
+                values.push(100);
+                return;
+            }
+
+            if (status === "in_game" || status === "in progress" || status === "in_progress") {
+                var start = Date.parse(game.start_time || "");
+                if (Number.isFinite(start)) {
+                    // NFL games average roughly 3h 15m from kickoff to completion.
+                    var total = 195 * 60 * 1000;
+                    values.push(Math.max(0, Math.min(100, ((start + total) - Date.now()) / total * 100)));
+                } else {
+                    values.push(50);
+                }
+                return;
+            }
+
+            values.push(50);
         });
+
         if (!values.length) return null;
-        return Math.round(values.reduce(function(a,b){return a+b;},0)/values.length);
+        return Math.round(values.reduce(function (a,b) { return a + b; }, 0) / values.length);
     }
 
     function appendPlayingTimeBar(text, starters) {
@@ -399,7 +327,7 @@
 
         var wrap = document.createElement("div");
         wrap.className = "playing-time-wrap";
-        wrap.title = state.liveGames && state.liveGames.length ? "Available playing time based on the live NFL game clock" : "Playing time estimate based on game status";
+        wrap.title = "Estimated available playing time remaining for active players";
 
         var label = document.createElement("div");
         label.className = "playing-time-label";
@@ -416,27 +344,6 @@
         wrap.appendChild(label);
         wrap.appendChild(track);
         text.appendChild(wrap);
-    }
-
-    function loadLiveGameClock() {
-        // This request is intentionally fire-and-forget. A third-party scoreboard
-        // outage must never prevent Sleeper scores from rendering.
-        return fetch("/.netlify/functions/liveclock", {
-            cache: "no-store",
-            headers: { "Accept": "application/json" }
-        }).then(function (response) {
-            return response.text().then(function (text) {
-                if (!response.ok) throw new Error("Live clock feed returned " + response.status);
-                var data = text ? JSON.parse(text) : {};
-                state.liveGames = Array.isArray(data.games) ? data.games : [];
-                if (state.matchups && state.matchups.length && state.selectedWeek === state.currentWeek) {
-                    renderMatchups(state.matchups, state.selectedWeek);
-                }
-            });
-        }).catch(function (error) {
-            console.warn("FS5 independent live clock feed unavailable", error);
-            state.liveGames = [];
-        });
     }
 
     function renderMatchups(matchups, week) {
@@ -667,7 +574,6 @@
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
             setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
-            if (week === state.currentWeek) loadLiveGameClock();
             loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
         } catch (error) {
             console.error("FS5 Sleeper matchup request failed", error);
@@ -679,33 +585,19 @@
     async function initialize() {
         setStatus("Connecting to Sleeper...");
         try {
-            // Only league membership is required to start the page. Do not make
-            // NFL state or schedule calls a prerequisite for rendering.
-            var results = await Promise.allSettled([
-                api("/league/" + LEAGUE_ID + "/rosters"),
-                api("/league/" + LEAGUE_ID + "/users")
-            ]);
-
-            var rosterResult = results[0].status === "fulfilled" ? results[0].value : [];
-            var usersResult = results[1].status === "fulfilled" ? results[1].value : [];
-
-            state.rosters = Array.isArray(rosterResult) ? rosterResult : [];
-            state.users = Array.isArray(usersResult) ? usersResult : [];
-            state.currentWeek = 2;
-            state.selectedWeek = 2;
-
-            if (!state.rosters.length || !state.users.length) {
-                throw new Error("Sleeper league data could not be reached. The site tried both current Sleeper API hosts.");
-            }
-
+            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
+            var nflState = results[0] || {};
+            state.currentWeek = Number(nflState.display_week || nflState.week || 1);
+            state.selectedWeek = state.currentWeek;
+            state.rosters = Array.isArray(results[1]) ? results[1] : [];
+            state.users = Array.isArray(results[2]) ? results[2] : [];
+            state.schedule = Array.isArray(results[3]) ? results[3] : [];
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
-            setStatus("Live · Sleeper connected", "live");
         } catch (error) {
             console.error("FS5 Sleeper initialization failed", error);
-            weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error");
-            setStatus("Sleeper connection error", "error");
+            weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
         }
     }
 
