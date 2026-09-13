@@ -4,7 +4,11 @@
 
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
-  const source = qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : 'app');
+  const source = qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app'));
+
+  if (source === 'news') {
+    return getPlayerNews(qs.player || '', qs.team || '');
+  }
 
   if (source === 'players') {
     return getRequestedPlayers(qs.ids || '');
@@ -95,4 +99,65 @@ function json(statusCode, body) {
     headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
     body: JSON.stringify(body)
   };
+}
+
+
+async function getPlayerNews(playerName, team) {
+  const name = String(playerName || '').trim();
+  const nflTeam = String(team || '').trim();
+  if (!name) return json(400, { error: 'Player name is required.' });
+
+  // Google News RSS is used only as a current-news feed. We request it on
+  // demand when a manager opens a player, rather than for every player on load.
+  const query = [name, nflTeam, 'NFL'].filter(Boolean).join(' ');
+  const rssUrl = 'https://news.google.com/rss/search?q=' + encodeURIComponent(query) + '&hl=en-US&gl=US&ceid=US:en';
+  try {
+    const response = await fetch(rssUrl, {
+      headers: { 'Accept': 'application/rss+xml, application/xml, text/xml', 'User-Agent': 'FS5-Live-Scores/1.0' }
+    });
+    if (!response.ok) return json(502, { error: `News feed returned ${response.status}.` });
+    const xml = await response.text();
+    const items = parseRssItems(xml).slice(0, 5);
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'public, max-age=900'
+      },
+      body: JSON.stringify({ query, items })
+    };
+  } catch (err) {
+    return json(502, { error: err && err.message ? err.message : 'Unable to load player news.' });
+  }
+}
+
+function parseRssItems(xml) {
+  const items = [];
+  const blocks = String(xml || '').match(/<item[\s\S]*?<\/item>/gi) || [];
+  for (const block of blocks) {
+    const title = xmlTag(block, 'title');
+    const link = xmlTag(block, 'link');
+    const pubDate = xmlTag(block, 'pubDate');
+    const sourceMatch = block.match(/<source(?:\s+url=["']([^"']*)["'])?>([\s\S]*?)<\/source>/i);
+    const source = sourceMatch ? decodeXml(sourceMatch[2]).trim() : '';
+    if (!title || !link) continue;
+    items.push({ title: decodeXml(title).trim(), link: decodeXml(link).trim(), pubDate: decodeXml(pubDate || '').trim(), source });
+  }
+  return items;
+}
+
+function xmlTag(block, tag) {
+  const re = new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>', 'i');
+  const match = String(block || '').match(re);
+  return match ? match[1].trim() : '';
+}
+
+function decodeXml(value) {
+  return String(value || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'");
 }
