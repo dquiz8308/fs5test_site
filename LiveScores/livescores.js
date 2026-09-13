@@ -4,8 +4,16 @@ const LEAGUE_ID="1387297022695993344", SEASON=2026, REFRESH_MS=45000;
 const BASE="https://api.sleeper.app/v1", DATA_BASE="https://api.sleeper.com/v1";
 const S={week:null,selected:null,league:null,rosters:[],users:[],players:{},stats:{},projections:{},schedule:[],matchups:[],scoring:{},teamMap:new Map()};
 const $=id=>document.getElementById(id), esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const api=async path=>{const r=await fetch(BASE+path,{cache:"no-store",headers:{"Accept":"application/json"}});if(!r.ok)throw Error("Sleeper API "+r.status);return r.json();};
-const dataApi=async path=>{const r=await fetch(DATA_BASE+path,{cache:"no-store",headers:{"Accept":"application/json"}});if(!r.ok)throw Error("Sleeper data API "+r.status);return r.json();};
+const proxy=async(source,path)=>{
+  const u=`/.netlify/functions/sleeper?source=${encodeURIComponent(source)}&path=${encodeURIComponent(path)}`;
+  const r=await fetch(u,{cache:"no-store",headers:{"Accept":"application/json"}});
+  let body=null;
+  try{body=await r.json();}catch(_){}
+  if(!r.ok){throw Error((body&&body.error)||`Sleeper ${source} API ${r.status}`);}
+  return body;
+};
+const api=path=>proxy("app",path);
+const dataApi=path=>proxy("data",path);
 const cdn=(id,thumb=false)=>id?`https://sleepercdn.com/avatars/${thumb?'thumbs/':''}${encodeURIComponent(id)}`:"";
 const pimg=id=>id?`https://sleepercdn.com/content/nfl/players/thumb/${encodeURIComponent(id)}.jpg`:"";
 const n=v=>Number.isFinite(Number(v))?Number(v):0, fmt=v=>n(v).toFixed(2), norm=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -48,18 +56,50 @@ async function loadWeek(week){
 
     // These feeds are supplemental. Try them independently so one unavailable feed
     // cannot break the live matchup/score display.
-    try{S.stats=await dataApi(`/stats/nfl/${seasonType}/${SEASON}/${apiWeek}`)||{};}catch(e){console.warn('Sleeper weekly stats unavailable:',e);}
-    try{S.projections=await dataApi(`/projections/nfl/${seasonType}/${SEASON}/${apiWeek}`)||{};}catch(e){console.warn('Sleeper weekly projections unavailable:',e);}
+    try{S.stats=await dataApi(`/stats/nfl/${SEASON}/${apiWeek}?season_type=${encodeURIComponent(seasonType)}`)||{};}catch(e){console.warn('Sleeper weekly stats unavailable:',e);}
+    try{S.projections=await dataApi(`/projections/nfl/${SEASON}/${apiWeek}?season_type=${encodeURIComponent(seasonType)}`)||{};}catch(e){console.warn('Sleeper weekly projections unavailable:',e);}
     renderMatchups(S.matchups,week);
   }catch(e){
     console.error('Sleeper matchup error:',e);
     $("live-status").textContent='Sleeper matchup data error';
     $("live-status").className='live-status is-error';
-    $("week-context").textContent='Unable to load matchup data. Try Refresh.';
-    $("matchup-grid").innerHTML='<div class="empty-state">Sleeper matchup data could not be loaded. Please try Refresh.</div>';
+    $("week-context").textContent=`Unable to load matchup data: ${e.message||'unknown Sleeper error'}. Try Refresh.`;
+    $("matchup-grid").innerHTML=`<div class="empty-state">Sleeper matchup data could not be loaded.<br><small>${esc(e.message||'Unknown error')}</small></div>`;
   }
   $("matchup-grid").setAttribute("aria-busy","false");
 }
-async function init(){try{const [league,state,rosters,users,players,schedule]=await Promise.all([api(`/league/${LEAGUE_ID}`),api('/state/nfl'),api(`/league/${LEAGUE_ID}/rosters`),api(`/league/${LEAGUE_ID}/users`),api('/players/nfl'),fetch('https://api.sleeper.app/schedule/nfl/regular/2026',{cache:'no-store'}).then(r=>r.ok?r.json():[])]);S.league=league;S.scoring=league.scoring_settings||{};S.week=Number(state.display_week||state.week||1);S.selected=S.week;S.rosters=rosters||[];S.users=users||[];S.players=players||{};S.schedule=schedule||[];buildTeams();renderRanks();const sel=$("week-select");for(let w=1;w<=17;w++){const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;sel.appendChild(o);}sel.disabled=false;sel.value=S.week;await loadWeek(S.week);}catch(e){console.error(e);$("live-status").textContent='Unable to connect to Sleeper';$("live-status").className='live-status is-error';$("week-context").textContent='Refresh after confirming the site can reach Sleeper.';}}
+async function init(){
+  try{
+    // Core league data is required. Optional large/supplemental feeds are isolated so
+    // one Sleeper endpoint cannot prevent the matchup page from rendering.
+    const [league,state,rosters,users]=await Promise.all([
+      api(`/league/${LEAGUE_ID}`),
+      api('/state/nfl'),
+      api(`/league/${LEAGUE_ID}/rosters`),
+      api(`/league/${LEAGUE_ID}/users`)
+    ]);
+    S.league=league;
+    S.scoring=league.scoring_settings||{};
+    S.week=Number(state.display_week||state.week||1);
+    S.selected=S.week;
+    S.rosters=rosters||[];
+    S.users=users||[];
+    // Player dictionary and schedule are helpful but never block the core page.
+    try{S.players=await api('/players/nfl')||{};}catch(e){console.warn('Sleeper player dictionary unavailable:',e);S.players={};}
+    try{S.schedule=await api('/schedule/nfl/regular/2026')||[];}catch(e){console.warn('Sleeper schedule unavailable:',e);S.schedule=[];}
+    buildTeams();
+    renderRanks();
+    const sel=$("week-select");
+    for(let w=1;w<=18;w++){const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;sel.appendChild(o);}
+    sel.disabled=false;
+    sel.value=S.week;
+    await loadWeek(S.week);
+  }catch(e){
+    console.error('Sleeper initialization error:',e);
+    $("live-status").textContent='Unable to connect to Sleeper';
+    $("live-status").className='live-status is-error';
+    $("week-context").textContent=`Sleeper connection failed: ${e.message||'unknown error'}`;
+  }
+}
 $("week-select").addEventListener('change',e=>loadWeek(Number(e.target.value)));$("refresh-button").addEventListener('click',()=>loadWeek(S.selected||S.week));setInterval(()=>{if(S.selected===S.week)loadWeek(S.week);},REFRESH_MS);init();
 })();
