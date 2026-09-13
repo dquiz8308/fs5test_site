@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="../artwork/logowhite.jpg">
+    <link rel="icon" type="image/jpeg" href="../artwork/logowhite.jpg">
+    <title>FastStrongFive Fantasy Football League</title>
+    <link rel="stylesheet" href="ownerstyle.css">
+    <link rel="stylesheet" href="../common.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-config.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="website-title">Owners</h1>
+<button class="menu-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Open navigation menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </header>
+<nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
+        <div class="site-nav__brand">
+            <img src="../artwork/logo.png" alt="FastStrongFive">
+        </div>
+        <div class="container site-nav__container">
+            <ul class="site-nav__list">
+                <li class="site-nav__item"><a class="site-nav__link" href="../index.html"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link is-active" href="../owners/index.html" aria-current="page"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../livescores/index.html"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
+                <li class="site-nav__item site-nav__item--has-submenu">
+                    <div class="site-nav__category-row">
+                        <a class="site-nav__link" href="../nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
+                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="nextgen-submenu">
+                            <span class="site-nav__disclosure-label">Toggle NextGenStats submenu</span>
+                            <span class="site-nav__chevron" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <ul class="site-nav__submenu" id="nextgen-submenu">
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/currentyear/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--calendar" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path class="site-nav__icon-accent" d="M4 9h16M8 3v4M16 3v4"/><path d="M8 13h2M14 13h2M8 17h2M14 17h2"/></svg><span>2026 Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/singlegame/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--football" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 18c-2-4 1-10 6-13s9-2 8 2c1 4-2 9-7 12s-9 3-7-1Z"/><path class="site-nav__icon-accent" d="m9 10 6 4M11 9l-1 2M13 11l-1 2M15 13l-1 2"/></svg><span>Single Game Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/alltime/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--clock" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="site-nav__icon-accent" d="M12 7v5l3.5 2M8 3.8 6.5 2M16 3.8 17.5 2"/></svg><span>All-Time Records</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../nextgenstats/seasonrecords/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--season" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 6h14v14H5zM8 3v6M16 3v6M5 10h14"/><path class="site-nav__icon-accent" d="m12 12.5.8 1.7 1.8.2-1.3 1.2.3 1.8-1.6-.9-1.6.9.3-1.8-1.3-1.2 1.8-.2z"/></svg><span>Season Records</span></a></li>
+                    </ul>
+                </li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../fs5book/index.html"><svg class="site-nav__icon site-nav__icon--book" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 5.5c3.2-1 5.8-.5 8 1.5v13c-2.2-2-4.8-2.5-8-1.5z"/><path d="M20 5.5c-3.2-1-5.8-.5-8 1.5v13c2.2-2 4.8-2.5 8-1.5z"/><path class="site-nav__icon-accent" d="M12 7v13"/></svg><span>FS5 SportsBook</span></a></li>
+                <li class="site-nav__item site-nav__item--has-submenu">
+                    <div class="site-nav__category-row">
+                        <a class="site-nav__link" href="../vault/index.html"><svg class="site-nav__icon site-nav__icon--vault" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3 8-8 10-5-2-8-5-8-10V6z"/><rect class="site-nav__icon-accent" x="8.5" y="11" width="7" height="5" rx="1"/><path class="site-nav__icon-accent" d="M10 11V9.5a2 2 0 0 1 4 0V11"/></svg><span>Vault</span></a>
+                        <button class="site-nav__disclosure" type="button" aria-expanded="false" aria-controls="vault-submenu">
+                            <span class="site-nav__disclosure-label">Toggle Vault submenu</span>
+                            <span class="site-nav__chevron" aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <ul class="site-nav__submenu" id="vault-submenu">
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/archive/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--archive" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path class="site-nav__icon-accent" d="M4 5h16v4H4z"/><path d="M6 9v11h12V9M9 13h6"/></svg><span>Archive</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/brackets/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--brackets" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h4v4H5zM5 15h4v4H5zM15 10h4v4h-4zM9 7h3v5h3M9 17h3v-5"/><circle class="site-nav__icon-accent" cx="17" cy="12" r="1"/></svg><span>Brackets</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/bowls/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--bowl" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M5 5h14v3c0 4-2.5 7-7 8-4.5-1-7-4-7-8zM8 20h8M12 16v4"/><path class="site-nav__icon-accent" d="M5 7H2c0 3 1.5 5 4 5M19 7h3c0 3-1.5 5-4 5"/></svg><span>Bowl Games</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/probowl/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--star" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/><path class="site-nav__icon-accent" d="m12 7 1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z"/></svg><span>Pro Bowl</span></a></li>
+                        <li><a class="site-nav__link site-nav__submenu-link" href="../vault/drafts/index.html"><svg class="site-nav__icon site-nav__icon--submenu site-nav__icon--drafts" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="1"/><path d="M9.33 5v14M14.67 5v14M4 9.67h16M4 14.33h16"/><path class="site-nav__icon-accent" d="M4 5h5.33v4.67H4zM9.33 9.67h5.34v4.66H9.33zM14.67 14.33H20V19h-5.33z"/></svg><span>Drafts</span></a></li>
+                    </ul>
+                </li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../divisions/index.html"><svg class="site-nav__icon site-nav__icon--divisions" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect class="site-nav__icon-accent" x="14" y="14" width="6" height="6" rx="1"/></svg><span>Divisions</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="../hallofchampions/index.html"><svg class="site-nav__icon site-nav__icon--hall" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7z"/><path d="M8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/><path class="site-nav__icon-accent" d="m12 6 .7 1.5 1.6.2-1.2 1.1.3 1.6-1.4-.8-1.4.8.3-1.6-1.2-1.1 1.6-.2z"/></svg><span>Hall of Champions</span></a></li>
+            </ul>
+        </div>
+    </nav>
+    <main class="owners-main--blank">
+
+<div id="owner-data-status" class="owner-data-status" role="status" aria-live="polite" hidden></div>
+<section class="row1 owner-profile-layout" aria-labelledby="team-name">
+    <div class="owner-profile__selector">
+        <div class="owner-dropdown">
+            <label for="owner-dropdown">
+                <span class="owner-dropdown__label-default">Viewing Owner</span>
+                <span class="owner-dropdown__label-blank">Owner</span>
+            </label>
+            <p class="owner-profile__welcome">Select an owner to view career statistics</p>
+            <p class="owner-profile__descriptor">Career History &middot; Records &middot; Postseason &middot; H2H</p>
+            <select id="owner-dropdown" aria-label="Select an owner">
+                <!-- Owner options -->
+                <option value="Owner">Owner</option>
+                <option value="Brycen">Brycen</option>
+                <option value="Will">Will</option>
+                <option value="David">David</option>
+                <option value="Jordan">Jordan</option>
+                <option value="Chris">Chris</option>
+                <option value="Bailey">Bailey</option>
+                <option value="Mike">Mike</option>
+                <option value="Keith">Keith</option>
+                <option value="Ethan">Ethan</option>
+                <option value="Matthew">Matthew</option>
+                <option value="Cody">Cody</option>
+                <option value="Max">Max</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="owner-profile">
+    <div class="owner-profile__identity">
+        <div class="team-logo">
+            <img src="../artwork/logo.png" alt="" class="team-logo-image" hidden>
+            <div class="team-logo-fallback" aria-hidden="true">
+                <span class="team-logo-fallback__initials">—</span>
+            </div>
+        </div>
+        <div class="team-name">
+            <span class="owner-profile__eyebrow">Current Team</span>
+            <h2 id="team-name">Select an owner</h2>
+        </div>
+    </div>
+
+    <div class="owner-profile__primary">
+        <section class="overall-stats" aria-label="Primary career statistics">
+            <div class="seasons stat-box stat-box--neutral">
+                <p><span id="seasons-title">Seasons</span></p>
+                <div class="record"><span id="seasons">00</span></div>
+            </div>
+            <div class="wins-box stat-box stat-box--wins">
+                <p><span id="wins-title">Wins</span></p>
+                <div class="record"><span id="wins">000</span></div>
+            </div>
+            <div class="losses-box stat-box stat-box--losses">
+                <p><span id="losses-title">Losses</span></p>
+                <div class="record"><span id="losses">000</span></div>
+            </div>
+            <div class="ties-box stat-box stat-box--gold">
+                <p><span id="ties-title">Ties</span></p>
+                <div class="record"><span id="ties">0</span></div>
+            </div>
+            <div class="total-box stat-box stat-box--neutral">
+                <p><span id="total-title">Total Games</span></p>
+                <div class="record"><span id="total-games">000</span></div>
+            </div>
+            <div class="win-percent-box stat-box stat-box--neutral">
+                <p><span id="percent-title">Win %</span></p>
+                <div class="record"><span id="win-percent">0.000</span></div>
+            </div>
+        </section>
+    </div>
+
+    <div class="summary-box">
+        <div class="owner-profile__secondary" aria-label="Career summary statistics">
+            <div class="champs summary-stat summary-stat--gold">
+                <h3>Championships</h3>
+                <p><span id="champs">0</span></p>
+            </div>
+            <div class="last-place summary-stat">
+                <h3>Last Place</h3>
+                <p><span id="last-place">0</span></p>
+            </div>
+            <div class="ten-win summary-stat">
+                <h3>10 Win Seasons</h3>
+                <p><span id="ten-win">0</span></p>
+            </div>
+            <div class="best-record summary-stat">
+                <h3>Best Record</h3>
+                <p><span id="best-record">0-0</span></p>
+            </div>
+            <div class="worst-record summary-stat">
+                <h3>Worst Record</h3>
+                <p><span id="worst-record">0-0</span></p>
+            </div>
+            <div class="average-record summary-stat">
+                <h3>Average Record</h3>
+                <p><span id="average-record">0.00-0.00</span></p>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+
+<div class="row2 owner-performance-grid">
+    <section class="phase2-card phase2-card--streaks" aria-labelledby="career-streaks-title">
+        <div class="phase2-card__header">
+            <span class="phase2-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 12h3l2-5 3 10 2-7 2 4h6"/></svg></span>
+            <h2 id="career-streaks-title">Career Streaks</h2>
+        </div>
+        <div class="phase2-card__body streak-list">
+            <div class="streak-row streak-row--win">
+                <span class="streak-row__icon" aria-hidden="true">↑</span>
+                <h3>Longest Win Streak</h3>
+                <strong><span id="longest-win-streak">00</span></strong>
+                <p id="wstreakdetail">***</p>
+            </div>
+            <div class="streak-row streak-row--loss">
+                <span class="streak-row__icon" aria-hidden="true">↓</span>
+                <h3>Longest Losing Streak</h3>
+                <strong><span id="longest-losing-streak">00</span></strong>
+                <p id="lstreakdetail">***</p>
+            </div>
+            <div class="streak-row streak-row--current">
+                <span class="streak-row__icon" aria-hidden="true">→</span>
+                <h3>Current Streak</h3>
+                <strong><span id="current-streak">00</span></strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="phase2-card phase2-card--scoring" aria-labelledby="scoring-profile-title">
+        <div class="phase2-card__header">
+            <span class="phase2-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 19v-6h3v6M10.5 19V9h3v10M16 19V5h3v14"/></svg></span>
+            <h2 id="scoring-profile-title">Scoring Profile</h2>
+        </div>
+        <div class="phase2-card__body metric-list">
+            <div class="metric-row metric-row--positive">
+                <span class="metric-row__label">Total Points</span>
+                <strong id="total-points">0</strong>
+                <p id="total-points-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--positive">
+                <span class="metric-row__label">Average Points</span>
+                <strong id="average-points">0</strong>
+                <p id="average-points-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--negative metric-row--separated">
+                <span class="metric-row__label">Total Points Against</span>
+                <strong id="points-against">0</strong>
+                <p id="points-against-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--negative">
+                <span class="metric-row__label">Average Points Against</span>
+                <strong id="average-points-against">0</strong>
+                <p id="average-points-against-rank"><span>0</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="phase2-card phase2-card--playoff" aria-labelledby="playoff-performance-title">
+        <div class="phase2-card__header">
+            <span class="phase2-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 3 19 6v5c0 4.4-2.4 7.5-7 10-4.6-2.5-7-5.6-7-10V6z"/><path d="m9 12 2 2 4-5"/></svg></span>
+            <h2 id="playoff-performance-title">Playoff Performance</h2>
+        </div>
+        <div class="phase2-card__body metric-list">
+            <div class="metric-row">
+                <span class="metric-row__label">Appearances</span>
+                <strong id="playoff-appearances">0</strong>
+                <p id="appearances-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row">
+                <span class="metric-row__label">Byes</span>
+                <strong id="playoff-byes">0</strong>
+                <p id="byes-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--positive metric-row--separated">
+                <span class="metric-row__label">Wins</span>
+                <strong id="playoff-wins">0</strong>
+                <p id="wins-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--negative">
+                <span class="metric-row__label">Losses</span>
+                <strong id="playoff-losses">0</strong>
+                <p id="losses-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--blue">
+                <span class="metric-row__label">Win %</span>
+                <strong id="playoff-win-percentage">0.000</strong>
+                <p id="win-percentage-rank"><span>0</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="phase2-card phase2-card--championship" aria-labelledby="championship-performance-title">
+        <div class="phase2-card__header">
+            <span class="phase2-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 4h8v3c0 4-1.6 6-4 7-2.4-1-4-3-4-7zM8 6H4c0 3 1.5 5 4.5 5M16 6h4c0 3-1.5 5-4.5 5M12 14v4M8 20h8"/></svg></span>
+            <h2 id="championship-performance-title">Championship Performance</h2>
+        </div>
+        <div class="phase2-card__body metric-list">
+            <div class="metric-row">
+                <span class="metric-row__label">Appearances</span>
+                <strong id="championship-appearances">0</strong>
+                <p id="championship-appearances-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--positive metric-row--separated">
+                <span class="metric-row__label">Wins</span>
+                <strong id="champ-wins">0</strong>
+                <p id="champ-wins-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--negative">
+                <span class="metric-row__label">Losses</span>
+                <strong id="champ-losses">0</strong>
+                <p id="champ-losses-rank"><span>0</span></p>
+            </div>
+            <div class="metric-row metric-row--blue">
+                <span class="metric-row__label">Win %</span>
+                <strong id="champ-win-percentage">0.000</strong>
+                <p id="champ-win-percentage-rank"><span>0</span></p>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+<div class="row3">
+    <div class="all-years season-history" aria-labelledby="season-history-title">
+        <div class="season-history__card">
+            <div class="season-history__header">
+                <span class="season-history__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"/><path d="M12 8v4l3 2"/></svg>
+                </span>
+                <h2 id="season-history-title">Season History</h2>
+            </div>
+            <div class="season-history__columns" aria-hidden="true">
+                <span>Year</span>
+                <span class="season-history__team-heading">Team</span>
+                <span>Record</span>
+                <span>Finish</span>
+                <span>Reg. Rank</span>
+            </div>
+            <div class="all-years-table season-history__list" id="season-history-list"></div>
+            <p class="season-history__empty" id="season-history-empty">Select an owner to view season history.</p>
+            <div class="season-history__controls" hidden>
+                <button type="button" class="season-history__toggle" aria-expanded="false" aria-controls="season-history-list"></button>
+                <p class="season-history__note"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-records-container team-game-records" aria-labelledby="team-game-records-title">
+        <div class="team-game-records__toolbar">
+            <div class="team-game-records__header">
+                <span class="team-game-records__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M5 5h14v14H5z"/><path d="M8 15v-3M12 15V9M16 15V7"/></svg>
+                </span>
+                <h2 id="team-game-records-title">Team Game Records</h2>
+            </div>
+            <select id="game-record-dropdown" aria-label="Select a team game record category">
+                <option value="high-scores">Highest Team Score</option>
+                <option value="low-scores">Lowest Team Score</option>
+                <option value="biggest-wins">Biggest Wins</option>
+                <option value="biggest-losses">Biggest Losses</option>
+                <option value="closest-wins">Closest Wins</option>
+                <option value="closest-losses">Closest Losses</option>
+                <option value="most-losing">Most While Losing</option>
+                <option value="least-winning">Least While Winning</option>
+            </select>
+        </div>
+        <div class="team-game-records__results" tabindex="0" aria-label="Team game record results">
+            <table class="game-records-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Score</th>
+                        <th>Year</th>
+                        <th>Week</th>
+                        <th>Opponent</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<section class="h2h-summary h2h-summary--redesigned" aria-labelledby="h2h-summary-title">
+    <div class="h2h-summary__header">
+        <span class="h2h-summary__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false"><path d="M8 7h8M8 17h8M7 7l-2 2 2 2M17 13l2 2-2 2"/></svg>
+        </span>
+        <h2 id="h2h-summary-title"><a href="../h2h/index.html">H2H Summary</a></h2>
+    </div>
+    <p class="h2h-summary__empty" id="h2h-summary-empty">Select an owner to view head-to-head records.</p>
+    <div class="h2h-summary__grid" id="h2h-summary-grid" hidden>
+        <div class="owner-stats">
+            <p><span id="owner1-name">Owner 1</span></p>
+            <div class="record">
+                 <span id="owner1-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner1-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner2-name">Owner 2</span></p>
+            <div class="record">
+                 <span id="owner2-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner2-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner3-name">Owner 3</span></p>
+            <div class="record">
+                 <span id="owner3-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner3-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner4-name">Owner 4</span></p>
+            <div class="record">
+                 <span id="owner4-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner4-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner5-name">Owner 5</span></p>
+            <div class="record">
+                 <span id="owner5-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner5-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner6-name">Owner 6</span></p>
+            <div class="record">
+                 <span id="owner6-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner6-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner7-name">Owner 7</span></p>
+            <div class="record">
+                 <span id="owner7-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner7-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner8-name">Owner 8</span></p>
+            <div class="record">
+                 <span id="owner8-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner8-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner9-name">Owner 9</span></p>
+            <div class="record">
+                 <span id="owner9-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner9-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner10-name">Owner 10</span></p>
+            <div class="record">
+                 <span id="owner10-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner10-losses">00</span>
+            </div>
+        </div>
+        <div class="owner-stats">
+            <p><span id="owner11-name">Owner 11</span></p>
+            <div class="record">
+                 <span id="owner11-wins">00</span>
+                 <span class="dash">-</span> <!-- Permanent dash between numbers -->
+                 <span id="owner11-losses">00</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+  </main>
+    <footer>
+        <div class="container">
+            <p><span data-footer-permanent>FastStrongFive</span><span data-footer-status aria-live="polite">Founded 2012</span></p>
+        </div>
+    </footer>
+    <script src="ownerscript.js?v=owners-blank-state-20260806"></script>
+    <script src="../footer-status.js"></script>
+    <script src="../mobile-menu.js"></script>
+</body>
+</html>
