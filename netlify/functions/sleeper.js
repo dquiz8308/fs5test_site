@@ -1,15 +1,20 @@
-// Same-origin Netlify proxy for Sleeper's public read-only APIs.
-// This avoids browser/CORS differences between Sleeper endpoints and lets the
-// site fail gracefully if one upstream feed is unavailable.
+// FS5 Sleeper proxy. League/matchup endpoints use Sleeper's public v1 API.
+// Player-name lookups are handled specially: Sleeper's full NFL player catalog is
+// now ~14MB, so we filter it server-side and return only the requested IDs.
+
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
-  const source = qs.source === 'data' ? 'data' : 'app';
+  const source = qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : 'app');
+
+  if (source === 'players') {
+    return getRequestedPlayers(qs.ids || '');
+  }
+
   let path = qs.path || '';
   try { path = decodeURIComponent(path); } catch (_) {}
-
   if (!path.startsWith('/')) path = '/' + path;
-  // League/stats/projections/state endpoints use the /v1 prefix. Schedule does not.
   if (!path.startsWith('/v1/') && !path.startsWith('/schedule/')) path = '/v1' + path;
+
   if (!/^\/(v1\/)?[A-Za-z0-9_?=&.\-\/]+$/.test(path)) {
     return json(400, { error: 'Invalid Sleeper API path.' });
   }
@@ -18,8 +23,6 @@ exports.handler = async function (event) {
     ? ['https://api.sleeper.com']
     : ['https://api.sleeper.app'];
 
-  // Matchups are documented on api.sleeper.app. If that host has a transient
-  // problem, also try api.sleeper.com as a fallback before returning the error.
   if (path.includes('/league/') && path.includes('/matchups/')) {
     hosts.push('https://api.sleeper.com');
   }
@@ -27,8 +30,7 @@ exports.handler = async function (event) {
   let lastError = 'Sleeper request failed.';
   for (const host of hosts) {
     try {
-      const url = host + path;
-      const response = await fetch(url, {
+      const response = await fetch(host + path, {
         method: 'GET',
         headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
       });
@@ -44,7 +46,6 @@ exports.handler = async function (event) {
         };
       }
       lastError = `Sleeper ${response.status} from ${host}${path}`;
-      // Try the next allowed host for matchup requests.
       if (!path.includes('/matchups/')) break;
     } catch (err) {
       lastError = err && err.message ? err.message : lastError;
@@ -52,6 +53,41 @@ exports.handler = async function (event) {
   }
   return json(502, { error: lastError, path, source });
 };
+
+async function getRequestedPlayers(idsParam) {
+  const ids = String(idsParam || '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean)
+    .slice(0, 300);
+
+  if (!ids.length) return json(200, {});
+
+  try {
+    const response = await fetch('https://api.sleeper.app/v1/players/nfl', {
+      method: 'GET',
+      headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
+    });
+    if (!response.ok) return json(502, { error: `Sleeper player catalog returned ${response.status}.` });
+
+    const all = await response.json();
+    const wanted = {};
+    ids.forEach(id => {
+      if (all && all[id]) wanted[id] = all[id];
+    });
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'public, max-age=86400'
+      },
+      body: JSON.stringify(wanted)
+    };
+  } catch (err) {
+    return json(502, { error: err && err.message ? err.message : 'Unable to load Sleeper player catalog.' });
+  }
+}
 
 function json(statusCode, body) {
   return {
