@@ -351,7 +351,14 @@
 
     async function loadExactLiveGames() {
         try {
-            var response = await fetch("/.netlify/functions/sleeper?source=live", { cache: "no-store" });
+            var controller = new AbortController();
+            var timeout = setTimeout(function () { controller.abort(); }, 5000);
+            var response;
+            try {
+                response = await fetch("/.netlify/functions/sleeper?source=live", { cache: "no-store", signal: controller.signal });
+            } finally {
+                clearTimeout(timeout);
+            }
             if (!response.ok) return [];
             var data = await response.json();
             var events = Array.isArray(data && data.events) ? data.events : [];
@@ -661,7 +668,7 @@
         weekContext.textContent = "Loading Week " + week + "...";
         try {
             var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
-            if (week === state.currentWeek) await loadExactLiveGames();
+            if (week === state.currentWeek) loadExactLiveGames().catch(function () {});
             state.selectedWeek = week; weekSelect.value = String(week);
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
@@ -684,7 +691,7 @@
             state.rosters = Array.isArray(results[1]) ? results[1] : [];
             state.users = Array.isArray(results[2]) ? results[2] : [];
             state.schedule = Array.isArray(results[3]) ? results[3] : [];
-            await loadExactLiveGames();
+            loadExactLiveGames().catch(function () {});
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
