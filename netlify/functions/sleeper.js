@@ -10,7 +10,6 @@ exports.handler = async function (event) {
     return getPlayerNews(qs.player || '', qs.team || '');
   }
 
-
   if (source === 'players') {
     return getRequestedPlayers(qs.ids || '');
   }
@@ -24,26 +23,21 @@ exports.handler = async function (event) {
     return json(400, { error: 'Invalid Sleeper API path.' });
   }
 
-  // Use Sleeper's current data host first. Keep the legacy app host as a
-  // fallback for endpoints that still live there. The schedule endpoint is
-  // specifically on api.sleeper.com.
-  const hosts = path.startsWith('/schedule/')
+  const hosts = source === 'data'
     ? ['https://api.sleeper.com']
-    : (source === 'data'
-      ? ['https://api.sleeper.com', 'https://api.sleeper.app']
-      : ['https://api.sleeper.com', 'https://api.sleeper.app']);
+    : ['https://api.sleeper.app'];
+
+  if (path.includes('/league/') && path.includes('/matchups/')) {
+    hosts.push('https://api.sleeper.com');
+  }
 
   let lastError = 'Sleeper request failed.';
   for (const host of hosts) {
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 6000);
       const response = await fetch(host + path, {
         method: 'GET',
-        headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' },
-        signal: controller.signal
+        headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
       });
-      clearTimeout(timeout);
       const text = await response.text();
       if (response.ok) {
         return {
@@ -58,12 +52,11 @@ exports.handler = async function (event) {
       lastError = `Sleeper ${response.status} from ${host}${path}`;
       if (!path.includes('/matchups/')) break;
     } catch (err) {
-      lastError = err && err.name === 'AbortError' ? 'Sleeper request timed out.' : (err && err.message ? err.message : lastError);
+      lastError = err && err.message ? err.message : lastError;
     }
   }
   return json(502, { error: lastError, path, source });
 };
-
 
 async function getRequestedPlayers(idsParam) {
   const ids = String(idsParam || '')
