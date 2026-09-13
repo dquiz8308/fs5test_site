@@ -15,8 +15,7 @@
         stats: {},
         projections: {},
         matchups: [],
-        schedule: [],
-        liveGames: []
+        schedule: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -349,39 +348,6 @@
         card.appendChild(section);
     }
 
-    async function loadExactLiveGames() {
-        try {
-            var controller = new AbortController();
-            var timeout = setTimeout(function () { controller.abort(); }, 5000);
-            var response;
-            try {
-                response = await fetch("/.netlify/functions/sleeper?source=live", { cache: "no-store", signal: controller.signal });
-            } finally {
-                clearTimeout(timeout);
-            }
-            if (!response.ok) return [];
-            var data = await response.json();
-            var events = Array.isArray(data && data.events) ? data.events : [];
-            state.liveGames = events.map(function (event) {
-                var competition = event.competitions && event.competitions[0];
-                var status = competition && competition.status ? competition.status : {};
-                var competitors = competition && competition.competitors ? competition.competitors : [];
-                return {
-                    home: (competitors.find(function(c){ return c.homeAway === "home"; }) || {}).team?.abbreviation?.toUpperCase() || "",
-                    away: (competitors.find(function(c){ return c.homeAway === "away"; }) || {}).team?.abbreviation?.toUpperCase() || "",
-                    state: String((status.type && status.type.state) || "").toLowerCase(),
-                    period: Number(status.period || 0),
-                    clock: status.displayClock || "",
-                    completed: !!(status.type && status.type.completed)
-                };
-            });
-            return state.liveGames;
-        } catch (e) {
-            state.liveGames = [];
-            return [];
-        }
-    }
-
     function scheduleGameForTeam(team) {
         if (!team || !state.schedule || !state.schedule.length) return null;
         var t = String(team).toUpperCase();
@@ -395,28 +361,15 @@
         (playerIds || []).filter(Boolean).forEach(function (id) {
             var meta = playerMeta(id);
             var team = String((meta && meta.team) || "").toUpperCase();
-            var game = state.liveGames.find(function(g) { return g.home === team || g.away === team; });
-
-            if (!game) {
-                var scheduled = scheduleGameForTeam(team);
-                if (!scheduled) return;
-                values.push(String(scheduled.status || "").toLowerCase() === "complete" ? 0 : 100);
-                return;
-            }
-
-            if (game.completed || game.state === "post") { values.push(0); return; }
-            if (game.state !== "in") { values.push(game.state === "pre" ? 100 : 0); return; }
-
-            // Exact NFL game-clock calculation: four 15-minute quarters.
-            var parts = String(game.clock || "0:00").split(":");
-            var minutes = Number(parts[0] || 0);
-            var seconds = Number(parts[1] || 0);
-            var period = Math.max(1, Math.min(4, Number(game.period || 1)));
-            var remaining = ((4 - period) * 15 * 60) + minutes * 60 + seconds;
-            values.push(Math.max(0, Math.min(100, remaining / (4 * 15 * 60) * 100)));
+            var game = scheduleGameForTeam(team);
+            if (!game) return;
+            var status = String(game.status || "").toLowerCase();
+            if (status === "complete" || status === "post") values.push(0);
+            else if (status === "in_game" || status === "in" || status === "in_progress") values.push(50);
+            else values.push(100);
         });
         if (!values.length) return null;
-        return Math.round(values.reduce(function(a,b){ return a+b; },0) / values.length);
+        return Math.round(values.reduce(function(a,b){return a+b;},0)/values.length);
     }
 
     function appendPlayingTimeBar(text, starters) {
@@ -668,7 +621,6 @@
         weekContext.textContent = "Loading Week " + week + "...";
         try {
             var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
-            if (week === state.currentWeek) loadExactLiveGames().catch(function () {});
             state.selectedWeek = week; weekSelect.value = String(week);
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
@@ -691,7 +643,6 @@
             state.rosters = Array.isArray(results[1]) ? results[1] : [];
             state.users = Array.isArray(results[2]) ? results[2] : [];
             state.schedule = Array.isArray(results[3]) ? results[3] : [];
-            loadExactLiveGames().catch(function () {});
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
