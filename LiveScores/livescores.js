@@ -679,33 +679,29 @@
     async function initialize() {
         setStatus("Connecting to Sleeper...");
         try {
-            // Do not let the optional schedule feed hold up the page. The three
-            // required Sleeper calls are also independently time-limited.
+            // Only league membership is required to start the page. Do not make
+            // NFL state or schedule calls a prerequisite for rendering.
             var results = await Promise.allSettled([
-                api("/state/nfl"),
                 api("/league/" + LEAGUE_ID + "/rosters"),
-                api("/league/" + LEAGUE_ID + "/users"),
-                api("/schedule/nfl/regular/2026")
+                api("/league/" + LEAGUE_ID + "/users")
             ]);
 
-            var nflState = results[0].status === "fulfilled" ? (results[0].value || {}) : {};
-            var rosterResult = results[1].status === "fulfilled" ? results[1].value : [];
-            var usersResult = results[2].status === "fulfilled" ? results[2].value : [];
-            var scheduleResult = results[3].status === "fulfilled" ? results[3].value : [];
+            var rosterResult = results[0].status === "fulfilled" ? results[0].value : [];
+            var usersResult = results[1].status === "fulfilled" ? results[1].value : [];
 
-            state.currentWeek = Number(nflState.display_week || nflState.week || 1);
-            state.selectedWeek = state.currentWeek;
             state.rosters = Array.isArray(rosterResult) ? rosterResult : [];
             state.users = Array.isArray(usersResult) ? usersResult : [];
-            state.schedule = Array.isArray(scheduleResult) ? scheduleResult : [];
+            state.currentWeek = 2;
+            state.selectedWeek = 2;
 
             if (!state.rosters.length || !state.users.length) {
-                throw new Error("Sleeper roster data did not respond within 10 seconds.");
+                throw new Error("Sleeper league data could not be reached. The site tried both current Sleeper API hosts.");
             }
 
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadWeek(state.currentWeek);
+            setStatus("Live · Sleeper connected", "live");
         } catch (error) {
             console.error("FS5 Sleeper initialization failed", error);
             weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error");
