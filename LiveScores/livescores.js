@@ -1,105 +1,277 @@
-(function(){
-"use strict";
-const LEAGUE_ID="1387297022695993344", SEASON=2026, REFRESH_MS=45000;
-const BASE="https://api.sleeper.app/v1", DATA_BASE="https://api.sleeper.com/v1";
-const S={week:null,selected:null,league:null,rosters:[],users:[],players:{},stats:{},projections:{},schedule:[],matchups:[],scoring:{},teamMap:new Map()};
-const $=id=>document.getElementById(id), esc=v=>String(v??"").replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const proxy=async(source,path)=>{
-  const u=`/.netlify/functions/sleeper?source=${encodeURIComponent(source)}&path=${encodeURIComponent(path)}`;
-  const r=await fetch(u,{cache:"no-store",headers:{"Accept":"application/json"}});
-  let body=null;
-  try{body=await r.json();}catch(_){}
-  if(!r.ok){throw Error((body&&body.error)||`Sleeper ${source} API ${r.status}`);}
-  return body;
-};
-const api=path=>proxy("app",path);
-const dataApi=path=>proxy("data",path);
-const cdn=(id,thumb=false)=>id?`https://sleepercdn.com/avatars/${thumb?'thumbs/':''}${encodeURIComponent(id)}`:"";
-const pimg=id=>id?`https://sleepercdn.com/content/nfl/players/thumb/${encodeURIComponent(id)}.jpg`:"";
-const n=v=>Number.isFinite(Number(v))?Number(v):0, fmt=v=>n(v).toFixed(2), norm=v=>String(v||"").toLowerCase().replace(/[^a-z0-9]/g,"");
-function scoreStats(stats){let total=0;for(const [k,val] of Object.entries(stats||{})){const rate=n(S.scoring[k]);if(rate&&Number.isFinite(Number(val)))total+=rate*Number(val);}return total;}
-function teamInfo(roster){return S.teamMap.get(String(roster.roster_id))||{};}
-function teamName(user){return user?.metadata?.team_name||user?.metadata?.team_name?.trim()||user?.display_name||user?.username||"FS5 Team";}
-function avatar(user){return user?.avatar?cdn(user.avatar):"/artwork/logo.png";}
-function buildTeams(){const users=new Map(S.users.map(u=>[String(u.user_id),u]));S.teamMap=new Map();for(const r of S.rosters){const u=users.get(String(r.owner_id))||{};S.teamMap.set(String(r.roster_id),{roster:r,user:u,teamName:teamName(u),account:u.username?"@"+u.username:u.display_name||"",avatar:avatar(u),record:{wins:n(r.settings?.wins),losses:n(r.settings?.losses),ties:n(r.settings?.ties),pf:n(r.settings?.fpts)+n(r.settings?.fpts_decimal)/100,pa:n(r.settings?.fpts_against)+n(r.settings?.fpts_against_decimal)/100}});}}
-function rankTeams(){const arr=[...S.teamMap.entries()].map(([id,t])=>({id,t}));const vals={pf:arr.map(x=>x.t.record.pf),diff:arr.map(x=>x.t.record.pf-x.t.record.pa)};const pct=(v,a)=>{const lo=Math.min(...a),hi=Math.max(...a);return hi===lo?50:50+50*(v-lo)/(hi-lo)};return arr.map(x=>{const games=x.t.record.wins+x.t.record.losses+x.t.record.ties;const wr=games?(x.t.record.wins+.5*x.t.record.ties)/games:.5;const ps=100*wr;const pfs=pct(x.t.record.pf,vals.pf), ds=pct(x.t.record.pf-x.t.record.pa,vals.diff);return {...x,score:.5*ps+.3*pfs+.2*ds,wr,pfs,ds};}).sort((a,b)=>b.score-a.score);}
-function renderRanks(){const el=$("power-ranking-list"), ranks=rankTeams();el.innerHTML=ranks.map((x,i)=>`<div class="power-row"><div class="power-rank">${i+1}</div><img class="power-avatar" src="${esc(x.t.avatar)}" alt="" loading="lazy" onerror="this.src='/artwork/logo.png'"><div class="power-team"><strong>${esc(x.t.teamName)}</strong><span>${esc(x.t.account)} · ${x.t.record.wins}-${x.t.record.losses}-${x.t.record.ties} · ${fmt(x.t.record.pf)} PF</span></div><div class="power-score"><b>${x.score.toFixed(1)}</b><small>Power</small></div></div>`).join("")||'<div class="empty-state">No team data.</div>';}
-function projectionFor(id){return scoreStats(S.projections[id]);}
-function currentFor(id){return scoreStats(S.stats[id]);}
-function player(id){return S.players[id]||{player_id:id,first_name:id,last_name:"",position:"",fantasy_positions:[]};}
-function playerRow(id,starter){const p=player(id), cur=currentFor(id), proj=projectionFor(id);return `<button class="player-row ${starter?'is-starter':'is-bench'}" data-player="${esc(id)}"><img src="${esc(pimg(id))}" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span class="player-main"><strong>${esc((p.first_name||"")+" "+(p.last_name||""))}</strong><small>${esc(p.position||p.fantasy_positions?.[0]||"")} · ${esc(p.team||"")} ${p.injury_status?"· "+esc(p.injury_status):""}</small></span><span class="player-points"><b>${fmt(cur)}</b><small>${fmt(proj)} proj</small></span></button>`;}
-function gameStatus(teamAbbr){const games=S.schedule.filter(g=>g.home===teamAbbr||g.away===teamAbbr);return games.find(g=>g.status==="in_game")?.status||games.find(g=>g.status==="complete")?.status||games[0]?.status||"pre_game";}
-function teamProjected(roster,matchup){const ids=matchup.players||roster.players||[];let current=n(matchup.points),remaining=0,variance=0;for(const id of ids){if((matchup.starters||[]).includes(id)){const c=currentFor(id),pr=projectionFor(id);const stat=S.stats[id];const rem=stat&&Object.keys(stat).length?Math.max(0,pr-c):pr;remaining+=rem;variance+=Math.max(1,rem*.28)**2;}}return {current,projected:current+remaining,variance};}
-function winProb(a,b){const diff=a.projected-b.projected, sd=Math.sqrt(a.variance+b.variance)||1;let p=.5*(1+erf(diff/(sd*Math.sqrt(2))));return Math.min(.995,Math.max(.005,p));}
-function erf(x){const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+.3275911*x),a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429;return s*(1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x));}
-function probBar(p){return `<div class="prob-wrap"><div class="prob-labels"><b>${(p*100).toFixed(0)}%</b><span>FS5 projected win probability</span><b>${((1-p)*100).toFixed(0)}%</b></div><div class="prob-track"><div class="prob-fill" style="width:${(p*100).toFixed(1)}%"></div><div class="prob-thumb" style="left:${(p*100).toFixed(1)}%"></div></div></div>`;}
-function renderMatchups(data,week){const grid=$("matchup-grid"),empty=$("empty-state");grid.innerHTML="";const groups=new Map();for(const m of data||[]){if(m.matchup_id==null)continue;const k=String(m.matchup_id);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(m);}if(!groups.size){grid.hidden=true;empty.hidden=false;return;}grid.hidden=false;empty.hidden=true;for(const [,teams] of groups){if(teams.length<2)continue;const a=teams[0],b=teams[1],ta=teamInfo(a.roster_id),tb=teamInfo(b.roster_id),pa=teamProjected(ta.roster,a),pb=teamProjected(tb.roster,b);let p=winProb(pa,pb);if(a.points>b.points&&a.points!==b.points)p=Math.min(.995,Math.max(p,.5));else if(b.points>a.points)p=Math.min(.995,Math.max(1-p,.5));const card=document.createElement("article");card.className="matchup-card";card.innerHTML=`<div class="matchup-card__head"><span>Matchup ${esc(a.matchup_id)}</span><span class="matchup-card__state ${week===S.week?'is-current':''}">${week===S.week?'LIVE':week<S.week?'FINAL':'UPCOMING'}</span></div><div class="matchup-teams">${teamBlock(a,ta,pa,p,true)}<div class="vs-divider"><span>VS</span></div>${teamBlock(b,tb,pb,p,false)}</div><div class="predictor"><div class="predictor-head"><div><span class="section-kicker">FS5 Live Predictor</span><strong>${p>=.5?esc(ta.teamName):esc(tb.teamName)} favored</strong></div><span class="model-tag">Monte Carlo-style model</span></div>${probBar(p)}</div><div class="lineup-grid"><div><h3>${esc(ta.teamName)} <small>Starting lineup</small></h3>${(a.starters||[]).map(id=>playerRow(id,true)).join("")||'<p class="muted">No starters supplied.</p>'}</div><div><h3>${esc(tb.teamName)} <small>Starting lineup</small></h3>${(b.starters||[]).map(id=>playerRow(id,true)).join("")||'<p class="muted">No starters supplied.</p>'}</div></div><details class="bench-details"><summary>View benches</summary><div class="lineup-grid"><div>${(a.players||[]).filter(id=>!(a.starters||[]).includes(id)).map(id=>playerRow(id,false)).join("")||'<p class="muted">No bench data.</p>'}</div><div>${(b.players||[]).filter(id=>!(b.starters||[]).includes(id)).map(id=>playerRow(id,false)).join("")||'<p class="muted">No bench data.</p>'}</div></div></details>`;grid.appendChild(card);}
-}
-function teamBlock(m,t,p,prob,left){const pct=left?prob:1-prob;return `<div class="matchup-team ${m.points>0?'':''}"><div class="team-identity"><img class="team-avatar" src="${esc(t.avatar)}" alt="" onerror="this.src='/artwork/logo.png'"><div><h3>${esc(t.teamName)}</h3><span>${esc(t.account)}</span><small>Record ${t.record.wins}-${t.record.losses}-${t.record.ties} · ${fmt(t.record.pf)} PF</small></div></div><div class="score-box"><strong>${fmt(m.points)}</strong><span>Proj. ${fmt(p.projected)}</span></div></div>`;}
-function showPlayer(id){const p=player(id),cur=currentFor(id),proj=projectionFor(id),stats=S.stats[id]||{};$("player-modal-content").innerHTML=`<div class="player-detail"><img class="player-detail__image" src="${esc(pimg(id))}" alt="" onerror="this.src='/artwork/logo.png'"><div><p class="section-kicker">Sleeper Player Profile</p><h2 id="player-modal-name">${esc((p.first_name||"")+" "+(p.last_name||""))}</h2><p class="player-detail__team">${esc(p.position||p.fantasy_positions?.join(', ')||"")} · ${esc(p.team||"Free Agent")}</p><div class="player-detail__chips"><span>${fmt(cur)} current</span><span>${fmt(proj)} projected</span>${p.injury_status?`<span>${esc(p.injury_status)}</span>`:""}</div><dl class="player-meta"><div><dt>Age</dt><dd>${esc(p.age??"—")}</dd></div><div><dt>Experience</dt><dd>${esc(p.years_exp??"—")} yrs</dd></div><div><dt>College</dt><dd>${esc(p.college||"—")}</dd></div><div><dt>Number</dt><dd>${esc(p.number??"—")}</dd></div><div><dt>Status</dt><dd>${esc(p.status||"—")}</dd></div><div><dt>Depth Chart</dt><dd>${esc(p.depth_chart_position??"—")}</dd></div></dl><pre class="player-stats">${esc(JSON.stringify(stats,null,2))}</pre></div></div>`;$("player-modal").hidden=false;$("player-modal").setAttribute("aria-hidden","false");}
-document.addEventListener("click",e=>{const b=e.target.closest("[data-player]");if(b)showPlayer(b.dataset.player);if(e.target.closest("[data-close-player]")){$("player-modal").hidden=true;$ ("player-modal").setAttribute("aria-hidden","true");}});
-async function loadWeek(week){
-  $("matchup-grid").setAttribute("aria-busy","true");
-  const seasonType=week>14?"post":"regular";
-  const apiWeek=week>14?week-14:week;
-  try{
-    // Matchups are the primary live-score source. Never let stats/projections failure hide them.
-    const matchups=await api(`/league/${LEAGUE_ID}/matchups/${week}`);
-    S.selected=week;
-    S.matchups=matchups||[];
-    S.stats={};
-    S.projections={};
-    renderMatchups(S.matchups,week);
-    $("week-context").textContent=`${week===S.week?'Current week · live scoring + projections':'2026 season · historical matchup'} · auto refresh every 45 seconds`;
-    $("live-status").textContent=week===S.week?'Live · Sleeper connected':'Historical week';
-    $("live-status").className='live-status '+(week===S.week?'is-live':'');
+(function () {
+    "use strict";
 
-    // These feeds are supplemental. Try them independently so one unavailable feed
-    // cannot break the live matchup/score display.
-    try{S.stats=await dataApi(`/stats/nfl/${SEASON}/${apiWeek}?season_type=${encodeURIComponent(seasonType)}`)||{};}catch(e){console.warn('Sleeper weekly stats unavailable:',e);}
-    try{S.projections=await dataApi(`/projections/nfl/${SEASON}/${apiWeek}?season_type=${encodeURIComponent(seasonType)}`)||{};}catch(e){console.warn('Sleeper weekly projections unavailable:',e);}
-    renderMatchups(S.matchups,week);
-  }catch(e){
-    console.error('Sleeper matchup error:',e);
-    $("live-status").textContent='Sleeper matchup data error';
-    $("live-status").className='live-status is-error';
-    $("week-context").textContent=`Unable to load matchup data: ${e.message||'unknown Sleeper error'}. Try Refresh.`;
-    $("matchup-grid").innerHTML=`<div class="empty-state">Sleeper matchup data could not be loaded.<br><small>${esc(e.message||'Unknown error')}</small></div>`;
-  }
-  $("matchup-grid").setAttribute("aria-busy","false");
-}
-async function init(){
-  try{
-    // Core league data is required. Optional large/supplemental feeds are isolated so
-    // one Sleeper endpoint cannot prevent the matchup page from rendering.
-    const [league,state,rosters,users]=await Promise.all([
-      api(`/league/${LEAGUE_ID}`),
-      api('/state/nfl'),
-      api(`/league/${LEAGUE_ID}/rosters`),
-      api(`/league/${LEAGUE_ID}/users`)
-    ]);
-    S.league=league;
-    S.scoring=league.scoring_settings||{};
-    S.week=Number(state.display_week||state.week||1);
-    S.selected=S.week;
-    S.rosters=rosters||[];
-    S.users=users||[];
-    // Player dictionary and schedule are helpful but never block the core page.
-    try{S.players=await api('/players/nfl')||{};}catch(e){console.warn('Sleeper player dictionary unavailable:',e);S.players={};}
-    try{S.schedule=await api('/schedule/nfl/regular/2026')||[];}catch(e){console.warn('Sleeper schedule unavailable:',e);S.schedule=[];}
-    buildTeams();
-    renderRanks();
-    const sel=$("week-select");
-    for(let w=1;w<=18;w++){const o=document.createElement('option');o.value=w;o.textContent=`Week ${w}`;sel.appendChild(o);}
-    sel.disabled=false;
-    sel.value=S.week;
-    await loadWeek(S.week);
-  }catch(e){
-    console.error('Sleeper initialization error:',e);
-    $("live-status").textContent='Unable to connect to Sleeper';
-    $("live-status").className='live-status is-error';
-    $("week-context").textContent=`Sleeper connection failed: ${e.message||'unknown error'}`;
-  }
-}
-$("week-select").addEventListener('change',e=>loadWeek(Number(e.target.value)));$("refresh-button").addEventListener('click',()=>loadWeek(S.selected||S.week));setInterval(()=>{if(S.selected===S.week)loadWeek(S.week);},REFRESH_MS);init();
+    var LEAGUE_ID = "1387297022695993344";
+    var REFRESH_MS = 45000;
+    var state = {
+        currentWeek: 1,
+        selectedWeek: 1,
+        rosters: [],
+        users: [],
+        rosterMap: new Map()
+    };
+
+    var $ = function (id) { return document.getElementById(id); };
+    var weekSelect = $("week-select");
+    var weekContext = $("week-context");
+    var refreshButton = $("refresh-button");
+    var grid = $("matchup-grid");
+    var empty = $("empty-state");
+    var status = $("live-status");
+    var heading = $("scoreboard-heading");
+    var kicker = $("scoreboard-kicker");
+    var badge = $("week-badge");
+
+    function esc(value) {
+        return String(value == null ? "" : value).replace(/[&<>'"]/g, function (c) {
+            return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c];
+        });
+    }
+
+    function api(path) {
+        var url = "/.netlify/functions/sleeper?source=app&path=" + encodeURIComponent(path);
+        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } }).then(function (response) {
+            return response.text().then(function (text) {
+                var data = null;
+                try { data = text ? JSON.parse(text) : null; } catch (e) {}
+                if (!response.ok) {
+                    throw new Error((data && data.error) || ("Sleeper API returned " + response.status));
+                }
+                return data;
+            });
+        });
+    }
+
+    function setStatus(text, kind) {
+        status.textContent = text;
+        status.className = "live-status" + (kind ? " is-" + kind : "");
+    }
+
+    function avatarUrl(user) {
+        if (user && user.avatar) {
+            return "https://sleepercdn.com/avatars/thumbs/" + encodeURIComponent(user.avatar);
+        }
+        return "/artwork/logo.png";
+    }
+
+    function teamName(user) {
+        if (!user) return "FS5 Team";
+        var metadataName = user.metadata && user.metadata.team_name;
+        return String(metadataName || user.display_name || user.username || "FS5 Team").trim();
+    }
+
+    function buildRosterMap() {
+        var usersById = new Map();
+        state.users.forEach(function (user) {
+            if (user && user.user_id != null) usersById.set(String(user.user_id), user);
+        });
+
+        state.rosterMap = new Map();
+        state.rosters.forEach(function (roster) {
+            if (!roster || roster.roster_id == null) return;
+            var user = usersById.get(String(roster.owner_id));
+            var settings = roster.settings || {};
+            state.rosterMap.set(String(roster.roster_id), {
+                user: user,
+                teamName: teamName(user),
+                account: user && user.username ? "@" + user.username : "",
+                avatar: avatarUrl(user),
+                wins: Number(settings.wins || 0),
+                losses: Number(settings.losses || 0),
+                ties: Number(settings.ties || 0)
+            });
+        });
+    }
+
+    function populateWeeks() {
+        weekSelect.replaceChildren();
+        for (var week = 1; week <= 17; week++) {
+            var option = document.createElement("option");
+            option.value = String(week);
+            option.textContent = "Week " + week;
+            weekSelect.appendChild(option);
+        }
+        weekSelect.disabled = false;
+        weekSelect.value = String(state.selectedWeek);
+    }
+
+    function formatScore(value) {
+        var number = Number(value);
+        return Number.isFinite(number) ? number.toFixed(2) : "0.00";
+    }
+
+    function weekLabel(week) {
+        return week <= 14 ? "Regular Season" : "Postseason";
+    }
+
+    function renderMatchups(matchups, week) {
+        grid.replaceChildren();
+        kicker.textContent = "WEEK " + week;
+        heading.textContent = weekLabel(week);
+        badge.textContent = "Week " + week;
+
+        var groups = new Map();
+        (Array.isArray(matchups) ? matchups : []).forEach(function (item) {
+            if (!item || item.matchup_id == null) return;
+            var key = String(item.matchup_id);
+            if (!groups.has(key)) groups.set(key, []);
+            groups.get(key).push(item);
+        });
+
+        if (!groups.size) {
+            grid.hidden = true;
+            empty.hidden = false;
+            empty.textContent = "No matchup data is available for this week.";
+            return;
+        }
+
+        grid.hidden = false;
+        empty.hidden = true;
+
+        Array.from(groups.entries()).sort(function (a, b) {
+            return Number(a[0]) - Number(b[0]);
+        }).forEach(function (entry) {
+            var teams = entry[1].slice(0, 2);
+            if (teams.length < 2) return;
+
+            var card = document.createElement("article");
+            card.className = "matchup-card";
+
+            var head = document.createElement("div");
+            head.className = "matchup-card__head";
+            var label = document.createElement("span");
+            label.className = "matchup-card__label";
+            label.textContent = "Matchup " + entry[0];
+            var stateText = document.createElement("span");
+            stateText.className = "matchup-card__state" + (week === state.currentWeek ? " is-current" : "");
+            stateText.textContent = week === state.currentWeek ? "LIVE" : (week < state.currentWeek ? "FINAL" : "UPCOMING");
+            head.appendChild(label);
+            head.appendChild(stateText);
+            card.appendChild(head);
+
+            teams.forEach(function (matchup, index) {
+                var info = state.rosterMap.get(String(matchup.roster_id));
+                var team = document.createElement("div");
+                team.className = "matchup-team";
+
+                var identity = document.createElement("div");
+                identity.className = "matchup-team__identity";
+
+                var img = document.createElement("img");
+                img.className = "team-avatar";
+                img.src = info && info.avatar ? info.avatar : "/artwork/logo.png";
+                img.alt = "";
+                img.width = 48;
+                img.height = 48;
+                img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
+                identity.appendChild(img);
+
+                var text = document.createElement("div");
+                var name = document.createElement("p");
+                name.className = "matchup-team__name";
+                name.textContent = info ? info.teamName : "Roster " + matchup.roster_id;
+                text.appendChild(name);
+
+                if (info && info.account) {
+                    var account = document.createElement("div");
+                    account.className = "matchup-team__owner";
+                    account.textContent = info.account;
+                    text.appendChild(account);
+                }
+                if (info) {
+                    var record = document.createElement("div");
+                    record.className = "matchup-team__owner";
+                    record.textContent = "Record: " + info.wins + "-" + info.losses + "-" + info.ties;
+                    text.appendChild(record);
+                }
+                identity.appendChild(text);
+
+                var scoreWrap = document.createElement("div");
+                var score = document.createElement("div");
+                score.className = "matchup-team__score";
+                score.textContent = formatScore(matchup.points);
+                scoreWrap.appendChild(score);
+
+                team.appendChild(identity);
+                team.appendChild(scoreWrap);
+                card.appendChild(team);
+
+                if (index === 0) {
+                    var divider = document.createElement("div");
+                    divider.className = "vs-divider";
+                    var vs = document.createElement("span");
+                    vs.textContent = "VS";
+                    divider.appendChild(vs);
+                    card.appendChild(divider);
+                }
+            });
+
+            grid.appendChild(card);
+        });
+    }
+
+    async function loadWeek(week) {
+        grid.setAttribute("aria-busy", "true");
+        weekContext.textContent = "Loading Week " + week + "...";
+        try {
+            var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
+            state.selectedWeek = week;
+            weekSelect.value = String(week);
+            renderMatchups(matchups, week);
+            weekContext.textContent = week === state.currentWeek
+                ? "Current week · live scoring · auto-refresh every 45 seconds"
+                : "2026 season · " + weekLabel(week);
+            setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
+        } catch (error) {
+            console.error("FS5 Sleeper matchup request failed", error);
+            grid.replaceChildren();
+            grid.hidden = true;
+            empty.hidden = false;
+            empty.textContent = "Sleeper matchup data could not be loaded. Please try again.";
+            weekContext.textContent = "Unable to load Week " + week + ". " + (error.message || "Unknown Sleeper error");
+            setStatus("Sleeper connection error", "error");
+        } finally {
+            grid.setAttribute("aria-busy", "false");
+        }
+    }
+
+    async function initialize() {
+        setStatus("Connecting to Sleeper...");
+        try {
+            var results = await Promise.all([
+                api("/state/nfl"),
+                api("/league/" + LEAGUE_ID + "/rosters"),
+                api("/league/" + LEAGUE_ID + "/users")
+            ]);
+
+            var nflState = results[0] || {};
+            state.currentWeek = Number(nflState.display_week || nflState.week || 1);
+            state.selectedWeek = state.currentWeek;
+            state.rosters = Array.isArray(results[1]) ? results[1] : [];
+            state.users = Array.isArray(results[2]) ? results[2] : [];
+            buildRosterMap();
+            populateWeeks();
+            await loadWeek(state.selectedWeek);
+        } catch (error) {
+            console.error("FS5 Sleeper initialization failed", error);
+            setStatus("Sleeper connection error", "error");
+            weekContext.textContent = "Unable to connect to Sleeper. " + (error.message || "Unknown error");
+            empty.hidden = false;
+            grid.hidden = true;
+            empty.textContent = "The live scoreboard could not connect to Sleeper. Please refresh the page.";
+        }
+    }
+
+    weekSelect.addEventListener("change", function () {
+        loadWeek(Number(weekSelect.value));
+    });
+
+    refreshButton.addEventListener("click", function () {
+        loadWeek(state.selectedWeek || state.currentWeek);
+    });
+
+    initialize();
+    window.setInterval(function () {
+        if (state.selectedWeek === state.currentWeek) loadWeek(state.currentWeek);
+    }, REFRESH_MS);
 })();
