@@ -350,15 +350,42 @@
     function esc(value) { return String(value == null ? "" : value).replace(/[&<>'"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]; }); }
 
     function loadPlayerCache() {
+        var ids = new Set();
+        state.matchups.forEach(function (m) {
+            (Array.isArray(m && m.players) ? m.players : []).forEach(function (id) { if (id != null) ids.add(String(id)); });
+            (Array.isArray(m && m.starters) ? m.starters : []).forEach(function (id) { if (id != null) ids.add(String(id)); });
+        });
+        var list = Array.from(ids);
+        if (!list.length) { state.players = {}; return Promise.resolve(true); }
+
+        // Cache only the players needed for this week's matchups. This avoids
+        // downloading Sleeper's very large full NFL player catalog to the browser.
+        var cacheKey = "fs5_sleeper_players_" + list.slice().sort().join(",");
         try {
-            var cached = JSON.parse(localStorage.getItem("fs5_sleeper_players") || "null");
-            if (cached && cached.saved && Date.now() - cached.saved < PLAYER_CACHE_MS && cached.players) { state.players = cached.players; return Promise.resolve(true); }
+            var cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+            if (cached && cached.saved && Date.now() - cached.saved < PLAYER_CACHE_MS && cached.players) {
+                state.players = cached.players;
+                return Promise.resolve(true);
+            }
         } catch (e) {}
-        return optionalApi(["/players/nfl"]).then(function (players) {
-            state.players = players || {};
-            try { localStorage.setItem("fs5_sleeper_players", JSON.stringify({ saved: Date.now(), players: state.players })); } catch (e) {}
-            return true;
-        }).catch(function () { state.players = {}; return false; });
+
+        return fetch("/.netlify/functions/sleeper?source=players&ids=" + encodeURIComponent(list.join(",")), {
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+        }).then(function (response) {
+            return response.text().then(function (text) {
+                var data = {};
+                try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+                if (!response.ok) throw new Error((data && data.error) || "Unable to load player names");
+                state.players = data || {};
+                try { localStorage.setItem(cacheKey, JSON.stringify({ saved: Date.now(), players: state.players })); } catch (e) {}
+                return true;
+            });
+        }).catch(function (e) {
+            console.warn("FS5 player-name feed unavailable", e);
+            state.players = {};
+            return false;
+        });
     }
 
     function loadSupplemental(week) {
