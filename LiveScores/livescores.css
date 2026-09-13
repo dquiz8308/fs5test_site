@@ -55,3 +55,4 @@ body.modal-open{overflow:hidden}
 .player-news__item a{display:block;color:#00376b;font-weight:900;font-size:.78rem;line-height:1.35;text-decoration:none}
 .player-news__item a:hover{text-decoration:underline}
 .player-news__meta{margin-top:4px;color:#7a8b97;font-size:.62rem;font-weight:700}
+.player-stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 4px}.player-stat-cell{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.035)}.player-stat-cell span{font-size:.84rem;opacity:.78}.player-stat-cell strong{font-size:.9rem}@media(max-width:560px){.player-stats-grid{grid-template-columns:1fr}}
