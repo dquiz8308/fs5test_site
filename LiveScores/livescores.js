@@ -58,6 +58,8 @@
     // Mirror the exact owner artwork used by the Owners page.
     // The artwork lives at /owners/artwork/profile-current/<owner>.png.
     var OWNER_LOGO_KEYS = ["bailey","brycen","chris","cody","david","ethan","jordan","keith","matthew","max","mike","will"];
+    // Definitive FS5 Sleeper -> website artwork mapping.
+    // These are the Sleeper usernames from the FS5 league.
     var OWNER_LOGO_BY_USERNAME = {
         "diabeastus": "will",
         "atlnitrohawgs": "cody",
@@ -65,7 +67,12 @@
         "armoryroadtrucks": "mike",
         "wornoutsocks": "keith",
         "fs5chair": "ethan",
-        "btb1022": "bailey"
+        "btb1022": "bailey",
+        "davidquiz": "david",
+        "brycen3time": "brycen",
+        "maxxmatistic": "max",
+        "chrismapel": "chris",
+        "jordanlynch22": "jordan"
     };
 
     function normalizeOwnerKey(value) {
