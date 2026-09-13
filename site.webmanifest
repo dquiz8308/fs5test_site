@@ -1,0 +1,9 @@
+{
+  "name": "FastStrongFive",
+  "short_name": "FS5",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#00376b",
+  "theme_color": "#00376b",
+  "icons": [{"src":"/artwork/fs5-ios-icon.png","sizes":"180x180","type":"image/png"}]
+}
