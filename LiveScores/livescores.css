@@ -203,3 +203,44 @@ body.modal-open{overflow:hidden}
 @keyframes fs5-td-out{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.88)}}
 .fs5-live-dark .td-animation__label{box-shadow:0 3px 12px rgba(0,0,0,.45)}
 @media(max-width:520px){.td-animation{inset:-16px -24px -16px -54px}.td-animation__label{font-size:.45rem}.td-animation__ball{font-size:.8rem}.td-animation__ball--2{font-size:.65rem}.td-animation__ball--3{font-size:.58rem}}
+
+/* FS5 Broadcast 2.0 enhancements */
+.fs5-lower-third{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,#0a3150,#124d72 58%,#0a3150);color:#fff;box-shadow:0 8px 20px rgba(9,48,78,.18);overflow:hidden;position:relative;transform:translateY(8px);opacity:0}
+.fs5-lower-third.is-showing{animation:fs5-lower-in .35s ease-out forwards}
+.fs5-lower-third.is-hiding{animation:fs5-lower-out .35s ease-in forwards}
+.fs5-lower-third:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#f0c84b;box-shadow:0 0 14px rgba(240,200,75,.7)}
+.fs5-lower-third__icon{font-size:1.35rem;line-height:1}.fs5-lower-third b{display:block;font-size:.58rem;letter-spacing:.12em;opacity:.72}.fs5-lower-third strong{display:block;font-size:.82rem;margin-top:2px}
+@keyframes fs5-lower-in{to{opacity:1;transform:translateY(0)}}@keyframes fs5-lower-out{to{opacity:0;transform:translateY(-5px)}}
+
+.league-chaos{margin:0 0 16px;padding:12px 14px;border:1px solid #c9dbe7;border-radius:13px;background:linear-gradient(180deg,#f8fcff,#eef7fc);box-shadow:0 6px 18px rgba(20,66,95,.08)}
+.league-chaos__title{font-size:.68rem;font-weight:1000;letter-spacing:.12em;color:#426172}.league-chaos__body{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:4px}.league-chaos__body strong{font-size:1.05rem;color:#0c4d75}.league-chaos__body span{font-size:.68rem;color:#647b88;text-align:right}.league-chaos__track{height:5px;margin-top:8px;border-radius:99px;background:#d9e7ef;overflow:hidden}.league-chaos__track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#6caed5,#d8a63c,#d84b4b);transition:width .35s ease}
+
+.odds-change-reason{margin:8px 12px 0;padding:8px 10px;border-radius:9px;background:rgba(241,194,68,.10);border:1px solid rgba(192,157,48,.22);font-size:.68rem;font-weight:800;color:#675721}
+.monday-takeover{display:flex;align-items:center;gap:10px;margin:8px 12px 0;padding:10px 11px;border-radius:10px;background:linear-gradient(100deg,rgba(33,27,58,.96),rgba(68,48,93,.92));border:1px solid rgba(157,126,197,.55);color:#f5e9c0;box-shadow:0 8px 18px rgba(54,38,76,.14)}
+.monday-takeover>span{font-size:1.3rem}.monday-takeover strong{display:block;font-size:.66rem;letter-spacing:.1em}.monday-takeover small{display:block;font-size:.62rem;opacity:.76;margin-top:2px}
+
+/* Score changes feel like a broadcast scoreboard, not just a number update. */
+.score-box{position:relative}.score-change{position:absolute;right:-8px;top:-18px;padding:3px 6px;border-radius:999px;background:#1976d2;color:#fff;font-size:.58rem;font-weight:1000;box-shadow:0 3px 9px rgba(25,118,210,.25);animation:fs5-score-change .7s ease-out both;z-index:9}.score-change.is-hiding{opacity:0;transform:translateY(-4px);transition:opacity .25s ease,transform .25s ease}
+@keyframes fs5-score-change{0%{opacity:0;transform:translateY(8px) scale(.75)}45%{opacity:1;transform:translateY(-2px) scale(1.08)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.score-box--touchdown>strong{animation:fs5-td-score-pulse .8s ease-in-out 2 alternate,fs5-score-emphasis 10s ease-in-out}
+@keyframes fs5-score-emphasis{0%,100%{filter:none}10%{filter:drop-shadow(0 0 8px rgba(242,138,46,.5))}20%{filter:none}}
+
+/* More sophisticated stadium lighting for matchup states. */
+.matchup-card--close:after,.matchup-card--nail:after,.matchup-card--witching:after,.matchup-card--victory:after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;opacity:.7;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.28),transparent 66%);mix-blend-mode:screen}
+.matchup-card--close{box-shadow:0 0 0 1px rgba(25,118,210,.08),0 12px 30px rgba(25,118,210,.10),inset 0 1px 0 rgba(255,255,255,.7)}
+.matchup-card--nail{box-shadow:0 0 0 2px rgba(25,118,210,.16),0 12px 30px rgba(25,118,210,.15),inset 0 1px 0 rgba(255,255,255,.75)}
+.matchup-card--witching{box-shadow:0 0 0 2px rgba(107,75,142,.16),0 14px 34px rgba(73,49,96,.17),inset 0 1px 0 rgba(255,245,211,.35)}
+.matchup-card--victory{box-shadow:0 0 0 2px rgba(211,172,55,.18),0 14px 34px rgba(190,150,35,.16),inset 0 1px 0 rgba(255,250,205,.75)}
+.matchup-card--victory:after{background:radial-gradient(ellipse at 50% 100%,rgba(255,218,92,.18),transparent 66%);opacity:1}
+.matchup-card--witching:after{background:radial-gradient(ellipse at 50% 100%,rgba(112,72,151,.16),transparent 66%);opacity:1}
+
+/* Mobile scoreboard refinement */
+@media(max-width:700px){
+  .live-hero{padding:18px 16px}.live-hero h1{font-size:1.65rem}.live-hero__tools{gap:7px}.live-theme-toggle{font-size:.6rem}
+  .matchup-grid{gap:12px}.matchup-card{border-radius:14px}.matchup-card__head{padding:9px 11px}.matchup-team{padding:12px 11px}.team-identity{gap:9px}.team-avatar{width:40px;height:40px}.team-identity h3{font-size:.84rem}.team-identity small{font-size:.61rem}.team-identity span{font-size:.63rem}.score-box strong{font-size:1.35rem}.score-box span{font-size:.58rem}
+  .predictor,.projected-finish,.points-bank,.matchup-mvp,.trash-talk,.matchup-hint{margin-left:10px;margin-right:10px}.monday-takeover,.odds-change-reason{margin-left:10px;margin-right:10px}.fs5-lower-third{border-radius:10px;padding:9px 11px}.fs5-lower-third strong{font-size:.72rem}.league-chaos__body{align-items:flex-start;flex-direction:column;gap:2px}.league-chaos__body span{text-align:left}.score-change{right:-4px}
+}
+
+.fs5-live-dark .fs5-lower-third{background:linear-gradient(90deg,#061a2a,#0b3b57 58%,#061a2a);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.fs5-live-dark .league-chaos{background:linear-gradient(180deg,#152a39,#122331);border-color:#2b4556}.fs5-live-dark .league-chaos__title{color:#91aab9}.fs5-live-dark .league-chaos__body strong{color:#7fc4ee}.fs5-live-dark .league-chaos__body span{color:#8ea4b2}.fs5-live-dark .league-chaos__track{background:#263d4c}
+.fs5-live-dark .odds-change-reason{background:rgba(224,188,69,.09);border-color:rgba(224,188,69,.22);color:#dbc879}.fs5-live-dark .monday-takeover{background:linear-gradient(100deg,rgba(24,18,37,.98),rgba(55,39,74,.94));border-color:#654b7e}

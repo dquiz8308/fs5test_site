@@ -22,6 +22,8 @@
         previousProbabilities: {},
         previousPlayerPoints: {},
         eventHistory: [],
+        broadcastCycle: 0,
+        lowerThirdTimer: null,
         snapshot: null,
         gameFlow: {}
     };
@@ -602,6 +604,95 @@
         return { active: count, total: total };
     }
 
+    function teamIsMondayBound(m) {
+        var roster = state.rosterMap.get(String(m.roster_id));
+        if (!roster || !roster.roster) return false;
+        var starters = Array.isArray(roster.roster.starters) ? roster.roster.starters.filter(Boolean) : [];
+        var monday = false;
+        starters.forEach(function(id){
+            var meta = playerMeta(id), game = scheduleGameForTeam(meta && meta.team, state.selectedWeek);
+            if (!game || gameStatus(game) === 'complete') return;
+            var start = gameStartMs(game);
+            if (!Number.isFinite(start)) return;
+            var d = new Date(start);
+            if (d.getDay() === 1) monday = true;
+        });
+        return monday;
+    }
+
+    function matchupHasMondayTakeover(teams) {
+        var monday = teams.some(teamIsMondayBound);
+        if (!monday) return false;
+        var remaining = 0;
+        teams.forEach(function(m){
+            var info = state.rosterMap.get(String(m.roster_id));
+            remaining += projectedRemaining(info && info.roster);
+        });
+        return remaining > 0;
+    }
+
+    function formatEventTime(ts) {
+        if (!ts) return '';
+        try { return new Date(ts).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'}); } catch(e) { return ''; }
+    }
+
+    function oddsChangeReason(a, b) {
+        var key = matchupKey(a) || (String(a.roster_id) + '-' + String(b.roster_id));
+        var previous = state.previousProbabilities[key];
+        if (!Number.isFinite(previous)) return null;
+        var pred = matchupProbability(a,b);
+        var change = pred.a - previous;
+        if (Math.abs(change) < 3) return null;
+        var pa = Number(a.points||0), pb = Number(b.points||0);
+        var leader = pa >= pb ? teamLabel(a) : teamLabel(b);
+        var trailing = pa >= pb ? teamLabel(b) : teamLabel(a);
+        var deltaA = Number(a.points||0) - Number(state.previousScores[String(a.roster_id)] || 0);
+        var deltaB = Number(b.points||0) - Number(state.previousScores[String(b.roster_id)] || 0);
+        var scoreDelta = Math.abs(deltaA) + Math.abs(deltaB);
+        if (scoreDelta >= 0.5) {
+            var scoringTeam = deltaA > deltaB ? teamLabel(a) : teamLabel(b);
+            var scoringPts = Math.max(deltaA, deltaB);
+            return '🧠 ' + scoringTeam + ' scoring swing moved the model ' + Math.abs(change).toFixed(0) + ' points of win probability toward ' + (change > 0 ? teamLabel(a) : teamLabel(b)) + '.';
+        }
+        return '🧠 The FS5 model shifted ' + Math.abs(change).toFixed(0) + '% toward ' + (change > 0 ? teamLabel(a) : teamLabel(b)) + ' as the remaining-player outlook changed.';
+    }
+
+    function renderLeagueChaos() {
+        var box = $('league-chaos');
+        if (!box) return;
+        var groups = new Map();
+        state.matchups.forEach(function(m){ var k=matchupKey(m); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(m); });
+        var close = 0, undecided = 0, monday = 0;
+        groups.forEach(function(t){
+            if(t.length<2) return;
+            var p=matchupProbability(t[0],t[1]);
+            if(Math.min(p.a,p.b)>=25 && Math.max(p.a,p.b)<=75) close++;
+            if(Math.max(p.a,p.b)<90 && !teamIsFinished(t[0]) && !teamIsFinished(t[1])) undecided++;
+            if(matchupHasMondayTakeover(t)) monday++;
+        });
+        var chaos = close >= 4 ? 'CHAOS' : (close >= 2 ? 'HIGH' : (close >= 1 ? 'HEATING UP' : 'CALM'));
+        box.hidden=false;
+        box.innerHTML='<div class="league-chaos__title">🌪️ FS5 CHAOS METER</div><div class="league-chaos__body"><strong>'+chaos+'</strong><span>'+close+' matchup'+(close===1?'':'s')+' in the danger zone · '+undecided+' still undecided'+(monday?' · '+monday+' going to Monday':'')+'</span></div><div class="league-chaos__track"><i style="width:'+Math.min(100,Math.max(10,close/Math.max(1,groups.size)*100))+'%"></i></div>';
+    }
+
+    function renderBroadcastLowerThird() {
+        var box=$('fs5-lower-third'); if(!box) return;
+        var msg=null;
+        if(state.eventHistory.length) {
+            var e=state.eventHistory[0];
+            msg={label:'FS5 MOMENT', text:e.message, icon:e.icon||'⚡'};
+        }
+        if(!msg){
+            var top=state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
+            if(top) msg={label:'FS5 BROADCAST', text:teamLabel(top)+' leads the league at '+formatScore(top.points)+' points.', icon:'🎙️'};
+        }
+        if(!msg){ box.hidden=true; return; }
+        box.innerHTML='<span class="fs5-lower-third__icon">'+esc(msg.icon)+'</span><span><b>'+esc(msg.label)+'</b><strong>'+esc(msg.text)+'</strong></span>';
+        box.hidden=false; box.classList.remove('is-showing'); void box.offsetWidth; box.classList.add('is-showing');
+        clearTimeout(state.lowerThirdTimer);
+        state.lowerThirdTimer=setTimeout(function(){ if(box){box.classList.remove('is-showing'); box.classList.add('is-hiding'); setTimeout(function(){box.hidden=true;box.classList.remove('is-hiding');},350);} },10000);
+    }
+
     function renderBroadcastHeader() {
         var box = $('fs5-broadcast');
         if (!box) return;
@@ -854,6 +945,12 @@
         var box = document.createElement("div");
         box.className = "score-box";
         box.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
+        var previous = state.previousScores[String(matchup.roster_id)];
+        var delta = Number(matchup.points || 0) - Number(previous == null ? matchup.points || 0 : previous);
+        if (Math.abs(delta) >= 0.5) {
+            var deltaBadge = document.createElement("span"); deltaBadge.className="score-change"; deltaBadge.textContent=(delta>0?"+":"")+formatScore(delta); box.appendChild(deltaBadge);
+            setTimeout(function(){ if(deltaBadge && deltaBadge.parentNode){deltaBadge.classList.add("is-hiding"); setTimeout(function(){if(deltaBadge.parentNode)deltaBadge.parentNode.removeChild(deltaBadge);},250);} },10000);
+        }
         var reaction = getScoreReaction(matchup, week);
         if (reaction) {
             var badge = document.createElement("span");
@@ -932,6 +1029,8 @@
         renderBroadcastHeader();
         renderWatching();
         renderLeagueLeaderboard();
+        renderLeagueChaos();
+        renderBroadcastLowerThird();
         var groups = new Map();
         state.matchups.forEach(function (item) {
             if (!item || item.matchup_id == null) return;
@@ -971,6 +1070,9 @@
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
             appendPredictor(card, teams);
+            var oddsReason = oddsChangeReason(teams[0], teams[1]);
+            if (oddsReason) { var reason = document.createElement("div"); reason.className = "odds-change-reason"; reason.textContent = oddsReason; card.appendChild(reason); }
+            if (matchupHasMondayTakeover(teams)) { var monday = document.createElement("div"); monday.className = "monday-takeover"; monday.innerHTML = "<span>🌙</span><div><strong>MONDAY NIGHT TAKEOVER</strong><small>The final chapter of this matchup is waiting for Monday Night Football.</small></div></div>"; card.appendChild(monday); }
             appendMatchupSuperlatives(card, teams);
             appendProjectedFinish(card, teams);
             appendPointsBank(card, teams);
@@ -1219,7 +1321,7 @@
             var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
             state.selectedWeek = week; weekSelect.value = String(week);
             renderMatchups(matchups, week);
-            weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
+            weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 10 seconds" : "2026 season · " + weekLabel(week);
             setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
             loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
         } catch (error) {
