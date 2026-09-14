@@ -1,1131 +1,184 @@
-(function () {
-    "use strict";
-
-    var LEAGUE_ID = "1387297022695993344";
-    var REFRESH_MS = 10000;
-    var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
-    var state = {
-        currentWeek: 1,
-        selectedWeek: 1,
-        rosters: [],
-        users: [],
-        league: {},
-        rosterMap: new Map(),
-        players: {},
-        stats: {},
-        projections: {},
-        matchups: [],
-        schedule: [],
-        previousScores: {},
-        previousStats: {},
-        reactionTimers: {},
-        previousProbabilities: {},
-        previousPlayerPoints: {},
-        eventHistory: [],
-        snapshot: null,
-        gameFlow: {}
-    };
-
-    var $ = function (id) { return document.getElementById(id); };
-    var weekSelect = $("week-select");
-    var weekContext = $("week-context");
-    var refreshButton = $("refresh-button");
-    var grid = $("matchup-grid");
-    var empty = $("empty-state");
-    var status = $("live-status");
-    var heading = $("scoreboard-heading");
-    var kicker = $("scoreboard-kicker");
-    var badge = $("week-badge");
-
-    function api(path) {
-        var url = "/.netlify/functions/sleeper?source=app&path=" + encodeURIComponent(path);
-        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } }).then(function (response) {
-            return response.text().then(function (text) {
-                var data = null;
-                try { data = text ? JSON.parse(text) : null; } catch (e) {}
-                if (!response.ok) throw new Error((data && data.error) || ("Sleeper API returned " + response.status));
-                return data;
-            });
-        });
-    }
-
-    function optionalApi(paths) {
-        var i = 0;
-        function next() {
-            if (i >= paths.length) return Promise.reject(new Error("Supplemental Sleeper feed unavailable"));
-            return api(paths[i++]).catch(next);
-        }
-        return next();
-    }
-
-    function setStatus(text, kind) {
-        status.textContent = text;
-        status.className = "live-status" + (kind ? " is-" + kind : "");
-    }
-
-    // Use Sleeper's custom team image when one is set. Sleeper stores custom
-    // team images in user.metadata.avatar. If none is set, fall back to the
-    // user's normal Sleeper avatar, then the site logo as a final fallback.
-    function sleeperTeamImageUrl(user) {
-        var metadataAvatar = user && user.metadata && user.metadata.avatar;
-        if (metadataAvatar) {
-            var custom = String(metadataAvatar).trim();
-            if (custom) {
-                if (/^https?:\/\//i.test(custom)) return custom;
-                if (/^\/\//.test(custom)) return 'https:' + custom;
-                if (custom.charAt(0) === '/') return 'https://sleepercdn.com' + custom;
-                return 'https://sleepercdn.com/' + custom.replace(/^\/+/, '');
-            }
-        }
-        if (user && user.avatar) {
-            return 'https://sleepercdn.com/avatars/' + encodeURIComponent(String(user.avatar));
-        }
-        return '/artwork/logo.png';
-    }
-
-    function avatarUrl(user) {
-        return sleeperTeamImageUrl(user);
-    }
-
-    function teamImage(info, className) {
-        var img = document.createElement("img");
-        img.className = className || "team-avatar";
-        img.src = info && info.avatar ? info.avatar : "/artwork/logo.png";
-        img.alt = ""; img.width = 48; img.height = 48;
-        var fallback = info && info.user && info.user.avatar ?
-            "https://sleepercdn.com/avatars/" + encodeURIComponent(String(info.user.avatar)) :
-            "/artwork/logo.png";
-        img.onerror = function () {
-            if (this.src !== fallback) {
-                this.onerror = null;
-                this.src = fallback;
-            } else {
-                this.onerror = null;
-                this.src = "/artwork/logo.png";
-            }
-        };
-        return img;
-    }
-
-    function playerImageUrl(playerId) {
-        return "https://sleepercdn.com/content/nfl/players/thumb/" + encodeURIComponent(playerId) + ".jpg";
-    }
-
-    function teamName(user) {
-        if (!user) return "FS5 Team";
-        var metadataName = user.metadata && user.metadata.team_name;
-        return String(metadataName || user.display_name || user.username || "FS5 Team").trim();
-    }
-
-    function buildRosterMap() {
-        var usersById = new Map();
-        state.users.forEach(function (user) {
-            if (user && user.user_id != null) usersById.set(String(user.user_id), user);
-        });
-        state.rosterMap = new Map();
-        state.rosters.forEach(function (roster) {
-            if (!roster || roster.roster_id == null) return;
-            var user = usersById.get(String(roster.owner_id));
-            var settings = roster.settings || {};
-            state.rosterMap.set(String(roster.roster_id), {
-                roster: roster,
-                user: user,
-                teamName: teamName(user),
-                account: user && user.username ? "@" + user.username : "",
-                avatar: avatarUrl(user),
-                ownerLogo: avatarUrl(user),
-                wins: Number(settings.wins || 0),
-                losses: Number(settings.losses || 0),
-                ties: Number(settings.ties || 0),
-                pf: Number(settings.fpts || 0),
-                pa: Number(settings.fpts_against || 0)
-            });
-        });
-    }
-
-    function populateWeeks() {
-        weekSelect.replaceChildren();
-        for (var week = 1; week <= 17; week++) {
-            var option = document.createElement("option");
-            option.value = String(week);
-            option.textContent = "Week " + week;
-            weekSelect.appendChild(option);
-        }
-        weekSelect.disabled = false;
-        weekSelect.value = String(state.selectedWeek);
-    }
-
-    function formatScore(value) {
-        var number = Number(value);
-        return Number.isFinite(number) ? number.toFixed(2) : "0.00";
-    }
-
-    function weekLabel(week) { return week <= 14 ? "Regular Season" : "Postseason"; }
-
-    function playerName(id) {
-        var p = state.players[String(id)];
-        if (!p) return "Player " + id;
-        return p.full_name || ((p.first_name || "") + " " + (p.last_name || "")).trim() || id;
-    }
-
-    function playerMeta(id) { return state.players[String(id)] || {}; }
-
-    function directFantasyPoints(stats, scoring) {
-        if (!stats || !scoring) return null;
-        var total = 0;
-        var used = false;
-        Object.keys(scoring).forEach(function (key) {
-            var rate = Number(scoring[key]);
-            var value = Number(stats[key]);
-            if (Number.isFinite(rate) && Number.isFinite(value)) {
-                total += value * rate;
-                if (rate !== 0 && value !== 0) used = true;
-            }
-        });
-        return used || Object.keys(stats).length ? total : null;
-    }
-
-    function getPlayerPoints(id) {
-        var s = state.stats && state.stats[String(id)];
-        if (!s) return 0;
-        var direct = s.pts_ppr;
-        if (state.league && state.league.scoring_settings) direct = directFantasyPoints(s, state.league.scoring_settings);
-        return Number.isFinite(Number(direct)) ? Number(direct) : 0;
-    }
-
-    function getProjection(id) {
-        var p = state.projections && state.projections[String(id)];
-        if (!p) return 0;
-        var scoring = state.league && state.league.scoring_settings;
-        var value = scoring ? directFantasyPoints(p, scoring) : null;
-        if (value == null || !Number.isFinite(value)) {
-            value = p.pts_ppr != null ? Number(p.pts_ppr) : (p.fantasy_points != null ? Number(p.fantasy_points) : 0);
-        }
-        return Number.isFinite(value) ? value : 0;
-    }
-
-    function getPreviousPlayerPoints(id) {
-        var s = state.previousStats && state.previousStats[String(id)];
-        if (!s) return null;
-        var scoring = state.league && state.league.scoring_settings;
-        var direct = scoring ? directFantasyPoints(s, scoring) : (s.pts_ppr != null ? Number(s.pts_ppr) : null);
-        return direct == null || !Number.isFinite(Number(direct)) ? null : Number(direct);
-    }
-
-    function playerIsMatchupMvp(id) {
-        var target = String(id);
-        var best = null;
-        var found = false;
-        state.matchups.forEach(function (m) {
-            if (getTeamPlayerIds(m).some(function (pid) { return String(pid) === target; })) found = true;
-        });
-        if (!found) return false;
-        state.matchups.forEach(function (m) {
-            var k = matchupKey(m);
-            if (!k) return;
-            var containing = getTeamPlayerIds(m);
-            if (!containing.some(function (pid) { return String(pid) === target; })) return;
-            var opponent = state.matchups.find(function (x) { return matchupKey(x) === k && String(x.roster_id) !== String(m.roster_id); });
-            if (!opponent) return;
-            [m, opponent].forEach(function (tm) {
-                getTeamPlayerIds(tm).forEach(function (pid) {
-                    var pts = getPlayerPoints(pid);
-                    if (!best || pts > best.points) best = { id: String(pid), points: pts };
-                });
-            });
-        });
-        return !!best && best.id === target && best.points > 0;
-    }
-
-    function playerGameIsFinal(id) {
-        var p = playerMeta(id) || {};
-        var game = scheduleGameForTeam(p.team, state.selectedWeek);
-        return gameStatus(game) === "complete";
-    }
-
-    function playerTrendBadge(id) {
-        var points = getPlayerPoints(id), projection = getProjection(id), prev = getPreviousPlayerPoints(id);
-        var badges = [];
-        if (points === 0 && playerGameIsFinal(id)) badges.push('<span class="player-trend player-trend--snow" title="Final game · 0 fantasy points">❄️</span>');
-        if (playerIsMatchupMvp(id)) badges.push('<span class="player-trend player-trend--mvp">👑</span>');
-        var td = playerTouchdownDelta(id);
-        if (td > 0) badges.push('<span class="player-trend player-trend--td">🏈🔥</span>');
-        else if (prev != null && points - prev >= 8) badges.push('<span class="player-trend player-trend--hot">🔥</span>');
-        if (projection > 0 && points > projection) badges.push('<span class="player-trend player-trend--over">🔥</span>');
-        else if (projection >= 8 && points < projection * 0.5 && projection - points >= 5) badges.push('<span class="player-trend player-trend--bust">💀</span>');
-        return badges.join('');
-    }
-
-    function renderPlayer(id, started) {
-        var p = playerMeta(id);
-        var pos = p.position || "--";
-        var nflTeam = p.team || "FA";
-        var injury = p.injury_status ? " · " + p.injury_status : "";
-        var points = getPlayerPoints(id);
-        var projection = getProjection(id);
-        var row = document.createElement("button");
-        row.type = "button";
-        row.className = "player-row";
-        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small></span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
-        row.addEventListener("click", function () { openPlayerModal(id); });
-        row.setAttribute("aria-label", "View " + playerName(id));
-        return row;
-    }
-
-    function renderLineups(roster) {
-        var wrap = document.createElement("div");
-        wrap.className = "lineup-area";
-        var starters = Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : [];
-        var allPlayers = Array.isArray(roster.players) ? roster.players.filter(Boolean) : [];
-        var starterSet = new Set(starters.map(String));
-        var bench = allPlayers.filter(function (id) { return !starterSet.has(String(id)); });
-
-        var starterBox = document.createElement("div");
-        starterBox.className = "lineup-box";
-        starterBox.innerHTML = '<div class="lineup-title"><strong>Starting Lineup</strong><span>' + starters.length + ' players</span></div>';
-        starters.forEach(function (id) { starterBox.appendChild(renderPlayer(id, true)); });
-        if (!starters.length) starterBox.insertAdjacentHTML("beforeend", '<p class="muted">No starters returned by Sleeper.</p>');
-        wrap.appendChild(starterBox);
-
-        var benchDetails = document.createElement("details");
-        benchDetails.className = "bench-details";
-        var summary = document.createElement("summary");
-        summary.textContent = "Bench · " + bench.length + " players";
-        benchDetails.appendChild(summary);
-        var benchBox = document.createElement("div");
-        benchBox.className = "bench-list";
-        bench.forEach(function (id) { benchBox.appendChild(renderPlayer(id, false)); });
-        if (!bench.length) benchBox.innerHTML = '<p class="muted">No bench players returned.</p>';
-        benchDetails.appendChild(benchBox);
-        wrap.appendChild(benchDetails);
-        return wrap;
-    }
-
-    function matchupProbability(a, b) {
-        var rosterA = state.rosterMap.get(String(a.roster_id));
-        var rosterB = state.rosterMap.get(String(b.roster_id));
-        var scoreA = Number(a.points || 0);
-        var scoreB = Number(b.points || 0);
-        var remainingA = projectedRemaining(rosterA && rosterA.roster);
-        var remainingB = projectedRemaining(rosterB && rosterB.roster);
-        var meanA = scoreA + remainingA;
-        var meanB = scoreB + remainingB;
-        var sdA = Math.max(3, remainingA * 0.28);
-        var sdB = Math.max(3, remainingB * 0.28);
-        var z = (meanA - meanB) / Math.sqrt(sdA * sdA + sdB * sdB);
-        var prob = 0.5 * (1 + erf(z / Math.sqrt(2)));
-        if (!Number.isFinite(prob)) prob = 0.5;
-        prob = Math.max(0.005, Math.min(0.995, prob));
-        return { a: prob * 100, b: (1 - prob) * 100, meanA: meanA, meanB: meanB, remainingA: remainingA, remainingB: remainingB };
-    }
-
-    function gameStatus(game) {
-        if (!game) return '';
-        var raw = game.status;
-        if (raw && typeof raw === 'object') raw = raw.type || raw.name || raw.state || raw.detail || '';
-        var status = String(raw || '').toLowerCase().replace(/[\s-]+/g, '_');
-        if (status === 'final' || status === 'post' || status === 'post_game' || status === 'complete' || status === 'completed') return 'complete';
-        if (status === 'in_game' || status === 'in_progress' || status === 'inprogress' || status === 'live' || status === 'playing') return 'in_game';
-        if (status === 'pre_game' || status === 'pregame' || status === 'scheduled' || status === 'upcoming' || status === 'pre') return 'pre_game';
-
-        var start = gameStartMs(game);
-        if (Number.isFinite(start)) {
-            if (Date.now() < start) return 'pre_game';
-            // If a game has been underway for more than four hours, treat it as complete
-            // even if the schedule feed did not update its status yet.
-            if (Date.now() >= start + (4 * 60 * 60 * 1000)) return 'complete';
-            return 'in_game';
-        }
-        return '';
-    }
-
-    function gameStartMs(game) {
-        if (!game) return NaN;
-        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff];
-        for (var i = 0; i < candidates.length; i++) {
-            var value = candidates[i];
-            if (value == null || value === '') continue;
-            if (typeof value === 'number') {
-                var n = value < 100000000000 ? value * 1000 : value;
-                if (Number.isFinite(n)) return n;
-            }
-            var parsed = Date.parse(String(value));
-            if (Number.isFinite(parsed)) return parsed;
-        }
-        // Sleeper's regular-season schedule normally provides a calendar date,
-        // not a kickoff clock. Use a conservative NFL slot estimate so a date-only
-        // schedule never gets interpreted as midnight and marked complete too early.
-        if (game.date) {
-            var parts = String(game.date).slice(0,10).split('-').map(Number);
-            if (parts.length === 3 && parts.every(Number.isFinite)) {
-                var y=parts[0], mo=parts[1]-1, d=parts[2];
-                var day=new Date(y,mo,d).getDay();
-                var hour=13, minute=0;
-                if (day===1) { hour=20; minute=15; }
-                else if (day===4) { hour=20; minute=15; }
-                else if (day===6) { hour=16; minute=30; }
-                else if (day===5) { hour=20; minute=0; }
-                else if (day===0) { hour=13; minute=0; }
-                return new Date(y,mo,d,hour,minute,0,0).getTime();
-            }
-        }
-        return NaN;
-    }
-
-    function projectedRemaining(roster) {
-        if (!roster) return 0;
-        var starters = Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : [];
-        return starters.reduce(function (sum, id) {
-            var meta = playerMeta(id);
-            var game = scheduleGameForTeam(meta && meta.team);
-            var status = gameStatus(game);
-            var projection = getProjection(id);
-            var current = getPlayerPoints(id);
-
-            // A finished NFL game has zero fantasy production remaining.
-            if (status === 'complete') return sum;
-
-            // Unknown schedule data: preserve the projection rather than inventing a game state.
-            return sum + Math.max(0, projection - current);
-        }, 0);
-    }
-
-    function erf(x) {
-        var sign = x < 0 ? -1 : 1;
-        x = Math.abs(x);
-        var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
-        var t = 1 / (1 + p * x);
-        var y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-        return sign * y;
-    }
-
-    function appendPredictor(card, teams) {
-        var pred = matchupProbability(teams[0], teams[1]);
-        var aInfo = state.rosterMap.get(String(teams[0].roster_id));
-        var bInfo = state.rosterMap.get(String(teams[1].roster_id));
-        var section = document.createElement("div");
-        section.className = "predictor";
-        section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div><span class="predictor-note">Live projection: ' + formatScore(pred.meanA) + ' – ' + formatScore(pred.meanB) + '</span></div>' +
-            '<div class="prob-wrap"><div class="prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + pred.a.toFixed(0) + '%</b><span>WIN PROBABILITY</span><b>' + pred.b.toFixed(0) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="prob-track"><div class="prob-fill" style="width:' + pred.a.toFixed(2) + '%"></div><div class="prob-thumb" style="left:' + pred.a.toFixed(2) + '%"></div></div><div class="prob-sub">Remaining projection: ' + formatScore(pred.remainingA) + ' vs ' + formatScore(pred.remainingB) + '</div></div>';
-        card.appendChild(section);
-    }
-
-    function scheduleGameForTeam(team, week) {
-        if (!team || !state.schedule || !state.schedule.length) return null;
-        var t = String(team).toUpperCase();
-        var targetWeek = Number(week != null ? week : state.selectedWeek);
-        var games = state.schedule.filter(function (game) {
-            var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
-            var away = String(game.away || game.away_team || game.awayTeam || '').toUpperCase();
-            var gameWeek = Number(game.week);
-            return (home === t || away === t) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
-        });
-        games.sort(function(a,b){ return gameStartMs(a)-gameStartMs(b); });
-        return games[0] || null;
-    }
-
-    function playerAvailableTimePct(playerIds) {
-        var values = [];
-        (playerIds || []).filter(Boolean).forEach(function (id) {
-            var meta = playerMeta(id);
-            var team = meta && meta.team;
-            var game = scheduleGameForTeam(team);
-            if (!game) return;
-
-            var status = String(game.status || "").toLowerCase();
-            if (status === "complete") {
-                values.push(0);
-                return;
-            }
-            if (status === "pre_game" || status === "scheduled" || status === "pregame") {
-                values.push(100);
-                return;
-            }
-
-            if (status === "in_game" || status === "in progress" || status === "in_progress") {
-                var start = Date.parse(game.start_time || "");
-                if (Number.isFinite(start)) {
-                    // NFL games average roughly 3h 15m from kickoff to completion.
-                    var total = 195 * 60 * 1000;
-                    values.push(Math.max(0, Math.min(100, ((start + total) - Date.now()) / total * 100)));
-                } else {
-                    values.push(50);
-                }
-                return;
-            }
-
-            values.push(50);
-        });
-
-        if (!values.length) return null;
-        return Math.round(values.reduce(function (a,b) { return a + b; }, 0) / values.length);
-    }
-
-    function appendPlayingTimeBar(text, starters) {
-        var pct = playerAvailableTimePct(starters);
-        if (pct == null) return;
-
-        var wrap = document.createElement("div");
-        wrap.className = "playing-time-wrap";
-        wrap.title = "Estimated available playing time remaining for active players";
-
-        var label = document.createElement("div");
-        label.className = "playing-time-label";
-        label.innerHTML = "<span>Available Playing Time</span><strong>" + pct + "%</strong>";
-
-        var track = document.createElement("div");
-        track.className = "playing-time-track";
-
-        var fill = document.createElement("div");
-        fill.className = "playing-time-fill";
-        fill.style.width = pct + "%";
-
-        track.appendChild(fill);
-        wrap.appendChild(label);
-        wrap.appendChild(track);
-        text.appendChild(wrap);
-    }
-
-    function statNumber(stats, keys) {
-        for (var i = 0; i < keys.length; i++) {
-            var value = stats && stats[keys[i]];
-            if (Number.isFinite(Number(value))) return Number(value);
-        }
-        return 0;
-    }
-
-    function teamHasNewTouchdown(matchup) {
-        var roster = state.rosterMap.get(String(matchup.roster_id));
-        var ids = new Set();
-        var players = (roster && roster.roster && Array.isArray(roster.roster.players)) ? roster.roster.players : [];
-        var starters = Array.isArray(matchup.starters) ? matchup.starters : [];
-        players.concat(starters).forEach(function (id) { if (id != null) ids.add(String(id)); });
-        var tdKeys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
-        for (var id of ids) {
-            var now = state.stats && state.stats[id];
-            var before = state.previousStats && state.previousStats[id];
-            if (!now || !before) continue;
-            var nowTd = tdKeys.reduce(function (sum, key) { return sum + statNumber(now, [key]); }, 0);
-            var beforeTd = tdKeys.reduce(function (sum, key) { return sum + statNumber(before, [key]); }, 0);
-            if (nowTd > beforeTd) return true;
-        }
-        return false;
-    }
-
-    function getScoreReaction(matchup, week) {
-        if (week !== state.currentWeek) return null;
-        var key = String(matchup.roster_id);
-        var now = Number(matchup.points || 0);
-        var previous = state.previousScores[key];
-        if (previous == null || !Number.isFinite(Number(previous))) return null;
-        var delta = now - Number(previous);
-        if (Math.abs(delta) < 0.001) return null;
-        if (teamHasNewTouchdown(matchup)) return { type: "touchdown", delta: delta };
-        return { type: delta > 0 ? "up" : "down", delta: delta };
-    }
-
-    function matchupKey(matchup) { return String(matchup && matchup.matchup_id != null ? matchup.matchup_id : ""); }
-
-    function teamLabel(matchup) {
-        var info = state.rosterMap.get(String(matchup.roster_id));
-        return info ? info.teamName : "Roster " + matchup.roster_id;
-    }
-
-    function getTeamPlayerIds(matchup) {
-        var info = state.rosterMap.get(String(matchup.roster_id));
-        var roster = info && info.roster;
-        var ids = Array.isArray(matchup.starters) ? matchup.starters.filter(Boolean) : (roster && Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : []);
-        return ids.map(String);
-    }
-
-    function teamIsFinished(matchup) {
-        var ids = getTeamPlayerIds(matchup);
-        if (!ids.length) return false;
-        var teams = ids.map(function (id) { return (playerMeta(id) || {}).team; }).filter(Boolean);
-        if (!teams.length) return false;
-        var games = teams.map(scheduleGameForTeam).filter(Boolean);
-        return games.length > 0 && games.every(function (g) { return String(g.status || '').toLowerCase() === 'complete'; });
-    }
-
-    function playerTouchdownDelta(id) {
-        var now = state.stats && state.stats[String(id)];
-        var before = state.previousStats && state.previousStats[String(id)];
-        if (!now || !before) return 0;
-        var keys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
-        var n = keys.reduce(function (sum, key) { return sum + statNumber(now, [key]); }, 0);
-        var b = keys.reduce(function (sum, key) { return sum + statNumber(before, [key]); }, 0);
-        return Math.max(0, n - b);
-    }
-
-    function appendEvent(message, icon) {
-        if (!message) return;
-        state.eventHistory.unshift({ message: message, icon: icon || "" });
-        state.eventHistory = state.eventHistory.slice(0, 12);
-    }
-
-    function analyzeLiveEvents(matchups, week) {
-        if (week !== state.currentWeek) return;
-        var seen = new Set();
-        matchups.forEach(function (m) {
-            var key = String(m.roster_id);
-            var now = Number(m.points || 0);
-            var previous = state.previousScores[key];
-            if (previous != null && Math.abs(now - Number(previous)) >= 0.001) {
-                var delta = now - Number(previous);
-                var label = teamLabel(m);
-                appendEvent(label + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼");
-            }
-            getTeamPlayerIds(m).forEach(function (id) {
-                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) {
-                    seen.add(id);
-                    appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥");
-                }
-            });
-        });
-    }
-
-    function teamProjectedFinish(matchup) {
-        var info = state.rosterMap.get(String(matchup.roster_id));
-        var current = Number(matchup.points || 0);
-        return current + projectedRemaining(info && info.roster);
-    }
-
-    function currentPlayingCount() {
-        var count = 0, total = 0;
-        state.matchups.forEach(function (m) {
-            getTeamPlayerIds(m).forEach(function (id) {
-                total++;
-                var meta = playerMeta(id), game = scheduleGameForTeam(meta.team);
-                if (game && String(game.status || '').toLowerCase() === 'in_game') count++;
-            });
-        });
-        return { active: count, total: total };
-    }
-
-    function renderBroadcastHeader() {
-        var box = $('fs5-broadcast');
-        if (!box) return;
-        var rows = state.matchups.map(function(m){
-            var pred = matchupProbability(m, state.matchups.find(function(x){return matchupKey(x)===matchupKey(m) && String(x.roster_id)!==String(m.roster_id)}) || m);
-            return {m:m,p:pred};
-        });
-        var leader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
-        var text = '🎙️ FS5 LIVE: ' + (leader ? teamLabel(leader) + ' currently leads the league with ' + formatScore(leader.points) + ' points.' : 'The live scoreboard is ready.');
-        var close = null;
-        var groups = new Map();
-        state.matchups.forEach(function(m){var k=matchupKey(m);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(m);});
-        groups.forEach(function(t){if(t.length>=2){var d=Math.abs(Number(t[0].points||0)-Number(t[1].points||0));if(!close||d<close.d)close={d:d,a:t[0],b:t[1]};}});
-        if(close && close.d <= 8) text = '🎙️ FS5 LIVE: ' + teamLabel(close.a) + ' and ' + teamLabel(close.b) + ' are separated by only ' + formatScore(close.d) + ' points.';
-        box.hidden=false; box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace('🎙️ FS5 LIVE: ',''))+'</span>';
-    }
-
-    function renderWatching() {
-        var box=$('fs5-watching'); if(!box)return;
-        var c=currentPlayingCount();
-        box.hidden=false; box.innerHTML='<span>👀 FS5 WATCHING</span><strong>'+c.active+' active player'+(c.active===1?'':'s')+'</strong><small>of '+c.total+' starters currently in NFL games</small>';
-    }
-
-    function renderWhatJustHappened() {
-        var box=$('what-just-happened'); if(!box)return;
-        var items=state.eventHistory.slice(0,3);
-        if(!items.length){box.hidden=true;return;}
-        box.hidden=false;
-        box.innerHTML='<strong>WHAT JUST HAPPENED</strong>'+items.map(function(e){return '<span>'+esc(e.icon)+' '+esc(e.message)+'</span>';}).join('');
-    }
-
-    function renderLeagueLeaderboard() {
-        var box=$('league-leaderboard'); if(!box)return;
-        var rows=[];
-        state.matchups.forEach(function(m){var info=state.rosterMap.get(String(m.roster_id));if(info)rows.push({team:info.teamName,score:Number(m.points||0)});});
-        rows.sort(function(a,b){return b.score-a.score;});
-        if(!rows.length){box.hidden=true;return;}
-        box.hidden=false;
-        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div>'+rows.slice(0,5).map(function(r,i){return '<div class="leaderboard-row"><b>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
-    }
-
-    function trashTalk(a,b) {
-        var pa=Number(a.points||0), pb=Number(b.points||0), diff=Math.abs(pa-pb);
-        var winner=pa>=pb?teamLabel(a):teamLabel(b), loser=pa>=pb?teamLabel(b):teamLabel(a);
-        if(diff<2) return '😈 TRASH TALK: Nobody is talking yet. This one is too close.';
-        if(diff<8) return '😈 TRASH TALK: '+esc(winner)+' has the bragging rights… for now.';
-        if(diff<20) return '😈 TRASH TALK: '+esc(loser)+' may want to check the waiver wire.';
-        return '😈 TRASH TALK: '+esc(loser)+' is currently getting sent to the shadow realm.';
-    }
-
-    function appendProjectedFinish(card, teams) {
-        var vals=teams.map(function(m){return {team:teamLabel(m),finish:teamProjectedFinish(m),current:Number(m.points||0),remaining:projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster)}});
-        var el=document.createElement('div'); el.className='projected-finish';
-        el.innerHTML=vals.map(function(v){return '<div><span>🎯 '+esc(v.team)+'</span><strong>'+formatScore(v.finish)+'</strong><small>Projected final · '+formatScore(v.remaining)+' left</small></div>';}).join('');
-        card.appendChild(el);
-    }
-
-    function appendPointsBank(card, teams) {
-        var el=document.createElement('div'); el.className='points-bank';
-        el.innerHTML=teams.map(function(m){var cur=Number(m.points||0), rem=projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster), total=Math.max(0,cur+rem), pct=total?Math.max(0,Math.min(100,cur/total*100)):0;return '<div class="points-bank__team"><div><span>💰 '+esc(teamLabel(m))+'</span><strong>'+formatScore(cur)+' banked</strong></div><div class="points-bank__track"><i style="width:'+pct.toFixed(1)+'%"></i></div><small>'+formatScore(rem)+' projected remaining</small></div>';}).join('');
-        card.appendChild(el);
-    }
-
-    function cardVibe(teams) {
-        var p=matchupProbability(teams[0],teams[1]), max=Math.max(p.a,p.b), min=Math.min(p.a,p.b);
-        if(max>90)return ' matchup-card--victory';
-        var timeLeft=matchupPlayingTimePct(teams[0],teams[1]);
-        if(timeLeft!=null && timeLeft<10 && (p.a<70 || p.b<70))return ' matchup-card--witching';
-        if(min>=45&&max<=55)return ' matchup-card--nail';
-        if(Math.abs(Number(teams[0].points||0)-Number(teams[1].points||0))<=5)return ' matchup-card--close';
-        return '';
-    }
-
-    function renderLiveTicker() {
-        var ticker = $("live-event-ticker");
-        if (!ticker) return;
-        if (!state.eventHistory.length) {
-            ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span><span class="live-ticker__empty">Waiting for scoring activity…</span>';
-            return;
-        }
-        ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span>' + state.eventHistory.slice(0, 5).map(function (e) {
-            return '<span class="live-ticker__item"><b>' + esc(e.icon) + '</b> ' + esc(e.message) + '</span>';
-        }).join('');
-    }
-
-    function matchupPlayingTimePct(a, b) {
-        var ids = getTeamPlayerIds(a).concat(getTeamPlayerIds(b)).filter(Boolean);
-        if (!ids.length) return null;
-        var values = [];
-        ids.forEach(function (id) {
-            var meta = playerMeta(id);
-            var game = scheduleGameForTeam(meta && meta.team, state.selectedWeek);
-            if (!game) return;
-            var status = gameStatus(game);
-            if (status === 'complete') values.push(0);
-            else if (status === 'pre_game') values.push(100);
-            else if (status === 'in_game') {
-                var start = gameStartMs(game);
-                if (Number.isFinite(start)) {
-                    var total = 195 * 60 * 1000;
-                    values.push(Math.max(0, Math.min(100, ((start + total) - Date.now()) / total * 100)));
-                } else values.push(50);
-            } else values.push(50);
-        });
-        if (!values.length) return null;
-        return values.reduce(function (a, b) { return a + b; }, 0) / values.length;
-    }
-
-    function matchupAlert(a, b) {
-        var pred = matchupProbability(a, b);
-        var key = matchupKey(a) || (String(a.roster_id) + '-' + String(b.roster_id));
-        var previous = state.previousProbabilities[key];
-        var labels = [teamLabel(a), teamLabel(b)];
-        var alert = null;
-        var timeLeft = matchupPlayingTimePct(a, b);
-        if (Math.max(pred.a, pred.b) > 90) {
-            alert = { type: 'victory', text: '🏆 VICTORY IMMINENT' };
-        } else if (timeLeft != null && timeLeft < 10 && (pred.a < 70 || pred.b < 70)) {
-            alert = { type: 'witching', text: '🕯️ THE WITCHING HOUR' };
-        } else if (previous && Math.abs(pred.a - previous) >= 12 && ((previous < 50 && pred.a >= 50) || (previous >= 50 && pred.a < 50))) {
-            alert = { type: 'lead', text: '⚡ LEAD CHANGE' };
-        } else if (pred.a >= 65 && previous != null && previous < 50) {
-            alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[0] };
-        } else if (pred.b >= 65 && previous != null && previous > 50) {
-            alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[1] };
-        } else if (Math.min(pred.a, pred.b) >= 45 && Math.max(pred.a, pred.b) <= 55) {
-            alert = { type: 'nail', text: '😬 NAIL BITER' };
-        }
-        state.previousProbabilities[key] = pred.a;
-        return alert;
-    }
-
-    function mondayNightSweat(a, b) {
-        if (teamIsFinished(a) || teamIsFinished(b)) return null;
-        var pa = matchupProbability(a,b);
-        var max = Math.max(pa.a, pa.b), min = Math.min(pa.a, pa.b);
-        if (min >= 25 && max <= 75 && (projectedRemaining((state.rosterMap.get(String(a.roster_id)) || {}).roster) > 0 || projectedRemaining((state.rosterMap.get(String(b.roster_id)) || {}).roster) > 0)) return '🌙 MONDAY NIGHT SWEAT';
-        return null;
-    }
-
-    function appendMatchupAlert(card, alert, finished) {
-        if (finished) {
-            var final = document.createElement('div'); final.className = 'matchup-alert matchup-alert--final'; final.textContent = '🏁 FINAL'; card.appendChild(final); return;
-        }
-        if (!alert) return;
-        var el = document.createElement('div'); el.className = 'matchup-alert matchup-alert--' + alert.type; el.textContent = alert.text; card.appendChild(el);
-        setTimeout(function () { if (el.parentNode) { el.classList.add('is-fading'); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350); } }, 10000);
-    }
-
-    function appendMatchupSuperlatives(card, teams) {
-        var best = null;
-        teams.forEach(function (m) {
-            getTeamPlayerIds(m).forEach(function (id) {
-                var pts = getPlayerPoints(id);
-                if (!best || pts > best.points) best = { id: id, points: pts, team: teamLabel(m) };
-            });
-        });
-        if (!best || best.points <= 0) return;
-        var strip = document.createElement('div'); strip.className = 'matchup-mvp';
-        strip.innerHTML = '<span>👑 MATCHUP MVP</span><strong>' + esc(playerName(best.id)) + '</strong><b>' + formatScore(best.points) + ' pts</b>';
-        card.appendChild(strip);
-    }
-
-    function renderScoreBox(matchup, week) {
-        var box = document.createElement("div");
-        box.className = "score-box";
-        box.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
-        var reaction = getScoreReaction(matchup, week);
-        if (reaction) {
-            var badge = document.createElement("span");
-            badge.className = "score-reaction score-reaction--" + reaction.type;
-            badge.setAttribute("aria-label", reaction.type === "touchdown" ? "Touchdown" : (reaction.type === "up" ? "Score increased" : "Score decreased"));
-            badge.textContent = reaction.type === "touchdown" ? "🏈🔥" : (reaction.type === "up" ? "▲" : "▼");
-            box.appendChild(badge);
-            var timerKey = String(matchup.roster_id);
-            clearTimeout(state.reactionTimers[timerKey]);
-            state.reactionTimers[timerKey] = setTimeout(function () {
-                if (badge && badge.parentNode) {
-                    badge.classList.add("is-hiding");
-                    setTimeout(function () { if (badge && badge.parentNode) badge.parentNode.removeChild(badge); }, 220);
-                }
-            }, reaction.type === "touchdown" ? 10000 : 2200);
-        }
-        return box;
-    }
-
-    function matchupGameWindow(teams) {
-        var starts = [], ends = [];
-        var week = state.selectedWeek;
-        teams.forEach(function (m) {
-            getTeamPlayerIds(m).forEach(function (id) {
-                var meta = playerMeta(id);
-                var game = scheduleGameForTeam(meta && meta.team, week);
-                var start = gameStartMs(game);
-                if (Number.isFinite(start)) {
-                    starts.push(start);
-                    ends.push(start + (195 * 60 * 1000));
-                }
-            });
-        });
-        if (!starts.length) return null;
-        return { start: Math.min.apply(null, starts), end: Math.max.apply(null, ends) };
-    }
-
-    function renderLiveGuide() {
-        var box=$('live-guide');
-        if(!box || box.dataset.ready==='1') return;
-        box.dataset.ready='1';
-        box.innerHTML='<details><summary>📖 FS5 LIVE SCORES GUIDE</summary><div class="live-guide__grid">'+
-            '<div><strong>🏆 Victory Imminent</strong><p>One team has a win probability above 90%. The matchup is heavily tilted toward a likely winner.</p></div>'+
-            '<div><strong>🕯️ The Witching Hour</strong><p>Less than 10% of the matchup\'s total playing time remains <em>and</em> at least one team has a win probability below 70%. The game is entering its late, dangerous stretch.</p></div>'+
-            '<div><strong>😬 Nail Biter</strong><p>Both teams are between 45% and 55% win probability. The matchup is essentially a coin flip.</p></div>'+
-            '<div><strong>⚡ Lead Change</strong><p>The win probability has swung sharply enough to indicate that control of the matchup changed hands.</p></div>'+
-            '<div><strong>🚨 Upset Alert</strong><p>A team that was previously behind in probability has moved into a strong position.</p></div>'+
-            '<div><strong>🌙 Monday Night Sweat</strong><p>A matchup still has meaningful production tied to a Monday Night Football player, keeping the outcome alive late.</p></div>'+
-            '<div><strong>👑 🔥 💀 ❄️ Player badges</strong><p>👑 matchup MVP · 🔥 above projection/hot · 💀 major projection miss · ❄️ final game with 0 points · 🏈🔥 touchdown activity.</p></div>'+
-            '</div></details>';
-    }
-
-    function renderMatchups(matchups, week) {
-        grid.replaceChildren();
-        renderLiveGuide();
-        kicker.textContent = "WEEK " + week;
-        heading.textContent = weekLabel(week);
-        badge.textContent = "Week " + week;
-        state.matchups = Array.isArray(matchups) ? matchups : [];
-        analyzeLiveEvents(state.matchups, week);
-        renderLiveTicker();
-        renderWhatJustHappened();
-        renderBroadcastHeader();
-        renderWatching();
-        renderLeagueLeaderboard();
-        var groups = new Map();
-        state.matchups.forEach(function (item) {
-            if (!item || item.matchup_id == null) return;
-            var key = String(item.matchup_id);
-            if (!groups.has(key)) groups.set(key, []);
-            groups.get(key).push(item);
-        });
-        if (!groups.size) {
-            grid.hidden = true; empty.hidden = false; empty.textContent = "No matchup data is available for this week."; return;
-        }
-        grid.hidden = false; empty.hidden = true;
-        Array.from(groups.entries()).sort(function (a, b) { return Number(a[0]) - Number(b[0]); }).forEach(function (entry) {
-            var teams = entry[1].slice(0, 2);
-            if (teams.length < 2) return;
-            var card = document.createElement("article");
-            card.className = "matchup-card matchup-card--clickable" + cardVibe(teams);
-            card.tabIndex = 0;
-            card.setAttribute("role", "button");
-            card.setAttribute("aria-label", "Open matchup " + entry[0]);
-            var head = document.createElement("div");
-            head.className = "matchup-card__head";
-            head.innerHTML = '<span>Matchup ' + esc(entry[0]) + '</span><span class="matchup-card__state' + (week === state.currentWeek ? ' is-current' : '') + '">' + (week === state.currentWeek ? 'LIVE' : (week < state.currentWeek ? 'FINAL' : 'UPCOMING')) + '</span>';
-            card.appendChild(head);
-            teams.forEach(function (matchup, index) {
-                var info = state.rosterMap.get(String(matchup.roster_id));
-                var team = document.createElement("div"); team.className = "matchup-team";
-                var identity = document.createElement("div"); identity.className = "team-identity";
-                var img = teamImage(info, "team-avatar");
-                var text = document.createElement("div");
-                var name = document.createElement("h3"); name.textContent = info ? info.teamName : "Roster " + matchup.roster_id; text.appendChild(name);
-                var account = document.createElement("span"); account.textContent = info && info.account ? info.account : ""; text.appendChild(account);
-                var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
-                appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
-                identity.appendChild(img); identity.appendChild(text);
-                var scoreBox = renderScoreBox(matchup, week);
-                team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
-                if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
-            });
-            appendPredictor(card, teams);
-            appendMatchupSuperlatives(card, teams);
-            appendProjectedFinish(card, teams);
-            appendPointsBank(card, teams);
-            var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash);
-            var alert = matchupAlert(teams[0], teams[1]);
-            if (!alert) { var sweat = mondayNightSweat(teams[0], teams[1]); if (sweat) alert = { type: 'sweat', text: sweat }; }
-            appendMatchupAlert(card, alert, teamIsFinished(teams[0]) && teamIsFinished(teams[1]));
-            var hint = document.createElement("div"); hint.className = "matchup-hint"; hint.textContent = "Click matchup to view lineups · bench · player details"; card.appendChild(hint);
-            function open() { openMatchupModal(teams, entry[0], week); }
-            card.addEventListener("click", open);
-            card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
-            grid.appendChild(card);
-        });
-        renderLeagueSuperlatives();
-    }
-
-    function renderLeagueSuperlatives() {
-        var box = $("league-superlatives"); if (!box) return;
-        var rows = [];
-        state.matchups.forEach(function (m) {
-            var info = state.rosterMap.get(String(m.roster_id));
-            if (!info) return;
-            rows.push({ team: info.teamName, score: Number(m.points || 0), remaining: projectedRemaining(info.roster) });
-        });
-        rows.sort(function(a,b){return b.score-a.score;});
-        if (!rows.length) { box.hidden = true; return; }
-        var high = rows[0], low = rows[rows.length - 1];
-        var closest = null;
-        state.matchups.forEach(function(m){ if (!closest || Math.abs(Number(m.points||0) - Number(closest.diffSource.points||0)) < closest.diff) closest = {diff: Math.abs(Number(m.points||0) - Number((closest && closest.diffSource ? closest.diffSource.points : 0))), diffSource:m}; });
-        var mostLeft = rows.slice().sort(function(a,b){return b.remaining-a.remaining;})[0];
-        box.hidden = false;
-        box.innerHTML = '<div class="superlative-card"><span>🏆 HIGHEST SCORE</span><strong>' + esc(high.team) + '</strong><b>' + formatScore(high.score) + '</b></div>' +
-            '<div class="superlative-card"><span>💀 LOWEST SCORE</span><strong>' + esc(low.team) + '</strong><b>' + formatScore(low.score) + '</b></div>' +
-            '<div class="superlative-card"><span>⚡ MOST LEFT</span><strong>' + esc(mostLeft.team) + '</strong><b>' + formatScore(mostLeft.remaining) + ' proj.</b></div>';
-        var closeGames = [];
-        var groups = new Map(); state.matchups.forEach(function(m){ var k=matchupKey(m); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(m); });
-        groups.forEach(function(t){ if(t.length>=2) closeGames.push({a:t[0],b:t[1],diff:Math.abs(Number(t[0].points||0)-Number(t[1].points||0))}); });
-        if(closeGames.length){ closeGames.sort(function(a,b){return a.diff-b.diff;}); var cg=closeGames[0]; box.insertAdjacentHTML('beforeend','<div class="superlative-card"><span>😬 CLOSEST MATCHUP</span><strong>' + esc(teamLabel(cg.a)) + ' vs ' + esc(teamLabel(cg.b)) + '</strong><b>' + formatScore(cg.diff) + ' pts</b></div>'); }
-        var hot = null; state.matchups.forEach(function(m){ getTeamPlayerIds(m).forEach(function(id){ var prev=getPreviousPlayerPoints(id), cur=getPlayerPoints(id); if(prev!=null){var d=cur-prev; if(!hot || d>hot.delta) hot={id:id,delta:d,team:teamLabel(m)};}}); });
-        if(hot && hot.delta>0){ box.insertAdjacentHTML('beforeend','<div class="superlative-card"><span>🔥 HOTTEST PLAYER</span><strong>' + esc(playerName(hot.id)) + '</strong><b>+' + formatScore(hot.delta) + '</b></div>'); }
-
-    }
-
-    function modalShell() {
-        var modal = $("matchup-modal");
-        if (!modal) return null;
-        return modal;
-    }
-
-    function openMatchupModal(teams, matchupId, week) {
-        var modal = modalShell(); if (!modal) return;
-        var body = $("matchup-modal-body");
-        body.replaceChildren();
-        var title = document.createElement("div"); title.className = "modal-matchup-title";
-        var aInfo = state.rosterMap.get(String(teams[0].roster_id)); var bInfo = state.rosterMap.get(String(teams[1].roster_id));
-        title.innerHTML = '<span>Matchup ' + esc(matchupId) + ' · Week ' + week + '</span><strong>' + formatScore(teams[0].points) + ' — ' + formatScore(teams[1].points) + '</strong>';
-        body.appendChild(title);
-        var matchupPred = matchupProbability(teams[0], teams[1]);
-        var pred = document.createElement("div"); pred.className = "modal-predictor";
-        pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="modal-prob-track"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
-        body.appendChild(pred);
-        var columns = document.createElement("div"); columns.className = "modal-lineups";
-        [teams[0], teams[1]].forEach(function (team) {
-            var info = state.rosterMap.get(String(team.roster_id));
-            var col = document.createElement("section"); col.className = "modal-team-column";
-            var roster = info && info.roster;
-            col.innerHTML = '<div class="modal-team-header"><img src="' + esc(info && info.avatar ? info.avatar : '/artwork/logo.png') + '" alt=""><div><h3>' + esc(info ? info.teamName : 'Roster ' + team.roster_id) + '</h3><span>' + esc(info && info.account ? info.account : '') + '</span></div><strong>' + formatScore(team.points) + '</strong></div>';
-            var starters = Array.isArray(roster && roster.starters) ? roster.starters.filter(Boolean) : [];
-            var all = Array.isArray(roster && roster.players) ? roster.players.filter(Boolean) : [];
-            var set = new Set(starters.map(String));
-            var bench = all.filter(function (id) { return !set.has(String(id)); });
-            var startHeading = document.createElement("h4"); startHeading.textContent = "STARTERS"; col.appendChild(startHeading);
-            starters.forEach(function (id) { col.appendChild(renderPlayer(id, true)); });
-            var benchDetails = document.createElement("details"); benchDetails.className = "modal-bench"; var summary = document.createElement("summary"); summary.textContent = "BENCH · " + bench.length; benchDetails.appendChild(summary); var bl = document.createElement("div"); bench.forEach(function (id) { bl.appendChild(renderPlayer(id, false)); }); benchDetails.appendChild(bl); col.appendChild(benchDetails);
-            columns.appendChild(col);
-        });
-        body.appendChild(columns);
-        modal.hidden = false; document.body.classList.add("modal-open"); $("matchup-modal-close").focus();
-    }
-
-    function loadPlayerNews(id) {
-        var p = playerMeta(id) || {};
-        var name = playerName(id);
-        var team = p.team || '';
-        var section = document.createElement('section');
-        section.className = 'player-news';
-        section.innerHTML = '<div class="player-news__head"><h4>Latest News</h4><span>Recent web coverage</span></div><div class="player-news__body"><p class="muted">Loading news…</p></div>';
-        var body = section.querySelector('.player-news__body');
-        fetch('/.netlify/functions/sleeper?source=news&player=' + encodeURIComponent(name) + '&team=' + encodeURIComponent(team), { cache: 'no-store', headers: { 'Accept': 'application/json' } })
-            .then(function (response) {
-                return response.text().then(function (text) {
-                    var data = {};
-                    try { data = text ? JSON.parse(text) : {}; } catch (e) {}
-                    if (!response.ok) throw new Error(data.error || 'Unable to load player news.');
-                    return data;
-                });
-            })
-            .then(function (data) {
-                var items = Array.isArray(data.items) ? data.items : [];
-                body.replaceChildren();
-                if (!items.length) {
-                    body.innerHTML = '<p class="muted">No recent news found for this player.</p>';
-                    return;
-                }
-                items.forEach(function (item) {
-                    var article = document.createElement('article');
-                    article.className = 'player-news__item';
-                    var link = document.createElement('a');
-                    link.href = item.link || '#'; link.target = '_blank'; link.rel = 'noopener noreferrer';
-                    link.textContent = item.title || 'Latest player news';
-                    var meta = document.createElement('div');
-                    meta.className = 'player-news__meta';
-                    var source = item.source || 'News';
-                    var date = item.pubDate ? new Date(item.pubDate) : null;
-                    var dateText = date && !isNaN(date.getTime()) ? date.toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
-                    meta.textContent = source + (dateText ? ' · ' + dateText : '');
-                    article.appendChild(link); article.appendChild(meta); body.appendChild(article);
-                });
-            })
-            .catch(function (error) {
-                body.innerHTML = '<p class="muted">News is temporarily unavailable. ' + esc(error.message || '') + '</p>';
-            });
-        return section;
-    }
-
-    function openPlayerModal(id) {
-        var modal = $("player-modal"); if (!modal) return;
-        var p = playerMeta(id); var body = $("player-modal-body");
-        var stats = state.stats && state.stats[String(id)] || {};
-        body.replaceChildren();
-        var detail = document.createElement('div'); detail.className = 'player-detail';
-        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div></div>';
-        body.appendChild(detail);
-        var meta = document.createElement('dl'); meta.className = 'player-meta';
-        meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';
-        body.appendChild(meta);
-        body.appendChild(loadPlayerNews(id));
-        var statEntries = Object.entries(stats || {}).filter(function (entry) {
-            return entry[1] != null && entry[1] !== '' && Number(entry[1]) !== 0 && entry[0] !== 'pts_ppr' && entry[0] !== 'pts_half_ppr' && entry[0] !== 'pts_std';
-        });
-        if (statEntries.length) {
-            var statsHeading = document.createElement('h4'); statsHeading.textContent = 'Weekly Stats'; body.appendChild(statsHeading);
-            var statsGrid = document.createElement('div'); statsGrid.className = 'player-stats-grid';
-            var labels = { pass_att:'Pass Attempts', pass_cmp:'Completions', pass_yd:'Pass Yards', pass_td:'Pass TDs', pass_int:'Interceptions', rush_att:'Rush Attempts', rush_yd:'Rush Yards', rush_td:'Rush TDs', rec:'Receptions', rec_yd:'Receiving Yards', rec_td:'Receiving TDs', rec_tgt:'Targets', fum:'Fumbles', fum_lost:'Fumbles Lost', two_pt:'2-Point Conversions', bonus_100_rush_yd:'100+ Rush Bonus', bonus_100_rec_yd:'100+ Rec Bonus', bonus_300_pass_yd:'300+ Pass Bonus' };
-            statEntries.sort(function(a,b){ return (labels[a[0]] || a[0]).localeCompare(labels[b[0]] || b[0]); }).forEach(function(entry) {
-                var cell = document.createElement('div'); cell.className = 'player-stat-cell';
-                var label = document.createElement('span'); label.textContent = labels[entry[0]] || entry[0].replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-                var value = document.createElement('strong'); value.textContent = Number.isFinite(Number(entry[1])) ? String(Number(entry[1])) : String(entry[1]);
-                cell.appendChild(label); cell.appendChild(value); statsGrid.appendChild(cell);
-            });
-            body.appendChild(statsGrid);
-        }
-        modal.hidden = false; document.body.classList.add("modal-open"); $("player-modal-close").focus();
-    }
-
-    function closeModals() { document.querySelectorAll(".fs5-modal").forEach(function (m) { m.hidden = true; }); document.body.classList.remove("modal-open"); }
-
-    function esc(value) { return String(value == null ? "" : value).replace(/[&<>'"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]; }); }
-
-    function loadPlayerCache() {
-        var ids = new Set();
-        state.matchups.forEach(function (m) {
-            (Array.isArray(m && m.players) ? m.players : []).forEach(function (id) { if (id != null) ids.add(String(id)); });
-            (Array.isArray(m && m.starters) ? m.starters : []).forEach(function (id) { if (id != null) ids.add(String(id)); });
-        });
-        var list = Array.from(ids);
-        if (!list.length) { state.players = {}; return Promise.resolve(true); }
-
-        // Cache only the players needed for this week's matchups. This avoids
-        // downloading Sleeper's very large full NFL player catalog to the browser.
-        var cacheKey = "fs5_sleeper_players_" + list.slice().sort().join(",");
-        try {
-            var cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-            if (cached && cached.saved && Date.now() - cached.saved < PLAYER_CACHE_MS && cached.players) {
-                state.players = cached.players;
-                return Promise.resolve(true);
-            }
-        } catch (e) {}
-
-        return fetch("/.netlify/functions/sleeper?source=players&ids=" + encodeURIComponent(list.join(",")), {
-            cache: "no-store",
-            headers: { "Accept": "application/json" }
-        }).then(function (response) {
-            return response.text().then(function (text) {
-                var data = {};
-                try { data = text ? JSON.parse(text) : {}; } catch (e) {}
-                if (!response.ok) throw new Error((data && data.error) || "Unable to load player names");
-                state.players = data || {};
-                try { localStorage.setItem(cacheKey, JSON.stringify({ saved: Date.now(), players: state.players })); } catch (e) {}
-                return true;
-            });
-        }).catch(function (e) {
-            console.warn("FS5 player-name feed unavailable", e);
-            state.players = {};
-            return false;
-        });
-    }
-
-    function loadSupplemental(week) {
-        var season = 2026;
-        var statsPaths = ["/stats/nfl/regular/" + season + "/" + week, "/stats/nfl/" + season + "/" + week + "?season_type=regular"];
-        var projectionPaths = ["/projections/nfl/regular/" + season + "/" + week, "/projections/nfl/" + season + "/" + week + "?season_type=regular"];
-        return Promise.allSettled([loadPlayerCache(), optionalApi(statsPaths).catch(function () { return {}; }), optionalApi(projectionPaths).catch(function () { return {}; })]).then(function (results) {
-            state.previousStats = state.stats || {};
-            state.stats = results[1].status === "fulfilled" && results[1].value ? results[1].value : {};
-            state.projections = results[2].status === "fulfilled" && results[2].value ? results[2].value : {};
-            renderMatchups(state.matchups, week);
-            state.matchups.forEach(function (m) { if (m && m.roster_id != null) state.previousScores[String(m.roster_id)] = Number(m.points || 0); });
-        });
-    }
-
-    async function loadWeek(week) {
-        grid.setAttribute("aria-busy", "true");
-        weekContext.textContent = "Loading Week " + week + "...";
-        try {
-            var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
-            state.selectedWeek = week; weekSelect.value = String(week);
-            renderMatchups(matchups, week);
-            weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 45 seconds" : "2026 season · " + weekLabel(week);
-            setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
-            loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
-        } catch (error) {
-            console.error("FS5 Sleeper matchup request failed", error);
-            grid.replaceChildren(); grid.hidden = true; empty.hidden = false; empty.textContent = "Sleeper matchup data could not be loaded. Please try again.";
-            weekContext.textContent = "Unable to load Week " + week + ". " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
-        } finally { grid.setAttribute("aria-busy", "false"); }
-    }
-
-    async function initialize() {
-        setStatus("Connecting to Sleeper...");
-        try {
-            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
-            var nflState = results[0] || {};
-            state.currentWeek = Number(nflState.display_week || nflState.week || 1);
-            state.selectedWeek = state.currentWeek;
-            state.rosters = Array.isArray(results[1]) ? results[1] : [];
-            state.users = Array.isArray(results[2]) ? results[2] : [];
-            state.schedule = Array.isArray(results[3]) ? results[3] : [];
-            buildRosterMap(); populateWeeks();
-            api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
-            await loadWeek(state.currentWeek);
-        } catch (error) {
-            console.error("FS5 Sleeper initialization failed", error);
-            weekContext.textContent = "Unable to load league data. " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
-        }
-    }
-
-    weekSelect.addEventListener("change", function () { loadWeek(Number(this.value)); });
-    refreshButton.addEventListener("click", function () { loadWeek(state.selectedWeek); });
-    document.addEventListener("click", function (e) {
-        if (e.target.matches("[data-close-modal]")) closeModals();
-    });
-    document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
-    setInterval(function () { if (document.visibilityState === "visible" && state.selectedWeek === state.currentWeek) loadWeek(state.currentWeek); }, REFRESH_MS);
-    initialize();
-})();
+/* FS5 Live Scores Enhanced */
+.live-main{padding:24px 0 44px;background:linear-gradient(180deg,#f5f8fb,#fff 48%)}
+.live-shell{width:min(1220px,94%);margin:auto}.live-hero{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;padding:30px;margin-bottom:18px;color:#fff;background:linear-gradient(135deg,#00376b,#0b527f);border-radius:18px;box-shadow:0 14px 36px rgba(0,55,107,.18)}
+.live-kicker,.section-kicker{margin:0 0 6px;font-size:.72rem;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.78}.live-hero h1{margin:0;font-size:clamp(2rem,5vw,3.3rem)}.live-subtitle{max-width:720px;margin:10px 0 0;opacity:.9}.live-status{padding:10px 13px;border-radius:999px;background:#ffffff14;border:1px solid #ffffff2e;font-weight:800;white-space:nowrap}.live-status.is-live{background:#26b46833}.live-status.is-error{background:#b4262633}
+.week-toolbar{display:flex;gap:15px;align-items:end;flex-wrap:wrap;margin-bottom:18px;padding:16px 18px;background:#fff;border:1px solid #dce5ee;border-radius:14px;box-shadow:0 5px 18px #102c460f}.week-control{display:flex;flex-direction:column;gap:5px}.week-control label{font-size:.72rem;font-weight:900;color:#536575;text-transform:uppercase}.week-control select{min-width:150px;padding:10px;border:1px solid #b9c8d6;border-radius:8px;font-weight:800}.week-context{flex:1;color:#596d7e;padding-bottom:8px}.refresh-button{padding:10px 15px;border:0;border-radius:8px;background:#00376b;color:#fff;font-weight:900;cursor:pointer}
+.power-rankings,.scoreboard{background:#fff;border:1px solid #dce5ee;border-radius:16px;padding:24px;box-shadow:0 8px 24px #102c4612;margin-bottom:18px}.section-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:14px}.section-kicker{color:#527087}.section-heading h2{margin:0;color:#0c2f4d;font-size:clamp(1.3rem,3vw,2rem)}.section-badge{padding:7px 11px;border-radius:999px;background:#eaf3f9;color:#00376b;font-weight:900}.analytics-note{margin:-4px 0 15px;color:#657786;font-size:.86rem}.power-ranking-list{display:grid;gap:8px}.power-row{display:grid;grid-template-columns:34px 44px minmax(0,1fr) 70px;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e3eaf0;border-radius:10px}.power-rank{font-size:1.15rem;font-weight:950;color:#00376b;text-align:center}.power-avatar,.team-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#eef3f6}.power-team{display:flex;flex-direction:column;min-width:0}.power-team strong{color:#0c2f4d;overflow-wrap:anywhere}.power-team span{font-size:.73rem;color:#72818d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.power-score{text-align:right}.power-score b{display:block;font-size:1.1rem;color:#00376b}.power-score small{font-size:.65rem;color:#72818d}
+.matchup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.matchup-card{border:1px solid #d7e1ea;border-radius:14px;overflow:hidden;background:#fff}.matchup-card__head{display:flex;justify-content:space-between;padding:10px 14px;background:#f3f7fa;border-bottom:1px solid #e0e7ed;font-size:.7rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}.matchup-card__state.is-current{color:#12804a}.matchup-teams{padding:2px 0}.matchup-team{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:15px}.team-identity{display:flex;gap:11px;align-items:center;min-width:0}.team-identity h3{margin:0;color:#0c2f4d;font-size:1rem;overflow-wrap:anywhere}.team-identity span{display:block;font-size:.75rem;color:#657786}.team-identity small{display:block;margin-top:3px;font-size:.68rem;color:#8a98a3}.score-box{text-align:right;flex:none}.score-box strong{display:block;font-size:1.7rem;color:#00376b}.score-box span{font-size:.68rem;color:#71808d}.vs-divider{text-align:center;margin:-8px 0;position:relative;z-index:2}.vs-divider span{display:inline-flex;width:28px;height:28px;border-radius:50%;align-items:center;justify-content:center;background:#00376b;color:#fff;border:3px solid #fff;font-size:.62rem;font-weight:900}.predictor{padding:14px;background:#f8fbfd;border-top:1px solid #e4ebf0;border-bottom:1px solid #e4ebf0}.predictor-head{display:flex;justify-content:space-between;gap:10px;align-items:end}.predictor-head strong{display:block;color:#0c2f4d}.model-tag{font-size:.62rem;font-weight:900;color:#72818d}.prob-wrap{margin-top:9px}.prob-labels{display:flex;justify-content:space-between;align-items:center;font-size:.68rem;color:#6b7d8c}.prob-labels b:first-child{color:#00376b}.prob-track{position:relative;height:13px;margin-top:5px;border-radius:999px;background:#c62828;overflow:visible}.prob-fill{height:100%;border-radius:999px;background:#00376b}.prob-thumb{position:absolute;top:50%;width:20px;height:20px;transform:translate(-50%,-50%);border:3px solid #c62828;border-radius:50%;background:#00376b;box-shadow:0 2px 8px #0003}.lineup-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px}.lineup-grid h3{margin:0 0 8px;color:#0c2f4d;font-size:.9rem}.lineup-grid h3 small{display:block;color:#8a98a3;font-size:.65rem;font-weight:700}.player-row{width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;padding:8px 7px;border:0;border-bottom:1px solid #edf1f4;background:#fff;cursor:pointer}.player-row:hover{background:#f5f9fb}.player-row img{width:32px;height:32px;border-radius:50%;object-fit:cover;background:#edf2f5}.player-main{min-width:0}.player-main strong{display:block;color:#18374f;font-size:.76rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.player-main small{display:block;color:#82909a;font-size:.61rem}.player-points{text-align:right}.player-points b{display:block;color:#00376b;font-size:.78rem}.player-points small{color:#83919b;font-size:.61rem}.bench-details{border-top:1px solid #e4ebf0;padding:10px 14px}.bench-details summary{cursor:pointer;color:#00376b;font-weight:900;font-size:.76rem}.bench-details .lineup-grid{padding:12px 0 0}.muted{font-size:.75rem;color:#84929d}.empty-state{padding:35px;text-align:center;color:#657786;border:1px dashed #cbd7e1;border-radius:12px}.source-note{margin:14px 2px 0;color:#6b7d8c;font-size:.74rem;line-height:1.5}
+.player-modal[hidden]{display:none}.player-modal{position:fixed;inset:0;z-index:1000}.player-modal__backdrop{position:absolute;inset:0;background:#00192dcc}.player-modal__panel{position:relative;width:min(760px,92%);max-height:88vh;overflow:auto;margin:6vh auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 25px 80px #0006}.player-modal__close{position:absolute;right:12px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#eef3f6;color:#16384f;font-size:24px;cursor:pointer}.player-detail{display:grid;grid-template-columns:120px 1fr;gap:22px;align-items:start}.player-detail__image{width:120px;height:120px;border-radius:16px;object-fit:cover;background:#edf2f5}.player-detail h2{margin:0;color:#0c2f4d;font-size:2rem}.player-detail__team{color:#667887}.player-detail__chips{display:flex;flex-wrap:wrap;gap:7px}.player-detail__chips span{padding:6px 9px;border-radius:999px;background:#eaf3f9;color:#00376b;font-size:.72rem;font-weight:900}.player-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.player-meta div{padding:9px;background:#f6f9fb;border-radius:8px}.player-meta dt{font-size:.62rem;color:#80909c;text-transform:uppercase;font-weight:900}.player-meta dd{margin:2px 0 0;color:#173b55;font-weight:800}.player-stats{max-height:180px;overflow:auto;background:#0d2435;color:#dbe8ef;padding:12px;border-radius:10px;font-size:.68rem}
+@media(max-width:850px){.matchup-grid{grid-template-columns:1fr}.lineup-grid{grid-template-columns:1fr}.live-hero{flex-direction:column;align-items:flex-start}.power-row{grid-template-columns:30px 40px minmax(0,1fr) 58px}.player-detail{grid-template-columns:80px 1fr}.player-detail__image{width:80px;height:80px}.player-meta{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.live-shell{width:96%}.power-rankings,.scoreboard{padding:15px}.matchup-team{padding:12px}.team-avatar{width:38px;height:38px}.score-box strong{font-size:1.45rem}.model-tag{display:none}.player-detail{grid-template-columns:1fr}.player-detail__image{width:90px;height:90px}}
+/* Matchup drill-down + enhanced predictor */
+.matchup-card--clickable{cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease}
+.matchup-card--clickable:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(16,44,70,.12);border-color:#9eb8ca}
+.matchup-card--clickable:focus-visible{outline:3px solid #4d9ac2;outline-offset:3px}
+.matchup-hint{padding:9px 14px;text-align:center;font-size:.68rem;font-weight:800;color:#71808d;background:#fbfcfd;border-top:1px solid #edf1f4}
+.predictor-note{font-size:.68rem;color:#607484;font-weight:800;white-space:nowrap}
+.prob-sub{margin-top:7px;text-align:center;font-size:.64rem;color:#71808d}
+.fs5-modal[hidden]{display:none}
+.fs5-modal{position:fixed;inset:0;z-index:2000}
+.fs5-modal__backdrop{position:absolute;inset:0;background:rgba(0,25,45,.78);backdrop-filter:blur(2px)}
+.fs5-modal__panel{position:relative;width:min(1050px,94%);max-height:90vh;overflow:auto;margin:5vh auto;background:#fff;border-radius:18px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.35)}
+.fs5-modal__panel--player{width:min(760px,92%)}
+.fs5-modal__close{position:absolute;right:12px;top:10px;width:38px;height:38px;border:0;border-radius:50%;background:#eef3f6;color:#17384f;font-size:26px;line-height:1;cursor:pointer;z-index:2}
+.modal-matchup-title{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:4px 45px 18px 0;border-bottom:1px solid #e4ebf0;color:#0c2f4d}
+.modal-matchup-title span{font-size:.8rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#6c8292}
+.modal-matchup-title strong{font-size:1.55rem}
+.modal-predictor{margin:18px 0;padding:18px;border:1px solid #d7e4ec;border-radius:14px;background:linear-gradient(180deg,#f8fbfd,#f1f7fa)}
+.modal-predictor__head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+.modal-predictor__head strong{font-size:1.05rem;color:#0c2f4d}.modal-predictor__head span{font-size:.68rem;font-weight:900;text-transform:uppercase;color:#718493}
+.modal-prob-labels{display:flex;justify-content:space-between;gap:12px;font-size:.78rem;color:#0c2f4d}
+.modal-prob-track{height:18px;margin:8px 0 9px;position:relative;border-radius:999px;background:#c62828;overflow:visible}
+.modal-prob-fill{height:100%;border-radius:999px;background:#00376b}
+.modal-prob-thumb{position:absolute;top:50%;width:24px;height:24px;transform:translate(-50%,-50%);border-radius:50%;background:#00376b;border:4px solid #c62828;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.modal-prob-meta{text-align:center;color:#647987;font-size:.72rem}.modal-prob-meta strong{color:#0c2f4d}
+.modal-lineups{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.modal-team-column{border:1px solid #dce6ed;border-radius:14px;overflow:hidden;background:#fff}
+.modal-team-header{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:14px;background:#f3f7fa;border-bottom:1px solid #e0e7ed}
+.modal-team-header img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#eef3f6}.modal-team-header h3{margin:0;color:#0c2f4d;font-size:.95rem}.modal-team-header span{font-size:.68rem;color:#748592}.modal-team-header>strong{font-size:1.25rem;color:#00376b}
+.modal-team-column>h4{margin:14px 14px 6px;color:#6e8391;font-size:.67rem;letter-spacing:.08em}
+.modal-team-column .player-row{padding:9px 12px;grid-template-columns:34px minmax(0,1fr) auto}
+.modal-bench{border-top:1px solid #e4ebf0;margin-top:6px}.modal-bench summary{padding:11px 14px;cursor:pointer;color:#00376b;font-size:.7rem;font-weight:900}
+body.modal-open{overflow:hidden}
+@media(max-width:800px){.modal-lineups{grid-template-columns:1fr}.modal-matchup-title{align-items:flex-start;flex-direction:column;gap:5px}.predictor-note{display:none}}
+@media(max-width:520px){.fs5-modal__panel{padding:16px;width:96%;max-height:94vh;margin:3vh auto}.modal-team-header{grid-template-columns:40px minmax(0,1fr) auto}.modal-team-header img{width:40px;height:40px}.modal-team-header>strong{font-size:1rem}.modal-prob-labels{font-size:.68rem}.modal-prob-meta{line-height:1.5}}
+/* Player news */
+.player-news{margin:20px 0;padding:15px;border:1px solid #dce6ed;border-radius:12px;background:#f8fbfd}
+.player-news__head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.player-news__head h4{margin:0;color:#0c2f4d;font-size:.9rem}
+.player-news__head span{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:#8293a0}
+.player-news__item{padding:10px 0;border-top:1px solid #e1e9ee}
+.player-news__item:first-child{border-top:0}
+.player-news__item a{display:block;color:#00376b;font-weight:900;font-size:.78rem;line-height:1.35;text-decoration:none}
+.player-news__item a:hover{text-decoration:underline}
+.player-news__meta{margin-top:4px;color:#7a8b97;font-size:.62rem;font-weight:700}
+.player-stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 4px}.player-stat-cell{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.035)}.player-stat-cell span{font-size:.84rem;opacity:.78}.player-stat-cell strong{font-size:.9rem}@media(max-width:560px){.player-stats-grid{grid-template-columns:1fr}}
+/* Available playing time */
+.playing-time-wrap{margin-top:7px;width:100%}
+.playing-time-label{display:flex;justify-content:space-between;align-items:center;font-size:10px;line-height:1.2;margin-bottom:4px;opacity:.9}
+.playing-time-label strong{font-size:10px}
+.playing-time-track{height:6px;width:100%;border-radius:999px;overflow:hidden;background:#d83a3a}
+.playing-time-fill{height:100%;border-radius:999px;background:#1976d2;transition:width .4s ease}
+/* Predictor blue/red */
+.predictor-track,.predictor-bar,.prediction-track,.modal-prob-track{background:#d83a3a!important}
+.predictor-fill,.prediction-fill,.modal-prob-fill{background:#1976d2!important}
+/* Live score reactions */
+.score-box{position:relative;min-width:72px}
+.score-reaction{position:absolute;right:100%;top:50%;transform:translateY(-58%) scale(.82);margin-right:6px;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;font-size:1rem;font-weight:900;line-height:1;animation:fs5-score-reaction-in .22s ease-out both;pointer-events:none}
+.score-reaction--touchdown{font-size:1.18rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.18));animation:fs5-score-reaction-td .28s ease-out both}
+.score-reaction--up{color:#16864a;font-size:.95rem}
+.score-reaction--down{color:#d83a3a;font-size:.95rem}
+.score-reaction.is-hiding{animation:fs5-score-reaction-out .22s ease-in both}
+@keyframes fs5-score-reaction-in{0%{opacity:0;transform:translateY(-58%) scale(.45)}70%{opacity:1;transform:translateY(-58%) scale(1.12)}100%{opacity:1;transform:translateY(-58%) scale(1)}}
+@keyframes fs5-score-reaction-td{0%{opacity:0;transform:translateY(-58%) scale(.3) rotate(-8deg)}55%{opacity:1;transform:translateY(-58%) scale(1.2) rotate(3deg)}100%{opacity:1;transform:translateY(-58%) scale(1) rotate(0)}}
+@keyframes fs5-score-reaction-out{from{opacity:1;transform:translateY(-58%) scale(1)}to{opacity:0;transform:translateY(-58%) scale(.7)}}
+@media(max-width:520px){.score-reaction{right:100%;margin-right:3px;min-width:20px;height:20px;font-size:.85rem}.score-reaction--touchdown{font-size:1rem}}
+/* Live broadcast-style enhancements */
+.live-event-ticker{display:flex;align-items:center;gap:12px;overflow:hidden;margin:0 0 14px;padding:9px 12px;border:1px solid #dce6ed;border-radius:10px;background:#0d2435;color:#dbe8ef;white-space:nowrap;font-size:.68rem}
+.live-ticker__label{font-weight:900;letter-spacing:.08em;color:#7fc1e8;flex:none}.live-ticker__empty{opacity:.7}.live-ticker__item{display:inline-flex;gap:4px;align-items:center;border-left:1px solid rgba(255,255,255,.12);padding-left:12px}.live-ticker__item b{font-size:.8rem}
+.league-superlatives{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}.superlative-card{padding:10px 12px;border:1px solid #dce6ed;border-radius:10px;background:#f8fbfd;display:grid;grid-template-columns:1fr auto;gap:2px 8px}.superlative-card span{grid-column:1/-1;font-size:.6rem;font-weight:900;color:#758793;letter-spacing:.06em}.superlative-card strong{font-size:.75rem;color:#0c2f4d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.superlative-card b{font-size:.75rem;color:#00376b;text-align:right}
+.matchup-alert{padding:7px 12px;text-align:center;font-size:.66rem;font-weight:900;letter-spacing:.07em;border-top:1px solid #e1e8ed;animation:fs5-alert-in .25s ease-out}.matchup-alert--lead{background:#fff7d6;color:#8b6500}.matchup-alert--upset{background:#e8f7ee;color:#147243}.matchup-alert--nail{background:#e9f1fb;color:#174d7a;animation:fs5-pulse 1.3s ease-in-out infinite}.matchup-alert--witching{background:linear-gradient(90deg,#1b1230,#30204d,#1b1230);color:#f6e9b8;border-color:#5b447e;box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 0 18px rgba(76,49,111,.18)}.matchup-alert--final{background:#eef2f5;color:#4e6473}.matchup-alert.is-fading{opacity:0;transition:opacity .35s ease}
+.matchup-alert--witching{animation:fs5-witching 1.8s ease-in-out infinite alternate}
+@keyframes fs5-witching{from{filter:brightness(.96)}to{filter:brightness(1.08)}}
+.matchup-mvp{display:flex;align-items:center;gap:7px;padding:7px 14px;background:#fbfcfd;border-top:1px solid #edf1f4;font-size:.64rem}.matchup-mvp span{font-weight:900;color:#8a6a00;letter-spacing:.05em}.matchup-mvp strong{color:#18374f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.matchup-mvp b{margin-left:auto;color:#00376b}
+@keyframes fs5-alert-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}@keyframes fs5-pulse{50%{filter:brightness(1.04);transform:scale(1.01)}}
+@media(max-width:700px){.league-superlatives{grid-template-columns:1fr}.live-event-ticker{gap:8px}.live-ticker__item:nth-of-type(n+4){display:none}}
+.player-trend{font-size:.72rem;vertical-align:1px;margin-left:3px}.player-trend--hot{filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}.player-trend--bust{opacity:.8}.player-trend--td{font-size:.68rem}
+.matchup-alert--sweat{background:#eef0fb;color:#4b4f8e}
+/* FS5 broadcast upgrade: ideas 1-10 */
+.fs5-broadcast{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding:10px 13px;border-radius:10px;background:#0b2b46;color:#eef7fb;border:1px solid #174867;box-shadow:0 5px 16px rgba(8,35,54,.10)}
+.fs5-broadcast strong{font-size:.63rem;letter-spacing:.08em;color:#8ed0f2;white-space:nowrap}.fs5-broadcast span{font-size:.72rem;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fs5-watching{display:flex;align-items:baseline;gap:8px;margin:0 0 10px;padding:8px 12px;border:1px solid #dce6ed;border-radius:9px;background:#f8fbfd}.fs5-watching span{font-size:.61rem;font-weight:900;letter-spacing:.07em;color:#718390}.fs5-watching strong{font-size:.76rem;color:#0c2f4d}.fs5-watching small{font-size:.64rem;color:#7b8c98}
+.what-just-happened{display:flex;align-items:center;gap:12px;overflow:auto;margin:0 0 12px;padding:9px 12px;border-radius:10px;background:#fffdf4;border:1px solid #eadfb4;white-space:nowrap}.what-just-happened strong{font-size:.61rem;color:#806b15;letter-spacing:.07em;white-space:nowrap}.what-just-happened span{font-size:.67rem;font-weight:800;color:#435968}
+.league-leaderboard{margin:0 0 14px;border:1px solid #dce6ed;border-radius:10px;background:#fff;overflow:hidden}.leaderboard-title{padding:9px 12px;background:#f5f8fa;color:#718390;font-size:.61rem;font-weight:900;letter-spacing:.07em}.leaderboard-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 12px;border-top:1px solid #edf1f4}.leaderboard-row b{font-size:.76rem}.leaderboard-row span{font-size:.72rem;font-weight:800;color:#18374f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.leaderboard-row strong{font-size:.73rem;color:#00376b}
+.projected-finish{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid #edf1f4;background:#fafcfd}.projected-finish>div{padding:8px 14px}.projected-finish>div+div{border-left:1px solid #edf1f4}.projected-finish span{display:block;font-size:.61rem;color:#718390;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.projected-finish strong{display:block;color:#00376b;font-size:.9rem;margin-top:2px}.projected-finish small{font-size:.58rem;color:#87949d}
+.points-bank{padding:9px 14px;background:#fff;border-top:1px solid #edf1f4}.points-bank__team+ .points-bank__team{margin-top:7px}.points-bank__team>div:first-child{display:flex;justify-content:space-between;gap:8px}.points-bank__team span{font-size:.61rem;font-weight:800;color:#4f6573}.points-bank__team strong{font-size:.61rem;color:#00376b}.points-bank__team small{font-size:.57rem;color:#87949d}.points-bank__track{height:5px;border-radius:999px;background:#e9eef2;margin:4px 0 2px;overflow:hidden}.points-bank__track i{display:block;height:100%;border-radius:999px;background:#1976d2}
+.trash-talk{padding:7px 14px;border-top:1px solid #edf1f4;background:#f8f5f0;color:#6c5542;font-size:.61rem;font-weight:800;text-align:center}
+.matchup-card--nail{box-shadow:0 0 0 2px rgba(25,118,210,.12),0 8px 22px rgba(25,118,210,.08)}.matchup-card--witching{box-shadow:0 0 0 2px rgba(74,47,104,.12)}.matchup-card--close{box-shadow:0 0 0 1px rgba(25,118,210,.08)}
+@media(max-width:700px){.projected-finish{grid-template-columns:1fr}.projected-finish>div+div{border-left:0;border-top:1px solid #edf1f4}.fs5-broadcast{align-items:flex-start;flex-direction:column;gap:3px}.what-just-happened{gap:8px}}
+/* Stronger stadium-style matchup states */
+.matchup-card--close{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.13),transparent 52%),linear-gradient(180deg,#f7fbff,#fff 42%);border-color:#b8d3e7}
+.matchup-card--nail{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.18),transparent 50%),linear-gradient(180deg,#f5faff,#fff 48%);border-color:#86b8dc;box-shadow:0 0 0 2px rgba(25,118,210,.18),0 12px 28px rgba(25,118,210,.12)}
+.matchup-card--witching{background:radial-gradient(circle at 50% 0%,rgba(74,47,104,.20),transparent 52%),radial-gradient(circle at 18% 18%,rgba(246,201,77,.08),transparent 28%),linear-gradient(180deg,#fbf8ff,#fff 48%);border-color:#b7a3ca;box-shadow:0 0 0 2px rgba(74,47,104,.16),0 12px 30px rgba(74,47,104,.12);position:relative;overflow:hidden}
+.matchup-card--close .matchup-card__head{background:rgba(231,242,250,.95)}
+.matchup-card--nail .matchup-card__head{background:linear-gradient(90deg,rgba(222,239,250,.98),rgba(246,250,253,.98),rgba(222,239,250,.98))}
+.matchup-card--witching .matchup-card__head{background:linear-gradient(90deg,rgba(35,24,55,.98),rgba(57,39,79,.98),rgba(35,24,55,.98));color:#f6e9b8}.matchup-card--witching .matchup-card__state{color:#f6e9b8}.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:12px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
+.matchup-card--nail:before,.matchup-card--witching:before{content:"";display:block;height:3px;background:linear-gradient(90deg,transparent,rgba(25,118,210,.7),transparent)}
+.matchup-card--witching:before{background:linear-gradient(90deg,transparent,#6b4b8e,#f0c85b,#6b4b8e,transparent)}
+/* Witching Hour + Victory Imminent */
+.matchup-alert--victory{background:linear-gradient(90deg,#fff2c2,#fff8df,#fff2c2);color:#7a5200;border-color:#e5c35b;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 20px rgba(229,195,91,.22);animation:fs5-victory 1.2s ease-in-out infinite alternate}
+.matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.22),transparent 52%),radial-gradient(circle at 82% 18%,rgba(255,238,170,.18),transparent 28%),linear-gradient(180deg,#fffdf4,#fff 48%);border-color:#d9bd67;box-shadow:0 0 0 2px rgba(211,172,55,.18),0 12px 30px rgba(190,150,35,.12);position:relative;overflow:hidden}
+.matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,rgba(74,55,15,.98),rgba(112,84,22,.98),rgba(74,55,15,.98));color:#fff2b5}
+.matchup-card--victory .matchup-card__state{color:#fff2b5}
+.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:14px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
+@keyframes fs5-victory{from{filter:brightness(.98)}to{filter:brightness(1.08)}}
+/* Game Flow interaction and checkpoint visibility */
+.player-trend--mvp{filter:drop-shadow(0 1px 2px rgba(138,106,0,.25))}.player-trend--over{filter:drop-shadow(0 1px 2px rgba(220,80,20,.2))}
+@media(max-width:700px){.game-flow__tooltip{min-width:160px;font-size:.58rem}}
+/* FS5 Live Scores guide */
+.live-guide{margin:0 0 14px}.live-guide details{border:1px solid #dce6ed;border-radius:11px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(15,42,58,.05)}.live-guide summary{cursor:pointer;list-style:none;padding:10px 13px;font-size:.67rem;font-weight:900;letter-spacing:.07em;color:#0c2f4d;background:#f7fafc}.live-guide summary::-webkit-details-marker{display:none}.live-guide summary:after{content:"＋";float:right;font-size:.85rem;color:#78909c}.live-guide details[open] summary:after{content:"−"}.live-guide__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #e7edf1}.live-guide__grid>div{padding:11px 13px;border-top:1px solid #edf1f4}.live-guide__grid>div:nth-child(-n+2){border-top:0}.live-guide__grid>div:nth-child(odd){border-right:1px solid #edf1f4}.live-guide__grid strong{display:block;font-size:.7rem;color:#173b52;margin-bottom:3px}.live-guide__grid p{margin:0;font-size:.62rem;line-height:1.45;color:#687b87}.live-guide__grid em{font-style:normal;font-weight:800;color:#4b3766}
+/* Game Flow: dense reviewable checkpoints and step-like score movement */
+.player-trend--snow{filter:drop-shadow(0 1px 2px rgba(110,160,190,.2))}
+@media(max-width:700px){.live-guide__grid{grid-template-columns:1fr}.live-guide__grid>div:nth-child(odd){border-right:0}.live-guide__grid>div:nth-child(2){border-top:1px solid #edf1f4}}
+
+/* Restored full-size matchup state shading */
+.matchup-card--close{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.13),transparent 52%),linear-gradient(180deg,#f7fbff,#fff 42%);border-color:#b8d3e7}
+.matchup-card--nail{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.18),transparent 50%),linear-gradient(180deg,#f5faff,#fff 48%);border-color:#86b8dc;box-shadow:0 0 0 2px rgba(25,118,210,.18),0 12px 28px rgba(25,118,210,.12)}
+.matchup-card--witching{background:radial-gradient(circle at 50% 0%,rgba(74,47,104,.20),transparent 52%),radial-gradient(circle at 18% 18%,rgba(246,201,77,.08),transparent 28%),linear-gradient(180deg,#fbf8ff,#fff 48%);border-color:#b7a3ca;box-shadow:0 0 0 2px rgba(74,47,104,.16),0 12px 30px rgba(74,47,104,.12);position:relative;overflow:hidden}
+.matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.22),transparent 52%),radial-gradient(circle at 82% 18%,rgba(255,238,170,.18),transparent 28%),linear-gradient(180deg,#fffdf4,#fff 48%);border-color:#d9bd67;box-shadow:0 0 0 2px rgba(211,172,55,.18),0 12px 30px rgba(190,150,35,.12);position:relative;overflow:hidden}
+.matchup-card--close .matchup-card__head{background:rgba(231,242,250,.95)}
+.matchup-card--nail .matchup-card__head{background:linear-gradient(90deg,rgba(222,239,250,.98),rgba(246,250,253,.98),rgba(222,239,250,.98))}
+.matchup-card--witching .matchup-card__head{background:linear-gradient(90deg,rgba(35,24,55,.98),rgba(57,39,79,.98),rgba(35,24,55,.98));color:#f6e9b8}
+.matchup-card--witching .matchup-card__state{color:#f6e9b8}
+.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:12px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
+.matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,rgba(74,55,15,.98),rgba(112,84,22,.98),rgba(74,55,15,.98));color:#fff2b5}
+.matchup-card--victory .matchup-card__state{color:#fff2b5}
+.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:14px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
+.matchup-card--nail:before,.matchup-card--witching:before{content:"";display:block;height:3px;background:linear-gradient(90deg,transparent,rgba(25,118,210,.7),transparent)}
+.matchup-card--witching:before{background:linear-gradient(90deg,transparent,#6b4b8e,#f0c85b,#6b4b8e,transparent)}
+.trash-talk.is-expiring{opacity:0;transform:translateY(-3px);transition:opacity .3s ease,transform .3s ease}
+
+/* Light / dark toggle */
+.live-hero__tools{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.live-theme-toggle{display:flex;align-items:center;padding:3px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(0,0,0,.16);backdrop-filter:blur(4px)}
+.live-theme-toggle button{border:0;background:transparent;color:#dcebf5;padding:6px 10px;border-radius:999px;font-size:.65rem;font-weight:900;cursor:pointer;transition:background .15s ease,color .15s ease}
+.live-theme-toggle button.is-active{background:#fff;color:#0b3658;box-shadow:0 2px 7px rgba(0,0,0,.16)}
+.live-theme-toggle button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* FS5 Live Scores dark mode */
+.fs5-live-dark .live-main{background:linear-gradient(180deg,#08131d,#0d1c27 52%,#0a151e)}
+.fs5-live-dark .live-hero{background:linear-gradient(135deg,#061b2e,#0c3b58);box-shadow:0 14px 36px rgba(0,0,0,.35)}
+.fs5-live-dark .week-toolbar,.fs5-live-dark .scoreboard,.fs5-live-dark .live-guide details,.fs5-live-dark .league-leaderboard{background:#122331;border-color:#294052;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.fs5-live-dark .week-control label,.fs5-live-dark .week-context,.fs5-live-dark .source-note{color:#9cb1c0}
+.fs5-live-dark .week-control select{background:#172b3a;color:#e7f0f5;border-color:#3b5668}
+.fs5-live-dark .refresh-button{background:#0e6ca7}
+.fs5-live-dark .section-heading h2,.fs5-live-dark .team-identity h3,.fs5-live-dark .player-main strong,.fs5-live-dark .player-detail h2,.fs5-live-dark .modal-matchup-title,.fs5-live-dark .modal-team-header h3,.fs5-live-dark .modal-team-column h4{color:#e8f2f7}
+.fs5-live-dark .section-kicker,.fs5-live-dark .week-control label{color:#8fa8b8}
+.fs5-live-dark .section-badge{background:#17394e;color:#9fd4f2}
+.fs5-live-dark .matchup-card{background:#122331;border-color:#30495a}
+.fs5-live-dark .matchup-card__head{background:#172b3a;border-color:#30495a;color:#9eb3c0}
+.fs5-live-dark .matchup-team,.fs5-live-dark .player-row{background:#122331}
+.fs5-live-dark .player-row{border-color:#263c4b}
+.fs5-live-dark .player-row:hover{background:#18303f}
+.fs5-live-dark .team-identity span{color:#a3b5c1}.fs5-live-dark .team-identity small,.fs5-live-dark .player-main small,.fs5-live-dark .score-box span,.fs5-live-dark .player-points small{color:#8198a7}
+.fs5-live-dark .score-box strong,.fs5-live-dark .player-points b,.fs5-live-dark .matchup-mvp b,.fs5-live-dark .projected-finish strong,.fs5-live-dark .points-bank__team strong{color:#70bdf0}
+.fs5-live-dark .vs-divider span{border-color:#122331}
+.fs5-live-dark .predictor,.fs5-live-dark .modal-predictor{background:#152a39;border-color:#2e4758}
+.fs5-live-dark .predictor-head strong,.fs5-live-dark .live-guide summary,.fs5-live-dark .live-guide__grid strong,.fs5-live-dark .leaderboard-row span,.fs5-live-dark .modal-team-header h3{color:#e5f0f5}
+.fs5-live-dark .model-tag,.fs5-live-dark .predictor-note,.fs5-live-dark .prob-labels,.fs5-live-dark .prob-sub,.fs5-live-dark .live-guide__grid p,.fs5-live-dark .leaderboard-title,.fs5-live-dark .leaderboard-row strong{color:#94aab8}
+.fs5-live-dark .live-guide summary{background:#172b3a}.fs5-live-dark .live-guide__grid{border-color:#29404f}.fs5-live-dark .live-guide__grid>div{border-color:#263c4b}
+.fs5-live-dark .live-event-ticker,.fs5-live-dark .fs5-watching,.fs5-live-dark .what-just-happened,.fs5-live-dark .projected-finish,.fs5-live-dark .points-bank,.fs5-live-dark .trash-talk,.fs5-live-dark .matchup-hint,.fs5-live-dark .matchup-mvp{background:#152a39;border-color:#2a4252}
+.fs5-live-dark .fs5-watching strong,.fs5-live-dark .what-just-happened span,.fs5-live-dark .projected-finish span,.fs5-live-dark .points-bank__team span{color:#c5d5de}
+.fs5-live-dark .what-just-happened{border-color:#665d35}.fs5-live-dark .what-just-happened strong{color:#e4cf78}
+.fs5-live-dark .trash-talk{color:#d2bfae}.fs5-live-dark .matchup-hint{color:#90a5b2}
+.fs5-live-dark .modal-predictor__head strong,.fs5-live-dark .modal-prob-meta,.fs5-live-dark .modal-team-header span{color:#e1edf2}
+.fs5-live-dark .fs5-modal__panel{background:#10212d}.fs5-live-dark .fs5-modal__close{background:#203645;color:#e6f0f4}.fs5-live-dark .modal-matchup-title{border-color:#2a4252}.fs5-live-dark .modal-team-column{border-color:#29404f}.fs5-live-dark .modal-bench{border-color:#29404f}.fs5-live-dark .modal-bench summary{color:#70bdf0}
+.fs5-live-dark .player-detail__team,.fs5-live-dark .player-meta dt{color:#93a9b7}.fs5-live-dark .player-detail__chips span{background:#17394e;color:#9fd4f2}.fs5-live-dark .player-meta div{background:#172b3a}.fs5-live-dark .player-meta dd{color:#dbe8ee}
+.fs5-live-dark .player-news__item{border-color:#29404f}.fs5-live-dark .player-news__item a{color:#83c7f0}.fs5-live-dark .player-news__meta{color:#8198a7}
+.fs5-live-dark .empty-state{border-color:#385162;color:#9db0bc}
+.fs5-live-dark .matchup-card--close{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.18),transparent 52%),linear-gradient(180deg,#132c3d,#122331 48%);border-color:#315d78}
+.fs5-live-dark .matchup-card--nail{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.23),transparent 50%),linear-gradient(180deg,#142d40,#122331 48%);border-color:#3e769c}
+.fs5-live-dark .matchup-card--witching{background:radial-gradient(circle at 50% 0%,rgba(102,68,139,.28),transparent 52%),radial-gradient(circle at 18% 18%,rgba(246,201,77,.10),transparent 28%),linear-gradient(180deg,#1b1527,#122331 55%);border-color:#654b7e}
+.fs5-live-dark .matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.25),transparent 52%),linear-gradient(180deg,#2a2718,#122331 55%);border-color:#806d35}
+
+@media(max-width:700px){.live-hero__tools{width:100%;align-items:flex-start}.live-theme-toggle{align-self:flex-start}}
