@@ -114,3 +114,4 @@ body.modal-open{overflow:hidden}
 .matchup-card--danger:before{background:linear-gradient(90deg,transparent,rgba(216,58,58,.75),transparent)}
 
 .game-flow{overflow:hidden}.game-flow svg{min-height:210px}.game-flow__grid{stroke:#dbe4ea;stroke-width:1;stroke-dasharray:3 4}.game-flow__axis{stroke:#91a4b0;stroke-width:1.5}.game-flow__legend{font-size:10px;fill:#38586d;font-weight:900}.game-flow text{font-size:10px;fill:#627582;font-weight:800}
+.game-flow__line--0{stroke:#1976d2}.game-flow__line--1{stroke:#d83a3a}.game-flow__legend--0{fill:#1976d2}.game-flow__legend--1{fill:#d83a3a}.game-flow__now{stroke:#8a9aa6;stroke-width:1.25;stroke-dasharray:4 4}.game-flow__now-label{fill:#526773;font-size:9px;font-weight:900;letter-spacing:.04em}

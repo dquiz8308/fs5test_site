@@ -284,26 +284,56 @@
         return { a: prob * 100, b: (1 - prob) * 100, meanA: meanA, meanB: meanB, remainingA: remainingA, remainingB: remainingB };
     }
 
+    function gameStatus(game) {
+        if (!game) return '';
+        var raw = game.status;
+        if (raw && typeof raw === 'object') raw = raw.type || raw.name || raw.state || raw.detail || '';
+        var status = String(raw || '').toLowerCase().replace(/[\s-]+/g, '_');
+        if (status === 'final' || status === 'post' || status === 'post_game' || status === 'complete' || status === 'completed') return 'complete';
+        if (status === 'in_game' || status === 'in_progress' || status === 'inprogress' || status === 'live' || status === 'playing') return 'in_game';
+        if (status === 'pre_game' || status === 'pregame' || status === 'scheduled' || status === 'upcoming' || status === 'pre') return 'pre_game';
+
+        var start = gameStartMs(game);
+        if (Number.isFinite(start)) {
+            if (Date.now() < start) return 'pre_game';
+            // If a game has been underway for more than four hours, treat it as complete
+            // even if the schedule feed did not update its status yet.
+            if (Date.now() >= start + (4 * 60 * 60 * 1000)) return 'complete';
+            return 'in_game';
+        }
+        return '';
+    }
+
+    function gameStartMs(game) {
+        if (!game) return NaN;
+        var candidates = [game.start_time, game.startTime, game.start, game.date, game.scheduled, game.kickoff];
+        for (var i = 0; i < candidates.length; i++) {
+            var value = candidates[i];
+            if (value == null || value === '') continue;
+            if (typeof value === 'number') {
+                var n = value < 100000000000 ? value * 1000 : value;
+                if (Number.isFinite(n)) return n;
+            }
+            var parsed = Date.parse(String(value));
+            if (Number.isFinite(parsed)) return parsed;
+        }
+        return NaN;
+    }
+
     function projectedRemaining(roster) {
         if (!roster) return 0;
         var starters = Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : [];
         return starters.reduce(function (sum, id) {
             var meta = playerMeta(id);
             var game = scheduleGameForTeam(meta && meta.team);
-            var status = game ? String(game.status || '').toLowerCase() : '';
+            var status = gameStatus(game);
             var projection = getProjection(id);
             var current = getPlayerPoints(id);
 
-            // A player whose NFL game is complete has no fantasy production left.
-            // This is what makes the team projection a true live projection.
-            if (status === 'complete' || status === 'final' || status === 'post') return sum;
+            // A finished NFL game has zero fantasy production remaining.
+            if (status === 'complete') return sum;
 
-            // Pre-game: the full weekly projection is still available.
-            if (status === 'pre_game' || status === 'scheduled' || status === 'pregame' || status === '') {
-                return sum + Math.max(0, projection - current);
-            }
-
-            // In-game: only the unused portion of the player's projection remains.
+            // Unknown schedule data: preserve the projection rather than inventing a game state.
             return sum + Math.max(0, projection - current);
         }, 0);
     }
@@ -332,7 +362,9 @@
         if (!team || !state.schedule || !state.schedule.length) return null;
         var t = String(team).toUpperCase();
         return state.schedule.find(function (game) {
-            return String(game.home || "").toUpperCase() === t || String(game.away || "").toUpperCase() === t;
+            var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
+            var away = String(game.away || game.away_team || game.awayTeam || '').toUpperCase();
+            return home === t || away === t;
         }) || null;
     }
 
@@ -612,7 +644,7 @@
         } else if (Math.min(pred.a, pred.b) >= 45 && Math.max(pred.a, pred.b) <= 55) {
             alert = { type: 'nail', text: '😬 NAIL BITER' };
         } else if (Math.max(pred.a, pred.b) >= 90) {
-            alert = { type: 'danger', text: '🚨 DANGER ZONE' };
+            alert = { type: 'danger', text: '🚨 RUNAWAY ALERT' };
         }
         state.previousProbabilities[key] = pred.a;
         return alert;
@@ -672,6 +704,23 @@
         return box;
     }
 
+    function matchupGameWindow(teams) {
+        var starts = [], ends = [];
+        teams.forEach(function (m) {
+            getTeamPlayerIds(m).forEach(function (id) {
+                var meta = playerMeta(id);
+                var game = scheduleGameForTeam(meta && meta.team);
+                var start = gameStartMs(game);
+                if (Number.isFinite(start)) {
+                    starts.push(start);
+                    ends.push(start + (195 * 60 * 1000));
+                }
+            });
+        });
+        if (!starts.length) return null;
+        return { start: Math.min.apply(null, starts), end: Math.max.apply(null, ends) };
+    }
+
     function captureGameFlow(matchups, week) {
         if (week !== state.currentWeek) return;
         var key = 'fs5_gameflow_' + LEAGUE_ID + '_w' + week;
@@ -679,11 +728,16 @@
         try { data=JSON.parse(localStorage.getItem(key)||'{}')||{}; } catch(e) { data={}; }
         var stamp=Date.now();
         matchups.forEach(function(m){
-            var k=matchupKey(m); if(!data[k]) data[k]=[];
+            var k=matchupKey(m), rid=String(m.roster_id);
+            // Migrate the older format, which incorrectly stored one history array
+            // for the entire matchup and caused both teams to draw the same line.
+            if (Array.isArray(data[k])) { data[k] = {}; }
+            if(!data[k]) data[k]={};
+            if(!Array.isArray(data[k][rid])) data[k][rid]=[];
             var pts=Number(m.points||0);
-            var last=data[k][data[k].length-1];
-            if(!last || Math.abs(Number(last.points)-pts)>=0.01) data[k].push({time:stamp,points:pts});
-            if(data[k].length>80) data[k]=data[k].slice(-80);
+            var last=data[k][rid][data[k][rid].length-1];
+            if(!last || Math.abs(Number(last.points)-pts)>=0.01) data[k][rid].push({time:stamp,points:pts});
+            if(data[k][rid].length>160) data[k][rid]=data[k][rid].slice(-160);
         });
         try { localStorage.setItem(key,JSON.stringify(data)); } catch(e) {}
         state.gameFlow=data;
@@ -692,12 +746,17 @@
     function renderGameFlow(teams) {
         var wrap=document.createElement('div'); wrap.className='game-flow';
         var byTeam={};
-        [teams[0],teams[1]].forEach(function(m){byTeam[String(m.roster_id)]=(state.gameFlow&&state.gameFlow[matchupKey(m)])||[];});
+        [teams[0],teams[1]].forEach(function(m){
+            var bucket=(state.gameFlow&&state.gameFlow[matchupKey(m)])||{};
+            if(Array.isArray(bucket)) bucket={};
+            byTeam[String(m.roster_id)]=Array.isArray(bucket[String(m.roster_id)]) ? bucket[String(m.roster_id)] : [];
+        });
         var allTimes=[], allPoints=[];
         Object.keys(byTeam).forEach(function(k){byTeam[k].forEach(function(x){allTimes.push(Number(x.time));allPoints.push(Number(x.points)||0);});});
         var now=Date.now();
-        var minT=allTimes.length?Math.min.apply(null,allTimes):now-3600000;
-        var maxT=Math.max(now, allTimes.length?Math.max.apply(null,allTimes):now);
+        var window=matchupGameWindow(teams);
+        var minT=window ? window.start : (allTimes.length?Math.min.apply(null,allTimes):now-3600000);
+        var maxT=window ? Math.max(window.end, now) : Math.max(now, allTimes.length?Math.max.apply(null,allTimes):now);
         if(maxT<=minT) maxT=minT+1;
         var maxP=Math.max(10, Math.ceil(Math.max.apply(null, allPoints.concat([Number(teams[0].points||0),Number(teams[1].points||0),10]))/10)*10);
         var w=620,h=230,left=54,right=24,top=28,bottom=44;
@@ -705,15 +764,17 @@
         function xPos(t){return left+(Number(t)-minT)/(maxT-minT)*plotW;}
         function yPos(p){return top+plotH-(Number(p)||0)/maxP*plotH;}
         var yTicks=[];
-        for(var v=0;v<=maxP;v+=Math.max(10,Math.ceil(maxP/5/10)*10)) yTicks.push(v);
+        var step=Math.max(10,Math.ceil(maxP/5/10)*10);
+        for(var v=0;v<=maxP;v+=step) yTicks.push(v);
         if(yTicks[yTicks.length-1]!==maxP) yTicks.push(maxP);
         var xTicks=[minT];
         if(maxT-minT>1) xTicks.push(minT+(maxT-minT)/2);
         xTicks.push(maxT);
         var gridLines=yTicks.map(function(v){var y=yPos(v);return '<line class="game-flow__grid" x1="'+left+'" y1="'+y.toFixed(1)+'" x2="'+(w-right)+'" y2="'+y.toFixed(1)+'"/><text x="'+(left-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+v+'</text>';}).join('');
-        var xLabels=xTicks.map(function(t,i){var label=i===xTicks.length-1?'NOW':new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});return '<text x="'+xPos(t).toFixed(1)+'" y="'+(h-14)+'" text-anchor="middle">'+esc(label)+'</text>';}).join('');
-        var lines=Object.keys(byTeam).map(function(rid,idx){var pts=byTeam[rid].slice().sort(function(a,b){return Number(a.time)-Number(b.time);});var m=teams.find(function(t){return String(t.roster_id)===rid;}); if(!pts.length) pts=[{time:minT,points:Number(m.points||0)}]; var path=pts.map(function(x,i){return (i?'L':'M')+xPos(x.time).toFixed(1)+' '+yPos(x.points).toFixed(1);}).join(' ');return {path:path,name:teamLabel(m)};});
-        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>X: time · Y: fantasy points · history since Live Scores opened</span></div><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup fantasy score history over time">'+gridLines+'<line class="game-flow__axis" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+(h-bottom)+'"/><line class="game-flow__axis" x1="'+left+'" y1="'+(h-bottom)+'" x2="'+(w-right)+'" y2="'+(h-bottom)+'"/>'+lines.map(function(l,i){return '<path class="game-flow__line game-flow__line--'+i+'" d="'+l.path+'"/><text class="game-flow__legend" x="'+(w-right)+'" y="'+(top+14+i*18)+'" text-anchor="end">'+esc(l.name)+'</text>';}).join('')+xLabels+'</svg>';
+        var xLabels=xTicks.map(function(t,i){var label=new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});return '<text x="'+xPos(t).toFixed(1)+'" y="'+(h-14)+'" text-anchor="middle">'+esc(label)+'</text>';}).join('');
+        var nowLine = (now>=minT && now<=maxT) ? '<line class="game-flow__now" x1="'+xPos(now).toFixed(1)+'" y1="'+top+'" x2="'+xPos(now).toFixed(1)+'" y2="'+(h-bottom)+'"/><text class="game-flow__now-label" x="'+xPos(now).toFixed(1)+'" y="'+(top-7)+'" text-anchor="middle">NOW</text>' : '';
+        var lines=Object.keys(byTeam).map(function(rid,idx){var pts=byTeam[rid].slice().sort(function(a,b){return Number(a.time)-Number(b.time);});var m=teams.find(function(t){return String(t.roster_id)===rid;}); if(!pts.length) pts=[{time:now,points:Number(m.points||0)}]; var path=pts.map(function(x,i){return (i?'L':'M')+Math.max(left,Math.min(w-right,xPos(x.time))).toFixed(1)+' '+yPos(x.points).toFixed(1);}).join(' ');return {path:path,name:teamLabel(m)};});
+        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>X: first kickoff → projected end of last game · Y: fantasy points</span></div><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup fantasy score history over the matchup game window">'+gridLines+nowLine+'<line class="game-flow__axis" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+(h-bottom)+'"/><line class="game-flow__axis" x1="'+left+'" y1="'+(h-bottom)+'" x2="'+(w-right)+'" y2="'+(h-bottom)+'"/>'+lines.map(function(l,i){return '<path class="game-flow__line game-flow__line--'+i+'" d="'+l.path+'"/><text class="game-flow__legend game-flow__legend--'+i+'" x="'+(w-right)+'" y="'+(top+14+i*18)+'" text-anchor="end">'+esc(l.name)+'</text>';}).join('')+xLabels+'</svg>';
         return wrap;
     }
 
