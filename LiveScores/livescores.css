@@ -205,11 +205,6 @@ body.modal-open{overflow:hidden}
 @media(max-width:520px){.td-animation{inset:-16px -24px -16px -54px}.td-animation__label{font-size:.45rem}.td-animation__ball{font-size:.8rem}.td-animation__ball--2{font-size:.65rem}.td-animation__ball--3{font-size:.58rem}}
 
 /* FS5 Broadcast 2.0 enhancements */
-.fs5-lower-third{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border-radius:12px;background:linear-gradient(90deg,#0a3150,#124d72 58%,#0a3150);color:#fff;box-shadow:0 8px 20px rgba(9,48,78,.18);overflow:hidden;position:relative;transform:translateY(8px);opacity:0}
-.fs5-lower-third.is-showing{animation:fs5-lower-in .35s ease-out forwards}
-.fs5-lower-third.is-hiding{animation:fs5-lower-out .35s ease-in forwards}
-.fs5-lower-third:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:#f0c84b;box-shadow:0 0 14px rgba(240,200,75,.7)}
-.fs5-lower-third__icon{font-size:1.35rem;line-height:1}.fs5-lower-third b{display:block;font-size:.58rem;letter-spacing:.12em;opacity:.72}.fs5-lower-third strong{display:block;font-size:.82rem;margin-top:2px}
 @keyframes fs5-lower-in{to{opacity:1;transform:translateY(0)}}@keyframes fs5-lower-out{to{opacity:0;transform:translateY(-5px)}}
 
 .league-chaos{margin:0 0 16px;padding:12px 14px;border:1px solid #c9dbe7;border-radius:13px;background:linear-gradient(180deg,#f8fcff,#eef7fc);box-shadow:0 6px 18px rgba(20,66,95,.08)}
@@ -238,9 +233,9 @@ body.modal-open{overflow:hidden}
 @media(max-width:700px){
   .live-hero{padding:18px 16px}.live-hero h1{font-size:1.65rem}.live-hero__tools{gap:7px}.live-theme-toggle{font-size:.6rem}
   .matchup-grid{gap:12px}.matchup-card{border-radius:14px}.matchup-card__head{padding:9px 11px}.matchup-team{padding:12px 11px}.team-identity{gap:9px}.team-avatar{width:40px;height:40px}.team-identity h3{font-size:.84rem}.team-identity small{font-size:.61rem}.team-identity span{font-size:.63rem}.score-box strong{font-size:1.35rem}.score-box span{font-size:.58rem}
-  .predictor,.projected-finish,.points-bank,.matchup-mvp,.trash-talk,.matchup-hint{margin-left:10px;margin-right:10px}.monday-takeover,.odds-change-reason{margin-left:10px;margin-right:10px}.fs5-lower-third{border-radius:10px;padding:9px 11px}.fs5-lower-third strong{font-size:.72rem}.league-chaos__body{align-items:flex-start;flex-direction:column;gap:2px}.league-chaos__body span{text-align:left}.score-change{right:-4px}
+  .predictor,.projected-finish,.points-bank,.matchup-mvp,.trash-talk,.matchup-hint{margin-left:10px;margin-right:10px}.monday-takeover,.odds-change-reason{margin-left:10px;margin-right:10px}.league-chaos__body{align-items:flex-start;flex-direction:column;gap:2px}.league-chaos__body span{text-align:left}.score-change{right:-4px}
 }
 
-.fs5-live-dark .fs5-lower-third{background:linear-gradient(90deg,#061a2a,#0b3b57 58%,#061a2a);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+
 .fs5-live-dark .league-chaos{background:linear-gradient(180deg,#152a39,#122331);border-color:#2b4556}.fs5-live-dark .league-chaos__title{color:#91aab9}.fs5-live-dark .league-chaos__body strong{color:#7fc4ee}.fs5-live-dark .league-chaos__body span{color:#8ea4b2}.fs5-live-dark .league-chaos__track{background:#263d4c}
 .fs5-live-dark .odds-change-reason{background:rgba(224,188,69,.09);border-color:rgba(224,188,69,.22);color:#dbc879}.fs5-live-dark .monday-takeover{background:linear-gradient(100deg,rgba(24,18,37,.98),rgba(55,39,74,.94));border-color:#654b7e}

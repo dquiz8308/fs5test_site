@@ -675,24 +675,6 @@
         box.innerHTML='<div class="league-chaos__title">🌪️ FS5 CHAOS METER</div><div class="league-chaos__body"><strong>'+chaos+'</strong><span>'+close+' matchup'+(close===1?'':'s')+' in the danger zone · '+undecided+' still undecided'+(monday?' · '+monday+' going to Monday':'')+'</span></div><div class="league-chaos__track"><i style="width:'+Math.min(100,Math.max(10,close/Math.max(1,groups.size)*100))+'%"></i></div>';
     }
 
-    function renderBroadcastLowerThird() {
-        var box=$('fs5-lower-third'); if(!box) return;
-        var msg=null;
-        if(state.eventHistory.length) {
-            var e=state.eventHistory[0];
-            msg={label:'FS5 MOMENT', text:e.message, icon:e.icon||'⚡'};
-        }
-        if(!msg){
-            var top=state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
-            if(top) msg={label:'FS5 BROADCAST', text:teamLabel(top)+' leads the league at '+formatScore(top.points)+' points.', icon:'🎙️'};
-        }
-        if(!msg){ box.hidden=true; return; }
-        box.innerHTML='<span class="fs5-lower-third__icon">'+esc(msg.icon)+'</span><span><b>'+esc(msg.label)+'</b><strong>'+esc(msg.text)+'</strong></span>';
-        box.hidden=false; box.classList.remove('is-showing'); void box.offsetWidth; box.classList.add('is-showing');
-        clearTimeout(state.lowerThirdTimer);
-        state.lowerThirdTimer=setTimeout(function(){ if(box){box.classList.remove('is-showing'); box.classList.add('is-hiding'); setTimeout(function(){box.hidden=true;box.classList.remove('is-hiding');},350);} },10000);
-    }
-
     function renderBroadcastHeader() {
         var box = $('fs5-broadcast');
         if (!box) return;
@@ -752,12 +734,21 @@
 
         if(!messages.length) messages.push('🎙️ FS5 LIVE: The broadcast booth is watching for the next big swing.');
 
-        var storageKey='fs5_broadcast_cycle_' + LEAGUE_ID + '_w' + state.selectedWeek;
-        var index=0;
-        try { index=Number(localStorage.getItem(storageKey)||0); } catch(e) { index=0; }
-        if(!Number.isFinite(index)) index=0;
-        var text=messages[index % messages.length];
-        try { localStorage.setItem(storageKey, String((index+1) % Math.max(messages.length,1))); } catch(e) {}
+        /* Cycle through the current relevant broadcast messages one at a time.
+           Keep a small persistent queue so changing event data does not make the
+           booth appear to skip every other message. A message is not repeated
+           until the currently relevant pool has been exhausted. */
+        var storageKey='fs5_broadcast_queue_' + LEAGUE_ID + '_w' + state.selectedWeek;
+        var queue=[];
+        try { queue=JSON.parse(localStorage.getItem(storageKey)||'[]')||[]; } catch(e) { queue=[]; }
+        if(!Array.isArray(queue)) queue=[];
+        var available=messages.filter(function(msg){ return queue.indexOf(msg)===-1; });
+        if(!available.length){ queue=[]; available=messages.slice(); }
+        var text=available[0] || messages[0];
+        queue.push(text);
+        /* Keep only messages that still exist so stale events do not block the cycle. */
+        queue=queue.filter(function(msg,idx){ return messages.indexOf(msg)!==-1 && queue.indexOf(msg)===idx; });
+        try { localStorage.setItem(storageKey, JSON.stringify(queue.slice(-Math.max(messages.length-1,1)))); } catch(e) {}
 
         box.hidden=false;
         box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace(/^🎙️ FS5 LIVE:\s*/,'')).replace(/&amp;/g,'&amp;')+'</span>';
@@ -1030,7 +1021,6 @@
         renderWatching();
         renderLeagueLeaderboard();
         renderLeagueChaos();
-        renderBroadcastLowerThird();
         var groups = new Map();
         state.matchups.forEach(function (item) {
             if (!item || item.matchup_id == null) return;
