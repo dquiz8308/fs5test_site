@@ -18,7 +18,10 @@
         schedule: [],
         previousScores: {},
         previousStats: {},
-        reactionTimers: {}
+        reactionTimers: {},
+        previousProbabilities: {},
+        previousPlayerPoints: {},
+        eventHistory: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -199,6 +202,23 @@
         return Number.isFinite(value) ? value : 0;
     }
 
+    function getPreviousPlayerPoints(id) {
+        var s = state.previousStats && state.previousStats[String(id)];
+        if (!s) return null;
+        var scoring = state.league && state.league.scoring_settings;
+        var direct = scoring ? directFantasyPoints(s, scoring) : (s.pts_ppr != null ? Number(s.pts_ppr) : null);
+        return direct == null || !Number.isFinite(Number(direct)) ? null : Number(direct);
+    }
+
+    function playerTrendBadge(id) {
+        var points = getPlayerPoints(id), projection = getProjection(id), prev = getPreviousPlayerPoints(id);
+        var td = playerTouchdownDelta(id);
+        if (td > 0) return '<span class="player-trend player-trend--td">🏈🔥</span>';
+        if (prev != null && points - prev >= 8) return '<span class="player-trend player-trend--hot">🔥</span>';
+        if (projection >= 8 && points < projection * 0.5 && projection - points >= 5) return '<span class="player-trend player-trend--bust">💀</span>';
+        return '';
+    }
+
     function renderPlayer(id, started) {
         var p = playerMeta(id);
         var pos = p.position || "--";
@@ -209,7 +229,7 @@
         var row = document.createElement("button");
         row.type = "button";
         row.className = "player-row";
-        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small></span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
+        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small></span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
         row.addEventListener("click", function () { openPlayerModal(id); });
         row.setAttribute("aria-label", "View " + playerName(id));
         return row;
@@ -400,6 +420,130 @@
         return { type: delta > 0 ? "up" : "down", delta: delta };
     }
 
+    function matchupKey(matchup) { return String(matchup && matchup.matchup_id != null ? matchup.matchup_id : ""); }
+
+    function teamLabel(matchup) {
+        var info = state.rosterMap.get(String(matchup.roster_id));
+        return info ? info.teamName : "Roster " + matchup.roster_id;
+    }
+
+    function getTeamPlayerIds(matchup) {
+        var info = state.rosterMap.get(String(matchup.roster_id));
+        var roster = info && info.roster;
+        var ids = Array.isArray(matchup.starters) ? matchup.starters.filter(Boolean) : (roster && Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : []);
+        return ids.map(String);
+    }
+
+    function teamIsFinished(matchup) {
+        var ids = getTeamPlayerIds(matchup);
+        if (!ids.length) return false;
+        var teams = ids.map(function (id) { return (playerMeta(id) || {}).team; }).filter(Boolean);
+        if (!teams.length) return false;
+        var games = teams.map(scheduleGameForTeam).filter(Boolean);
+        return games.length > 0 && games.every(function (g) { return String(g.status || '').toLowerCase() === 'complete'; });
+    }
+
+    function playerTouchdownDelta(id) {
+        var now = state.stats && state.stats[String(id)];
+        var before = state.previousStats && state.previousStats[String(id)];
+        if (!now || !before) return 0;
+        var keys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
+        var n = keys.reduce(function (sum, key) { return sum + statNumber(now, [key]); }, 0);
+        var b = keys.reduce(function (sum, key) { return sum + statNumber(before, [key]); }, 0);
+        return Math.max(0, n - b);
+    }
+
+    function appendEvent(message, icon) {
+        if (!message) return;
+        state.eventHistory.unshift({ message: message, icon: icon || "" });
+        state.eventHistory = state.eventHistory.slice(0, 12);
+    }
+
+    function analyzeLiveEvents(matchups, week) {
+        if (week !== state.currentWeek) return;
+        var seen = new Set();
+        matchups.forEach(function (m) {
+            var key = String(m.roster_id);
+            var now = Number(m.points || 0);
+            var previous = state.previousScores[key];
+            if (previous != null && Math.abs(now - Number(previous)) >= 0.001) {
+                var delta = now - Number(previous);
+                var label = teamLabel(m);
+                appendEvent(label + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼");
+            }
+            getTeamPlayerIds(m).forEach(function (id) {
+                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) {
+                    seen.add(id);
+                    appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥");
+                }
+            });
+        });
+    }
+
+    function renderLiveTicker() {
+        var ticker = $("live-event-ticker");
+        if (!ticker) return;
+        if (!state.eventHistory.length) {
+            ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span><span class="live-ticker__empty">Waiting for scoring activity…</span>';
+            return;
+        }
+        ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span>' + state.eventHistory.slice(0, 5).map(function (e) {
+            return '<span class="live-ticker__item"><b>' + esc(e.icon) + '</b> ' + esc(e.message) + '</span>';
+        }).join('');
+    }
+
+    function matchupAlert(a, b) {
+        var pred = matchupProbability(a, b);
+        var key = matchupKey(a) || (String(a.roster_id) + '-' + String(b.roster_id));
+        var previous = state.previousProbabilities[key];
+        var labels = [teamLabel(a), teamLabel(b)];
+        var alert = null;
+        if (previous && Math.abs(pred.a - previous) >= 12 && ((previous < 50 && pred.a >= 50) || (previous >= 50 && pred.a < 50))) {
+            alert = { type: 'lead', text: '⚡ LEAD CHANGE' };
+        } else if (pred.a >= 65 && previous != null && previous < 50) {
+            alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[0] };
+        } else if (pred.b >= 65 && previous != null && previous > 50) {
+            alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[1] };
+        } else if (Math.min(pred.a, pred.b) >= 45 && Math.max(pred.a, pred.b) <= 55) {
+            alert = { type: 'nail', text: '😬 NAIL BITER' };
+        } else if (Math.max(pred.a, pred.b) >= 90) {
+            alert = { type: 'danger', text: '🚨 DANGER ZONE' };
+        }
+        state.previousProbabilities[key] = pred.a;
+        return alert;
+    }
+
+    function mondayNightSweat(a, b) {
+        if (teamIsFinished(a) || teamIsFinished(b)) return null;
+        var pa = matchupProbability(a,b);
+        var max = Math.max(pa.a, pa.b), min = Math.min(pa.a, pa.b);
+        if (min >= 25 && max <= 75 && (projectedRemaining((state.rosterMap.get(String(a.roster_id)) || {}).roster) > 0 || projectedRemaining((state.rosterMap.get(String(b.roster_id)) || {}).roster) > 0)) return '🌙 MONDAY NIGHT SWEAT';
+        return null;
+    }
+
+    function appendMatchupAlert(card, alert, finished) {
+        if (finished) {
+            var final = document.createElement('div'); final.className = 'matchup-alert matchup-alert--final'; final.textContent = '🏁 FINAL'; card.appendChild(final); return;
+        }
+        if (!alert) return;
+        var el = document.createElement('div'); el.className = 'matchup-alert matchup-alert--' + alert.type; el.textContent = alert.text; card.appendChild(el);
+        setTimeout(function () { if (el.parentNode) { el.classList.add('is-fading'); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350); } }, 10000);
+    }
+
+    function appendMatchupSuperlatives(card, teams) {
+        var best = null;
+        teams.forEach(function (m) {
+            getTeamPlayerIds(m).forEach(function (id) {
+                var pts = getPlayerPoints(id);
+                if (!best || pts > best.points) best = { id: id, points: pts, team: teamLabel(m) };
+            });
+        });
+        if (!best || best.points <= 0) return;
+        var strip = document.createElement('div'); strip.className = 'matchup-mvp';
+        strip.innerHTML = '<span>👑 MATCHUP MVP</span><strong>' + esc(playerName(best.id)) + '</strong><b>' + formatScore(best.points) + ' pts</b>';
+        card.appendChild(strip);
+    }
+
     function renderScoreBox(matchup, week) {
         var box = document.createElement("div");
         box.className = "score-box";
@@ -429,6 +573,8 @@
         heading.textContent = weekLabel(week);
         badge.textContent = "Week " + week;
         state.matchups = Array.isArray(matchups) ? matchups : [];
+        analyzeLiveEvents(state.matchups, week);
+        renderLiveTicker();
         var groups = new Map();
         state.matchups.forEach(function (item) {
             if (!item || item.matchup_id == null) return;
@@ -468,12 +614,44 @@
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
             appendPredictor(card, teams);
+            appendMatchupSuperlatives(card, teams);
+            var alert = matchupAlert(teams[0], teams[1]);
+            if (!alert) { var sweat = mondayNightSweat(teams[0], teams[1]); if (sweat) alert = { type: 'sweat', text: sweat }; }
+            appendMatchupAlert(card, alert, teamIsFinished(teams[0]) && teamIsFinished(teams[1]));
             var hint = document.createElement("div"); hint.className = "matchup-hint"; hint.textContent = "Click matchup to view lineups · bench · player details"; card.appendChild(hint);
             function open() { openMatchupModal(teams, entry[0], week); }
             card.addEventListener("click", open);
             card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
             grid.appendChild(card);
         });
+        renderLeagueSuperlatives();
+    }
+
+    function renderLeagueSuperlatives() {
+        var box = $("league-superlatives"); if (!box) return;
+        var rows = [];
+        state.matchups.forEach(function (m) {
+            var info = state.rosterMap.get(String(m.roster_id));
+            if (!info) return;
+            rows.push({ team: info.teamName, score: Number(m.points || 0), remaining: projectedRemaining(info.roster) });
+        });
+        rows.sort(function(a,b){return b.score-a.score;});
+        if (!rows.length) { box.hidden = true; return; }
+        var high = rows[0], low = rows[rows.length - 1];
+        var closest = null;
+        state.matchups.forEach(function(m){ if (!closest || Math.abs(Number(m.points||0) - Number(closest.diffSource.points||0)) < closest.diff) closest = {diff: Math.abs(Number(m.points||0) - Number((closest && closest.diffSource ? closest.diffSource.points : 0))), diffSource:m}; });
+        var mostLeft = rows.slice().sort(function(a,b){return b.remaining-a.remaining;})[0];
+        box.hidden = false;
+        box.innerHTML = '<div class="superlative-card"><span>🏆 HIGHEST SCORE</span><strong>' + esc(high.team) + '</strong><b>' + formatScore(high.score) + '</b></div>' +
+            '<div class="superlative-card"><span>💀 LOWEST SCORE</span><strong>' + esc(low.team) + '</strong><b>' + formatScore(low.score) + '</b></div>' +
+            '<div class="superlative-card"><span>⚡ MOST LEFT</span><strong>' + esc(mostLeft.team) + '</strong><b>' + formatScore(mostLeft.remaining) + ' proj.</b></div>';
+        var closeGames = [];
+        var groups = new Map(); state.matchups.forEach(function(m){ var k=matchupKey(m); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(m); });
+        groups.forEach(function(t){ if(t.length>=2) closeGames.push({a:t[0],b:t[1],diff:Math.abs(Number(t[0].points||0)-Number(t[1].points||0))}); });
+        if(closeGames.length){ closeGames.sort(function(a,b){return a.diff-b.diff;}); var cg=closeGames[0]; box.insertAdjacentHTML('beforeend','<div class="superlative-card"><span>😬 CLOSEST MATCHUP</span><strong>' + esc(teamLabel(cg.a)) + ' vs ' + esc(teamLabel(cg.b)) + '</strong><b>' + formatScore(cg.diff) + ' pts</b></div>'); }
+        var hot = null; state.matchups.forEach(function(m){ getTeamPlayerIds(m).forEach(function(id){ var prev=getPreviousPlayerPoints(id), cur=getPlayerPoints(id); if(prev!=null){var d=cur-prev; if(!hot || d>hot.delta) hot={id:id,delta:d,team:teamLabel(m)};}}); });
+        if(hot && hot.delta>0){ box.insertAdjacentHTML('beforeend','<div class="superlative-card"><span>🔥 HOTTEST PLAYER</span><strong>' + esc(playerName(hot.id)) + '</strong><b>+' + formatScore(hot.delta) + '</b></div>'); }
+
     }
 
     function modalShell() {
