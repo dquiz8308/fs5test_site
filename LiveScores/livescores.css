@@ -117,3 +117,27 @@ body.modal-open{overflow:hidden}
 
 .game-flow{overflow:hidden}.game-flow svg{min-height:210px}.game-flow__grid{stroke:#dbe4ea;stroke-width:1;stroke-dasharray:3 4}.game-flow__axis{stroke:#91a4b0;stroke-width:1.5}.game-flow__legend{font-size:10px;fill:#38586d;font-weight:900}.game-flow text{font-size:10px;fill:#627582;font-weight:800}
 .game-flow__line--0{stroke:#1976d2}.game-flow__line--1{stroke:#d83a3a}.game-flow__legend--0{fill:#1976d2}.game-flow__legend--1{fill:#d83a3a}.game-flow__now{stroke:#8a9aa6;stroke-width:1.25;stroke-dasharray:4 4}.game-flow__now-label{fill:#526773;font-size:9px;font-weight:900;letter-spacing:.04em}
+
+/* Witching Hour + Victory Imminent */
+.matchup-alert--victory{background:linear-gradient(90deg,#fff2c2,#fff8df,#fff2c2);color:#7a5200;border-color:#e5c35b;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 0 20px rgba(229,195,91,.22);animation:fs5-victory 1.2s ease-in-out infinite alternate}
+.matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.22),transparent 52%),radial-gradient(circle at 82% 18%,rgba(255,238,170,.18),transparent 28%),linear-gradient(180deg,#fffdf4,#fff 48%);border-color:#d9bd67;box-shadow:0 0 0 2px rgba(211,172,55,.18),0 12px 30px rgba(190,150,35,.12);position:relative;overflow:hidden}
+.matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,rgba(74,55,15,.98),rgba(112,84,22,.98),rgba(74,55,15,.98));color:#fff2b5}
+.matchup-card--victory .matchup-card__state{color:#fff2b5}
+.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:14px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
+@keyframes fs5-victory{from{filter:brightness(.98)}to{filter:brightness(1.08)}}
+
+/* Game Flow interaction and checkpoint visibility */
+.game-flow__chart-wrap{position:relative;overflow:visible}
+.game-flow__svg{touch-action:none}
+.game-flow__line{stroke-width:3.5!important;opacity:1!important;vector-effect:non-scaling-stroke}
+.game-flow__line--0{stroke:#1976d2!important}
+.game-flow__line--1{stroke:#d83a3a!important}
+.game-flow__point{fill:#fff;stroke-width:2.5;vector-effect:non-scaling-stroke;cursor:pointer;opacity:.72}
+.game-flow__point.game-flow__line--0{stroke:#1976d2!important}
+.game-flow__point.game-flow__line--1{stroke:#d83a3a!important}
+.game-flow__point:hover,.game-flow__point:focus{opacity:1;r:5}
+.game-flow__tooltip{position:absolute;z-index:10;min-width:175px;max-width:230px;padding:8px 10px;border:1px solid #c8d5dd;border-radius:8px;background:rgba(255,255,255,.97);box-shadow:0 8px 24px rgba(15,42,58,.18);pointer-events:none;display:flex;flex-direction:column;gap:2px;font-size:.62rem;color:#34505f}
+.game-flow__tooltip strong{font-size:.68rem;color:#0c2f4d}.game-flow__tooltip span{color:#687d89}.game-flow__tooltip b{color:#00376b;margin-top:2px}
+.game-flow__tooltip[hidden]{display:none}
+.player-trend--mvp{filter:drop-shadow(0 1px 2px rgba(138,106,0,.25))}.player-trend--over{filter:drop-shadow(0 1px 2px rgba(220,80,20,.2))}
+@media(max-width:700px){.game-flow__tooltip{min-width:160px;font-size:.58rem}.game-flow__point{opacity:.9}}
