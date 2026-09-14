@@ -141,3 +141,12 @@ body.modal-open{overflow:hidden}
 .game-flow__tooltip[hidden]{display:none}
 .player-trend--mvp{filter:drop-shadow(0 1px 2px rgba(138,106,0,.25))}.player-trend--over{filter:drop-shadow(0 1px 2px rgba(220,80,20,.2))}
 @media(max-width:700px){.game-flow__tooltip{min-width:160px;font-size:.58rem}.game-flow__point{opacity:.9}}
+
+
+/* FS5 Live Scores guide */
+.live-guide{margin:0 0 14px}.live-guide details{border:1px solid #dce6ed;border-radius:11px;background:#fff;overflow:hidden;box-shadow:0 4px 14px rgba(15,42,58,.05)}.live-guide summary{cursor:pointer;list-style:none;padding:10px 13px;font-size:.67rem;font-weight:900;letter-spacing:.07em;color:#0c2f4d;background:#f7fafc}.live-guide summary::-webkit-details-marker{display:none}.live-guide summary:after{content:"＋";float:right;font-size:.85rem;color:#78909c}.live-guide details[open] summary:after{content:"−"}.live-guide__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #e7edf1}.live-guide__grid>div{padding:11px 13px;border-top:1px solid #edf1f4}.live-guide__grid>div:nth-child(-n+2){border-top:0}.live-guide__grid>div:nth-child(odd){border-right:1px solid #edf1f4}.live-guide__grid strong{display:block;font-size:.7rem;color:#173b52;margin-bottom:3px}.live-guide__grid p{margin:0;font-size:.62rem;line-height:1.45;color:#687b87}.live-guide__grid em{font-style:normal;font-weight:800;color:#4b3766}
+
+/* Game Flow: dense reviewable checkpoints and step-like score movement */
+.game-flow__hit{fill:none;stroke:transparent;stroke-width:18;vector-effect:non-scaling-stroke;cursor:crosshair;pointer-events:stroke}.game-flow__hit.game-flow__line--0{stroke:transparent}.game-flow__hit.game-flow__line--1{stroke:transparent}.game-flow__point{pointer-events:auto}.game-flow__point.game-flow__point--checkpoint{fill:#fff}.game-flow__point.game-flow__point--live{fill:#fff}.game-flow__line{shape-rendering:geometricPrecision}
+.player-trend--snow{filter:drop-shadow(0 1px 2px rgba(110,160,190,.2))}
+@media(max-width:700px){.live-guide__grid{grid-template-columns:1fr}.live-guide__grid>div:nth-child(odd){border-right:0}.live-guide__grid>div:nth-child(2){border-top:1px solid #edf1f4}}

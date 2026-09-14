@@ -2,7 +2,7 @@
     "use strict";
 
     var LEAGUE_ID = "1387297022695993344";
-    var REFRESH_MS = 15000;
+    var REFRESH_MS = 10000;
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
     var state = {
         currentWeek: 1,
@@ -237,9 +237,16 @@
         return !!best && best.id === target && best.points > 0;
     }
 
+    function playerGameIsFinal(id) {
+        var p = playerMeta(id) || {};
+        var game = scheduleGameForTeam(p.team, state.selectedWeek);
+        return gameStatus(game) === "complete";
+    }
+
     function playerTrendBadge(id) {
         var points = getPlayerPoints(id), projection = getProjection(id), prev = getPreviousPlayerPoints(id);
         var badges = [];
+        if (points === 0 && playerGameIsFinal(id)) badges.push('<span class="player-trend player-trend--snow" title="Final game · 0 fantasy points">❄️</span>');
         if (playerIsMatchupMvp(id)) badges.push('<span class="player-trend player-trend--mvp">👑</span>');
         var td = playerTouchdownDelta(id);
         if (td > 0) badges.push('<span class="player-trend player-trend--td">🏈🔥</span>');
@@ -801,14 +808,14 @@
 
     function captureGameFlow(matchups, week) {
         if (week !== state.currentWeek) return;
-        var key = 'fs5_gameflow_v3_' + LEAGUE_ID + '_w' + week;
+        var key = 'fs5_gameflow_v4_' + LEAGUE_ID + '_w' + week;
         var data={};
         try { data=JSON.parse(localStorage.getItem(key)||'{}')||{}; } catch(e) { data={}; }
         var stamp=Date.now();
         var grouped={};
         matchups.forEach(function(m){
             var k=matchupKey(m), rid=String(m.roster_id);
-            if (Array.isArray(data[k])) { data[k] = {}; }
+            if (Array.isArray(data[k])) data[k] = {};
             if(!data[k]) data[k]={};
             if(!Array.isArray(data[k][rid])) data[k][rid]=[];
             if(!grouped[k]) grouped[k]=[];
@@ -820,15 +827,55 @@
             teams.forEach(function(m){
                 var rid=String(m.roster_id), history=data[k][rid], pts=Number(m.points||0);
                 if(window && (!history.length || Number(history[0].time)>window.start)) {
-                    history.unshift({time:window.start,points:0});
+                    history.unshift({time:window.start,points:0,source:'kickoff'});
                 }
                 var last=history[history.length-1];
-                if(!last || Math.abs(Number(last.points)-pts)>=0.01 || Number(last.time)<stamp) history.push({time:stamp,points:pts});
-                if(history.length>10000) data[k][rid]=history.slice(-10000);
+                // Capture a real live snapshot every refresh, even when the score did not change.
+                // These repeated observations become the flat portions of the game-flow chart.
+                if(!last || Number(last.time) !== stamp) history.push({time:stamp,points:pts,source:'live'});
+                if(history.length>50000) data[k][rid]=history.slice(-50000);
             });
         });
         try { localStorage.setItem(key,JSON.stringify(data)); } catch(e) {}
         state.gameFlow=data;
+    }
+
+    function densifyGameFlowHistory(history, minT, maxT) {
+        var src=(history||[]).filter(function(x){return Number.isFinite(Number(x.time)) && Number.isFinite(Number(x.points));})
+            .map(function(x){return {time:Number(x.time),points:Number(x.points),source:x.source||'snapshot'};})
+            .sort(function(a,b){return a.time-b.time;});
+        if(!src.length) return [{time:minT,points:0,source:'kickoff'}];
+
+        var first=src[0];
+        var observed=[];
+        if(first.time>minT) observed.push({time:minT,points:0,source:'kickoff'});
+        src.forEach(function(x){
+            if(!observed.length || x.time!==observed[observed.length-1].time) observed.push(x);
+            else observed[observed.length-1]=x;
+        });
+
+        // Build a dense review timeline: one checkpoint every 2 minutes, plus every
+        // real score-changing snapshot. A checkpoint carries forward the last known
+        // score, so a quiet 30-minute stretch becomes visibly flat rather than a
+        // single long straight segment.
+        var endObserved=Math.min(maxT, observed[observed.length-1].time);
+        var merged=observed.slice();
+        var idx=0;
+        for(var t=minT+120000;t<=endObserved;t+=120000){
+            while(idx+1<observed.length && observed[idx+1].time<=t) idx++;
+            var value=observed[idx];
+            if(value && value.time!==t) merged.push({time:t,points:value.points,source:'checkpoint'});
+        }
+        merged.sort(function(a,b){return a.time-b.time;});
+        var out=[];
+        merged.forEach(function(x){
+            var last=out[out.length-1];
+            if(last && last.time===x.time){
+                // Prefer the real observation over a generated checkpoint.
+                if(x.source!=='checkpoint' || last.source==='checkpoint') out[out.length-1]=x;
+            } else out.push(x);
+        });
+        return out;
     }
 
     function renderGameFlow(teams) {
@@ -838,17 +885,14 @@
         var teamSeries=teams.map(function(m,idx){
             var bucket=(state.gameFlow&&state.gameFlow[matchupKey(m)])||{};
             if(Array.isArray(bucket)) bucket={};
-            var history=Array.isArray(bucket[String(m.roster_id)]) ? bucket[String(m.roster_id)].slice() : [];
-            history=history.filter(function(x){return Number.isFinite(Number(x.time)) && Number.isFinite(Number(x.points));});
-            history.sort(function(a,b){return Number(a.time)-Number(b.time);});
-            var current=Number(m.points||0);
-            var minT=window ? window.start : (history.length ? Number(history[0].time) : now-3600000);
-            var maxT=window ? window.end : Math.max(now,history.length ? Number(history[history.length-1].time) : now);
+            var raw=Array.isArray(bucket[String(m.roster_id)]) ? bucket[String(m.roster_id)].slice() : [];
+            var minT=window ? window.start : (raw.length ? Number(raw[0].time) : now-3600000);
+            var maxT=window ? window.end : Math.max(now,raw.length ? Number(raw[raw.length-1].time) : now);
             if(maxT<=minT) maxT=minT+1;
-            if(!history.length) history=[{time:minT,points:0}];
-            if(Number(history[0].time)>minT) history.unshift({time:minT,points:0});
-            if(Number(history[history.length-1].time)<now && now<=maxT) history.push({time:now,points:current});
-            if(Number(history[history.length-1].time)<maxT && teamIsFinished(m)) history.push({time:maxT,points:current});
+            var history=densifyGameFlowHistory(raw,minT,maxT);
+            var current=Number(m.points||0);
+            if(history.length && history[history.length-1].time<now && now<=maxT) history.push({time:now,points:current,source:'live'});
+            if(history.length && history[history.length-1].time<maxT && teamIsFinished(m)) history.push({time:maxT,points:current,source:'end'});
             return {m:m,idx:idx,history:history,minT:minT,maxT:maxT};
         });
         var minT=window ? window.start : Math.min.apply(null,teamSeries.map(function(s){return s.minT;}));
@@ -857,7 +901,7 @@
         var allPoints=[];
         teamSeries.forEach(function(s){s.history.forEach(function(x){allPoints.push(Number(x.points)||0);});});
         var maxP=Math.max(10,Math.ceil(Math.max.apply(null,allPoints.concat([Number(teams[0].points||0),Number(teams[1].points||0),10]))/10)*10);
-        var w=760,h=270,left=58,right=30,top=30,bottom=58;
+        var w=820,h=290,left=60,right=32,top=34,bottom=70;
         var plotW=w-left-right, plotH=h-top-bottom;
         function xPos(t){return left+(Number(t)-minT)/(maxT-minT)*plotW;}
         function yPos(p){return top+plotH-(Number(p)||0)/maxP*plotH;}
@@ -866,54 +910,94 @@
         if(yTicks[yTicks.length-1]!==maxP)yTicks.push(maxP);
         var gridLines=yTicks.map(function(v){var y=yPos(v);return '<line class="game-flow__grid" x1="'+left+'" y1="'+y.toFixed(1)+'" x2="'+(w-right)+'" y2="'+y.toFixed(1)+'"/><text x="'+(left-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+v+'</text>';}).join('');
         var span=maxT-minT;
-        var tickCount=span>=48*60*60*1000?6:span>=24*60*60*1000?5:6;
+        var tickCount=span>=72*60*60*1000?7:span>=48*60*60*1000?6:span>=24*60*60*1000?6:7;
         var xTicks=[]; for(var ti=0;ti<tickCount;ti++) xTicks.push(minT+(span*ti/(tickCount-1)));
         function formatTick(t){
             var d=new Date(t), date=d.toLocaleDateString([], {month:'short',day:'numeric'}), time=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
             return date+' · '+time;
         }
-        var xLabels=xTicks.map(function(t){return '<text x="'+xPos(t).toFixed(1)+'" y="'+(h-17)+'" text-anchor="middle">'+esc(formatTick(t))+'</text>';}).join('');
-        var nowLine=(now>=minT&&now<=maxT)?'<line class="game-flow__now" x1="'+xPos(now).toFixed(1)+'" y1="'+top+'" x2="'+xPos(now).toFixed(1)+'" y2="'+(h-bottom)+'"/><text class="game-flow__now-label" x="'+xPos(now).toFixed(1)+'" y="'+(top-8)+'" text-anchor="middle">NOW</text>':'';
-        var svgLines='', checkpointMarkup='';
+        var xLabels=xTicks.map(function(t){return '<text x="'+xPos(t).toFixed(1)+'" y="'+(h-18)+'" text-anchor="middle">'+esc(formatTick(t))+'</text>';}).join('');
+        var nowLine=(now>=minT&&now<=maxT)?'<line class="game-flow__now" x1="'+xPos(now).toFixed(1)+'" y1="'+top+'" x2="'+xPos(now).toFixed(1)+'" y2="'+(h-bottom)+'"/><text class="game-flow__now-label" x="'+xPos(now).toFixed(1)+'" y="'+(top-9)+'" text-anchor="middle">NOW</text>':'';
+        var svgLines='', checkpointMarkup='', hitMarkup='';
         teamSeries.forEach(function(s){
-            var pts=s.history;
-            var path=pts.map(function(x,i){return (i?'L':'M')+Math.max(left,Math.min(w-right,xPos(x.time))).toFixed(1)+' '+yPos(x.points).toFixed(1);}).join(' ');
-            var colorClass='game-flow__line--'+s.idx;
+            var pts=s.history, colorClass='game-flow__line--'+s.idx;
+            var path='';
+            pts.forEach(function(x,i){
+                var cx=Math.max(left,Math.min(w-right,xPos(x.time))), cy=yPos(x.points);
+                if(i===0) path='M'+cx.toFixed(1)+' '+cy.toFixed(1);
+                else {
+                    var prev=pts[i-1], px=Math.max(left,Math.min(w-right,xPos(prev.time))), py=yPos(prev.points);
+                    path+=' L'+cx.toFixed(1)+' '+py.toFixed(1)+' L'+cx.toFixed(1)+' '+cy.toFixed(1);
+                }
+            });
             svgLines+='<path class="game-flow__line '+colorClass+'" d="'+path+'"/>';
+            // Invisible wider path lets users hover/click the line itself, while visible dots provide exact checkpoints.
+            hitMarkup+='<path class="game-flow__hit '+colorClass+'" d="'+path+'" data-team="'+esc(teamLabel(s.m))+'"/>';
             checkpointMarkup+=pts.map(function(x,i){
                 var cx=Math.max(left,Math.min(w-right,xPos(x.time))), cy=yPos(x.points);
                 var label=teamLabel(s.m)+' · '+formatTick(x.time)+' · '+formatScore(x.points)+' pts';
-                return '<circle class="game-flow__point '+colorClass+'" cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="3.2" tabindex="0" data-team="'+esc(teamLabel(s.m))+'" data-time="'+Number(x.time)+'" data-points="'+Number(x.points)+'"><title>'+esc(label)+'</title></circle>';
+                return '<circle class="game-flow__point '+colorClass+'" cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(x.source==='checkpoint'?'2.5':'3.4')+'" tabindex="0" data-team="'+esc(teamLabel(s.m))+'" data-time="'+Number(x.time)+'" data-points="'+Number(x.points)+'"><title>'+esc(label)+'</title></circle>';
             }).join('');
         });
         var legends=teamSeries.map(function(s){return '<text class="game-flow__legend game-flow__legend--'+s.idx+'" x="'+(w-right)+'" y="'+(top+14+s.idx*18)+'" text-anchor="end">'+esc(teamLabel(s.m))+'</text>';}).join('');
-        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>First kickoff → projected end of last game · hover/click a checkpoint for date, time & score</span></div><div class="game-flow__chart-wrap"><svg class="game-flow__svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup fantasy score history over the matchup game window">'+gridLines+nowLine+'<line class="game-flow__axis" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+(h-bottom)+'"/><line class="game-flow__axis" x1="'+left+'" y1="'+(h-bottom)+'" x2="'+(w-right)+'" y2="'+(h-bottom)+'"/>'+svgLines+checkpointMarkup+legends+xLabels+'</svg><div class="game-flow__tooltip" hidden></div></div>';
+        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>Checkpointed score path · dots every 2 min · hover or click a dot/line for date, time & score</span></div><div class="game-flow__chart-wrap"><svg class="game-flow__svg" viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup fantasy score history over the matchup game window">'+gridLines+nowLine+'<line class="game-flow__axis" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+(h-bottom)+'"/><line class="game-flow__axis" x1="'+left+'" y1="'+(h-bottom)+'" x2="'+(w-right)+'" y2="'+(h-bottom)+'"/>'+svgLines+hitMarkup+checkpointMarkup+legends+xLabels+'</svg><div class="game-flow__tooltip" hidden></div></div>';
         var svg=wrap.querySelector('.game-flow__svg'), tooltip=wrap.querySelector('.game-flow__tooltip');
-        function showPoint(point, event){
-            var t=Number(point.getAttribute('data-time')), pts=Number(point.getAttribute('data-points')), name=point.getAttribute('data-team')||'Team';
-            var d=new Date(t), date=d.toLocaleDateString([], {weekday:'short',month:'short',day:'numeric',year:'numeric'}), time=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'});
-            tooltip.innerHTML='<strong>'+esc(name)+'</strong><span>'+esc(date)+' · '+esc(time)+'</span><b>'+formatScore(pts)+' fantasy points</b>';
+        function showPointData(name,t,pts,event){
+            var d=new Date(Number(t)), date=d.toLocaleDateString([], {weekday:'short',month:'short',day:'numeric',year:'numeric'}), time=d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit',second:'2-digit'});
+            tooltip.innerHTML='<strong>'+esc(name||'Team')+'</strong><span>'+esc(date)+' · '+esc(time)+'</span><b>'+formatScore(pts)+' fantasy points</b>';
             tooltip.hidden=false;
             if(event){
-                var rect=svg.getBoundingClientRect();
-                var x=event.clientX-rect.left+12, y=event.clientY-rect.top-12;
-                tooltip.style.left=Math.max(6,Math.min(rect.width-180,x))+'px'; tooltip.style.top=Math.max(6,y)+'px';
+                var rect=svg.getBoundingClientRect(), x=event.clientX-rect.left+12, y=event.clientY-rect.top-12;
+                tooltip.style.left=Math.max(6,Math.min(rect.width-190,x))+'px'; tooltip.style.top=Math.max(6,y)+'px';
             }
         }
-        function hidePoint(){tooltip.hidden=true;}
+        function showPoint(point,event){showPointData(point.getAttribute('data-team'),Number(point.getAttribute('data-time')),Number(point.getAttribute('data-points')),event);}
         wrap.querySelectorAll('.game-flow__point').forEach(function(point){
             point.addEventListener('mouseenter',function(e){showPoint(point,e);});
             point.addEventListener('mousemove',function(e){showPoint(point,e);});
-            point.addEventListener('mouseleave',hidePoint);
+            point.addEventListener('mouseleave',function(){tooltip.hidden=true;});
             point.addEventListener('focus',function(){showPoint(point,null);});
-            point.addEventListener('blur',hidePoint);
-            point.addEventListener('click',function(e){e.stopPropagation(); if(tooltip.hidden)showPoint(point,e); else hidePoint();});
+            point.addEventListener('blur',function(){tooltip.hidden=true;});
+            point.addEventListener('click',function(e){e.stopPropagation();showPoint(point,e);});
+        });
+        // Clicking/hovering the visible line finds the nearest checkpoint in time.
+        wrap.querySelectorAll('.game-flow__hit').forEach(function(hit){
+            var name=hit.getAttribute('data-team');
+            function lineEvent(e){
+                var rect=svg.getBoundingClientRect();
+                var svgX=(e.clientX-rect.left)/rect.width*820;
+                var targetT=minT+((svgX-left)/plotW)*(maxT-minT);
+                var series=teamSeries.find(function(s){return teamLabel(s.m)===name;});
+                if(!series || !series.history.length) return;
+                var nearest=series.history.reduce(function(best,x){return Math.abs(x.time-targetT)<Math.abs(best.time-targetT)?x:best;},series.history[0]);
+                showPointData(name,nearest.time,nearest.points,e);
+            }
+            hit.addEventListener('mouseenter',lineEvent);
+            hit.addEventListener('mousemove',lineEvent);
+            hit.addEventListener('click',function(e){e.stopPropagation();lineEvent(e);});
         });
         return wrap;
     }
 
+    function renderLiveGuide() {
+        var box=$('live-guide');
+        if(!box || box.dataset.ready==='1') return;
+        box.dataset.ready='1';
+        box.innerHTML='<details><summary>📖 FS5 LIVE SCORES GUIDE</summary><div class="live-guide__grid">'+
+            '<div><strong>🏆 Victory Imminent</strong><p>One team has a win probability above 90%. The matchup is heavily tilted toward a likely winner.</p></div>'+
+            '<div><strong>🕯️ The Witching Hour</strong><p>Less than 10% of the matchup\'s total playing time remains <em>and</em> at least one team has a win probability below 70%. The game is entering its late, dangerous stretch.</p></div>'+
+            '<div><strong>😬 Nail Biter</strong><p>Both teams are between 45% and 55% win probability. The matchup is essentially a coin flip.</p></div>'+
+            '<div><strong>⚡ Lead Change</strong><p>The win probability has swung sharply enough to indicate that control of the matchup changed hands.</p></div>'+
+            '<div><strong>🚨 Upset Alert</strong><p>A team that was previously behind in probability has moved into a strong position.</p></div>'+
+            '<div><strong>🌙 Monday Night Sweat</strong><p>A matchup still has meaningful production tied to a Monday Night Football player, keeping the outcome alive late.</p></div>'+
+            '<div><strong>📊 Game Flow</strong><p>The chart records live score snapshots. Dots are reviewable checkpoints; flat sections mean the recorded fantasy score did not change during that stretch.</p></div>'+
+            '<div><strong>👑 🔥 💀 ❄️ Player badges</strong><p>👑 matchup MVP · 🔥 above projection/hot · 💀 major projection miss · ❄️ final game with 0 points · 🏈🔥 touchdown activity.</p></div>'+
+            '</div></details>';
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
+        renderLiveGuide();
         kicker.textContent = "WEEK " + week;
         heading.textContent = weekLabel(week);
         badge.textContent = "Week " + week;
