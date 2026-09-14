@@ -102,3 +102,15 @@ body.modal-open{overflow:hidden}
 .matchup-card--nail{box-shadow:0 0 0 2px rgba(25,118,210,.12),0 8px 22px rgba(25,118,210,.08)}.matchup-card--danger{box-shadow:0 0 0 2px rgba(216,58,58,.10)}.matchup-card--close{box-shadow:0 0 0 1px rgba(25,118,210,.08)}
 .game-flow{margin:18px 0;padding:14px;border:1px solid #dce6ed;border-radius:12px;background:#f8fbfd}.game-flow__head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}.game-flow__head strong{font-size:.72rem;color:#0c2f4d;letter-spacing:.06em}.game-flow__head span{font-size:.6rem;color:#7b8b96}.game-flow svg{width:100%;height:auto;display:block;overflow:visible}.game-flow line{stroke:#ccd8df;stroke-width:1}.game-flow__line{fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.game-flow__line--0{stroke:#1976d2}.game-flow__line--1{stroke:#d83a3a}.game-flow text{font-size:10px;fill:#627582;font-weight:800}
 @media(max-width:700px){.projected-finish{grid-template-columns:1fr}.projected-finish>div+div{border-left:0;border-top:1px solid #edf1f4}.fs5-broadcast{align-items:flex-start;flex-direction:column;gap:3px}.game-flow__head{align-items:flex-start;flex-direction:column}.what-just-happened{gap:8px}}
+
+/* Stronger stadium-style matchup states */
+.matchup-card--close{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.13),transparent 52%),linear-gradient(180deg,#f7fbff,#fff 42%);border-color:#b8d3e7}
+.matchup-card--nail{background:radial-gradient(circle at 50% 0%,rgba(25,118,210,.18),transparent 50%),linear-gradient(180deg,#f5faff,#fff 48%);border-color:#86b8dc;box-shadow:0 0 0 2px rgba(25,118,210,.18),0 12px 28px rgba(25,118,210,.12)}
+.matchup-card--danger{background:radial-gradient(circle at 50% 0%,rgba(216,58,58,.16),transparent 50%),linear-gradient(180deg,#fff7f7,#fff 48%);border-color:#e2a2a2;box-shadow:0 0 0 2px rgba(216,58,58,.14),0 12px 28px rgba(216,58,58,.10)}
+.matchup-card--close .matchup-card__head{background:rgba(231,242,250,.95)}
+.matchup-card--nail .matchup-card__head{background:linear-gradient(90deg,rgba(222,239,250,.98),rgba(246,250,253,.98),rgba(222,239,250,.98))}
+.matchup-card--danger .matchup-card__head{background:linear-gradient(90deg,rgba(253,232,232,.98),rgba(255,248,248,.98),rgba(253,232,232,.98))}
+.matchup-card--nail:before,.matchup-card--danger:before{content:"";display:block;height:3px;background:linear-gradient(90deg,transparent,rgba(25,118,210,.7),transparent)}
+.matchup-card--danger:before{background:linear-gradient(90deg,transparent,rgba(216,58,58,.75),transparent)}
+
+.game-flow{overflow:hidden}.game-flow svg{min-height:210px}.game-flow__grid{stroke:#dbe4ea;stroke-width:1;stroke-dasharray:3 4}.game-flow__axis{stroke:#91a4b0;stroke-width:1.5}.game-flow__legend{font-size:10px;fill:#38586d;font-weight:900}.game-flow text{font-size:10px;fill:#627582;font-weight:800}

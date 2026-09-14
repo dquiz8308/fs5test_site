@@ -288,8 +288,22 @@
         if (!roster) return 0;
         var starters = Array.isArray(roster.starters) ? roster.starters.filter(Boolean) : [];
         return starters.reduce(function (sum, id) {
+            var meta = playerMeta(id);
+            var game = scheduleGameForTeam(meta && meta.team);
+            var status = game ? String(game.status || '').toLowerCase() : '';
             var projection = getProjection(id);
             var current = getPlayerPoints(id);
+
+            // A player whose NFL game is complete has no fantasy production left.
+            // This is what makes the team projection a true live projection.
+            if (status === 'complete' || status === 'final' || status === 'post') return sum;
+
+            // Pre-game: the full weekly projection is still available.
+            if (status === 'pre_game' || status === 'scheduled' || status === 'pregame' || status === '') {
+                return sum + Math.max(0, projection - current);
+            }
+
+            // In-game: only the unused portion of the player's projection remains.
             return sum + Math.max(0, projection - current);
         }, 0);
     }
@@ -309,7 +323,7 @@
         var bInfo = state.rosterMap.get(String(teams[1].roster_id));
         var section = document.createElement("div");
         section.className = "predictor";
-        section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div><span class="predictor-note">Projected: ' + formatScore(pred.meanA) + ' – ' + formatScore(pred.meanB) + '</span></div>' +
+        section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div><span class="predictor-note">Live projection: ' + formatScore(pred.meanA) + ' – ' + formatScore(pred.meanB) + '</span></div>' +
             '<div class="prob-wrap"><div class="prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + pred.a.toFixed(0) + '%</b><span>WIN PROBABILITY</span><b>' + pred.b.toFixed(0) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="prob-track"><div class="prob-fill" style="width:' + pred.a.toFixed(2) + '%"></div><div class="prob-thumb" style="left:' + pred.a.toFixed(2) + '%"></div></div><div class="prob-sub">Remaining projection: ' + formatScore(pred.remainingA) + ' vs ' + formatScore(pred.remainingB) + '</div></div>';
         card.appendChild(section);
     }
@@ -677,15 +691,29 @@
 
     function renderGameFlow(teams) {
         var wrap=document.createElement('div'); wrap.className='game-flow';
-        var key=matchupKey(teams[0]), points=(state.gameFlow&&state.gameFlow[key])||[];
         var byTeam={};
         [teams[0],teams[1]].forEach(function(m){byTeam[String(m.roster_id)]=(state.gameFlow&&state.gameFlow[matchupKey(m)])||[];});
-        var all=[]; Object.keys(byTeam).forEach(function(k){byTeam[k].forEach(function(x){all.push(x.time);});});
-        var minT=all.length?Math.min.apply(null,all):Date.now()-3600000, maxT=all.length?Math.max.apply(null,all):Date.now();
+        var allTimes=[], allPoints=[];
+        Object.keys(byTeam).forEach(function(k){byTeam[k].forEach(function(x){allTimes.push(Number(x.time));allPoints.push(Number(x.points)||0);});});
+        var now=Date.now();
+        var minT=allTimes.length?Math.min.apply(null,allTimes):now-3600000;
+        var maxT=Math.max(now, allTimes.length?Math.max.apply(null,allTimes):now);
         if(maxT<=minT) maxT=minT+1;
-        var w=560,h=170,pad=26;
-        var lines=Object.keys(byTeam).map(function(rid,idx){var pts=byTeam[rid];var m=teams.find(function(t){return String(t.roster_id)===rid;}); if(!pts.length) pts=[{time:minT,points:Number(m.points||0)}]; var minP=0,maxP=Math.max.apply(null,pts.map(function(x){return Number(x.points)||0}).concat([Number(m.points||0),1])); var path=pts.map(function(x,i){var xPos=pad+(Number(x.time)-minT)/(maxT-minT)*(w-2*pad);var y=h-pad-(Number(x.points)||0)/maxP*(h-2*pad);return (i?'L':'M')+xPos.toFixed(1)+' '+y.toFixed(1);}).join(' ');return {path:path,name:teamLabel(m)};});
-        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>Score history since Live Scores opened</span></div><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup score history"><line x1="'+pad+'" y1="'+(h-pad)+'" x2="'+(w-pad)+'" y2="'+(h-pad)+'"/><line x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(h-pad)+'"/>'+lines.map(function(l,i){return '<path class="game-flow__line game-flow__line--'+i+'" d="'+l.path+'"/><text x="'+(w-pad)+'" y="'+(pad+14+i*18)+'" text-anchor="end">'+esc(l.name)+'</text>';}).join('')+'</svg>';
+        var maxP=Math.max(10, Math.ceil(Math.max.apply(null, allPoints.concat([Number(teams[0].points||0),Number(teams[1].points||0),10]))/10)*10);
+        var w=620,h=230,left=54,right=24,top=28,bottom=44;
+        var plotW=w-left-right, plotH=h-top-bottom;
+        function xPos(t){return left+(Number(t)-minT)/(maxT-minT)*plotW;}
+        function yPos(p){return top+plotH-(Number(p)||0)/maxP*plotH;}
+        var yTicks=[];
+        for(var v=0;v<=maxP;v+=Math.max(10,Math.ceil(maxP/5/10)*10)) yTicks.push(v);
+        if(yTicks[yTicks.length-1]!==maxP) yTicks.push(maxP);
+        var xTicks=[minT];
+        if(maxT-minT>1) xTicks.push(minT+(maxT-minT)/2);
+        xTicks.push(maxT);
+        var gridLines=yTicks.map(function(v){var y=yPos(v);return '<line class="game-flow__grid" x1="'+left+'" y1="'+y.toFixed(1)+'" x2="'+(w-right)+'" y2="'+y.toFixed(1)+'"/><text x="'+(left-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+v+'</text>';}).join('');
+        var xLabels=xTicks.map(function(t,i){var label=i===xTicks.length-1?'NOW':new Date(t).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});return '<text x="'+xPos(t).toFixed(1)+'" y="'+(h-14)+'" text-anchor="middle">'+esc(label)+'</text>';}).join('');
+        var lines=Object.keys(byTeam).map(function(rid,idx){var pts=byTeam[rid].slice().sort(function(a,b){return Number(a.time)-Number(b.time);});var m=teams.find(function(t){return String(t.roster_id)===rid;}); if(!pts.length) pts=[{time:minT,points:Number(m.points||0)}]; var path=pts.map(function(x,i){return (i?'L':'M')+xPos(x.time).toFixed(1)+' '+yPos(x.points).toFixed(1);}).join(' ');return {path:path,name:teamLabel(m)};});
+        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>X: time · Y: fantasy points · history since Live Scores opened</span></div><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup fantasy score history over time">'+gridLines+'<line class="game-flow__axis" x1="'+left+'" y1="'+top+'" x2="'+left+'" y2="'+(h-bottom)+'"/><line class="game-flow__axis" x1="'+left+'" y1="'+(h-bottom)+'" x2="'+(w-right)+'" y2="'+(h-bottom)+'"/>'+lines.map(function(l,i){return '<path class="game-flow__line game-flow__line--'+i+'" d="'+l.path+'"/><text class="game-flow__legend" x="'+(w-right)+'" y="'+(top+14+i*18)+'" text-anchor="end">'+esc(l.name)+'</text>';}).join('')+xLabels+'</svg>';
         return wrap;
     }
 
@@ -873,7 +901,7 @@
         var stats = state.stats && state.stats[String(id)] || {};
         body.replaceChildren();
         var detail = document.createElement('div'); detail.className = 'player-detail';
-        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Projection ' + formatScore(getProjection(id)) + '</span></div></div>';
+        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div></div>';
         body.appendChild(detail);
         var meta = document.createElement('dl'); meta.className = 'player-meta';
         meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';
