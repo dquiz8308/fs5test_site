@@ -605,18 +605,71 @@
     function renderBroadcastHeader() {
         var box = $('fs5-broadcast');
         if (!box) return;
-        var rows = state.matchups.map(function(m){
-            var pred = matchupProbability(m, state.matchups.find(function(x){return matchupKey(x)===matchupKey(m) && String(x.roster_id)!==String(m.roster_id)}) || m);
-            return {m:m,p:pred};
-        });
-        var leader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
-        var text = '🎙️ FS5 LIVE: ' + (leader ? teamLabel(leader) + ' currently leads the league with ' + formatScore(leader.points) + ' points.' : 'The live scoreboard is ready.');
-        var close = null;
+
         var groups = new Map();
-        state.matchups.forEach(function(m){var k=matchupKey(m);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(m);});
-        groups.forEach(function(t){if(t.length>=2){var d=Math.abs(Number(t[0].points||0)-Number(t[1].points||0));if(!close||d<close.d)close={d:d,a:t[0],b:t[1]};}});
-        if(close && close.d <= 8) text = '🎙️ FS5 LIVE: ' + teamLabel(close.a) + ' and ' + teamLabel(close.b) + ' are separated by only ' + formatScore(close.d) + ' points.';
-        box.hidden=false; box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace('🎙️ FS5 LIVE: ',''))+'</span>';
+        state.matchups.forEach(function(m){
+            var k=matchupKey(m);
+            if(!groups.has(k)) groups.set(k,[]);
+            groups.get(k).push(m);
+        });
+
+        var rows = [];
+        groups.forEach(function(t){
+            if(t.length >= 2){
+                var a=t[0], b=t[1], p=matchupProbability(a,b);
+                rows.push({a:a,b:b,p:p,diff:Math.abs(Number(a.points||0)-Number(b.points||0))});
+            }
+        });
+
+        var leader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
+        var leagueLeader = leader ? teamLabel(leader) + ' leads the league at ' + formatScore(leader.points) + ' points.' : 'The live scoreboard is ready.';
+        var messages = [];
+
+        if (leader) messages.push('🎙️ ' + leagueLeader);
+
+        rows.forEach(function(r){
+            var a=teamLabel(r.a), b=teamLabel(r.b), pa=Number(r.a.points||0), pb=Number(r.b.points||0);
+            var leaderTeam=pa>=pb?a:b, trailer=pa>=pb?b:a;
+            var lp=pa>=pb?r.p.a:r.p.b, tp=pa>=pb?r.p.b:r.p.a;
+            if(r.diff < 1) messages.push('⚖️ ' + a + ' and ' + b + ' are dead even. This one is coming down to the wire.');
+            else if(r.diff < 3) messages.push('🔥 ' + leaderTeam + ' leads ' + trailer + ' by less than three points. One play can flip this matchup.');
+            else if(r.diff < 8) messages.push('📣 ' + leaderTeam + ' has the scoreboard lead, but ' + trailer + ' is still firmly within striking distance.');
+            else if(r.diff >= 20) messages.push('🚨 ' + leaderTeam + ' has opened a ' + formatScore(r.diff) + '-point gap on ' + trailer + '. That is a serious hill to climb.');
+            if(lp >= 90) messages.push('🏆 ' + leaderTeam + ' has crossed 90% win probability. The FS5 broadcast is calling this one Victory Imminent.');
+            else if(tp >= 65 && pa !== pb) messages.push('📈 The model still likes ' + trailer + ' at ' + tp.toFixed(0) + '%. The scoreboard lead may not be as comfortable as it looks.');
+            if(r.p.a < 30 && r.p.b > 70) messages.push('🎯 The model has a strong opinion here: ' + b + ' owns ' + r.p.b.toFixed(0) + '% win probability.');
+            if(r.p.b < 30 && r.p.a > 70) messages.push('🎯 The model has a strong opinion here: ' + a + ' owns ' + r.p.a.toFixed(0) + '% win probability.');
+
+            var timePct=matchupPlayingTimePct(r.a,r.b);
+            if(timePct != null && timePct < 10 && (r.p.a < 70 || r.p.b < 70)) messages.push('🕯️ The Witching Hour is here in ' + a + ' vs ' + b + '. Less than 10% of the matchup remains.');
+            if(timePct != null && timePct < 25 && r.diff < 10) messages.push('⏳ ' + a + ' vs ' + b + ' is entering the late-game sweat. Less than a quarter of the matchup remains.');
+
+            var remA=projectedRemaining((state.rosterMap.get(String(r.a.roster_id))||{}).roster);
+            var remB=projectedRemaining((state.rosterMap.get(String(r.b.roster_id))||{}).roster);
+            if(remA === 0 && remB === 0 && r.diff > 0) messages.push('🏁 ' + leaderTeam + ' has the lead and both teams are out of players. The scoreboard can finally exhale.');
+            else if(remA === 0 && remB > 0) messages.push('👀 ' + a + ' is done scoring. ' + b + ' still has ' + formatScore(remB) + ' projected points available.');
+            else if(remB === 0 && remA > 0) messages.push('👀 ' + b + ' is done scoring. ' + a + ' still has ' + formatScore(remA) + ' projected points available.');
+            if(remA + remB > 0 && remA + remB < 10) messages.push('🧨 There are fewer than 10 projected points left in ' + a + ' vs ' + b + '. Every possession matters now.');
+        });
+
+        var active=currentPlayingCount();
+        if(active.total) messages.push('👀 FS5 has ' + active.active + ' of ' + active.total + ' starters currently playing across the league.');
+        if(state.eventHistory && state.eventHistory.length) {
+            var latest=state.eventHistory[0];
+            messages.push(latest.icon + ' Fresh off the live feed: ' + latest.message + '.');
+        }
+
+        if(!messages.length) messages.push('🎙️ FS5 LIVE: The broadcast booth is watching for the next big swing.');
+
+        var storageKey='fs5_broadcast_cycle_' + LEAGUE_ID + '_w' + state.selectedWeek;
+        var index=0;
+        try { index=Number(localStorage.getItem(storageKey)||0); } catch(e) { index=0; }
+        if(!Number.isFinite(index)) index=0;
+        var text=messages[index % messages.length];
+        try { localStorage.setItem(storageKey, String((index+1) % Math.max(messages.length,1))); } catch(e) {}
+
+        box.hidden=false;
+        box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace(/^🎙️ FS5 LIVE:\s*/,'')).replace(/&amp;/g,'&amp;')+'</span>';
     }
 
     function renderWatching() {
