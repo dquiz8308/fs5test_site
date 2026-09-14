@@ -15,7 +15,10 @@
         stats: {},
         projections: {},
         matchups: [],
-        schedule: []
+        schedule: [],
+        previousScores: {},
+        previousStats: {},
+        reactionTimers: {}
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -359,6 +362,67 @@
         text.appendChild(wrap);
     }
 
+    function statNumber(stats, keys) {
+        for (var i = 0; i < keys.length; i++) {
+            var value = stats && stats[keys[i]];
+            if (Number.isFinite(Number(value))) return Number(value);
+        }
+        return 0;
+    }
+
+    function teamHasNewTouchdown(matchup) {
+        var roster = state.rosterMap.get(String(matchup.roster_id));
+        var ids = new Set();
+        var players = (roster && roster.roster && Array.isArray(roster.roster.players)) ? roster.roster.players : [];
+        var starters = Array.isArray(matchup.starters) ? matchup.starters : [];
+        players.concat(starters).forEach(function (id) { if (id != null) ids.add(String(id)); });
+        var tdKeys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
+        for (var id of ids) {
+            var now = state.stats && state.stats[id];
+            var before = state.previousStats && state.previousStats[id];
+            if (!now || !before) continue;
+            var nowTd = tdKeys.reduce(function (sum, key) { return sum + statNumber(now, [key]); }, 0);
+            var beforeTd = tdKeys.reduce(function (sum, key) { return sum + statNumber(before, [key]); }, 0);
+            if (nowTd > beforeTd) return true;
+        }
+        return false;
+    }
+
+    function getScoreReaction(matchup, week) {
+        if (week !== state.currentWeek) return null;
+        var key = String(matchup.roster_id);
+        var now = Number(matchup.points || 0);
+        var previous = state.previousScores[key];
+        if (previous == null || !Number.isFinite(Number(previous))) return null;
+        var delta = now - Number(previous);
+        if (Math.abs(delta) < 0.001) return null;
+        if (teamHasNewTouchdown(matchup)) return { type: "touchdown", delta: delta };
+        return { type: delta > 0 ? "up" : "down", delta: delta };
+    }
+
+    function renderScoreBox(matchup, week) {
+        var box = document.createElement("div");
+        box.className = "score-box";
+        box.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
+        var reaction = getScoreReaction(matchup, week);
+        if (reaction) {
+            var badge = document.createElement("span");
+            badge.className = "score-reaction score-reaction--" + reaction.type;
+            badge.setAttribute("aria-label", reaction.type === "touchdown" ? "Touchdown" : (reaction.type === "up" ? "Score increased" : "Score decreased"));
+            badge.textContent = reaction.type === "touchdown" ? "🏈🔥" : (reaction.type === "up" ? "▲" : "▼");
+            box.appendChild(badge);
+            var timerKey = String(matchup.roster_id);
+            clearTimeout(state.reactionTimers[timerKey]);
+            state.reactionTimers[timerKey] = setTimeout(function () {
+                if (badge && badge.parentNode) {
+                    badge.classList.add("is-hiding");
+                    setTimeout(function () { if (badge && badge.parentNode) badge.parentNode.removeChild(badge); }, 220);
+                }
+            }, reaction.type === "touchdown" ? 10000 : 2200);
+        }
+        return box;
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
         kicker.textContent = "WEEK " + week;
@@ -399,7 +463,7 @@
                 var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
                 appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
                 identity.appendChild(img); identity.appendChild(text);
-                var scoreBox = document.createElement("div"); scoreBox.className = "score-box"; scoreBox.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
+                var scoreBox = renderScoreBox(matchup, week);
                 team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
@@ -572,9 +636,11 @@
         var statsPaths = ["/stats/nfl/regular/" + season + "/" + week, "/stats/nfl/" + season + "/" + week + "?season_type=regular"];
         var projectionPaths = ["/projections/nfl/regular/" + season + "/" + week, "/projections/nfl/" + season + "/" + week + "?season_type=regular"];
         return Promise.allSettled([loadPlayerCache(), optionalApi(statsPaths).catch(function () { return {}; }), optionalApi(projectionPaths).catch(function () { return {}; })]).then(function (results) {
+            state.previousStats = state.stats || {};
             state.stats = results[1].status === "fulfilled" && results[1].value ? results[1].value : {};
             state.projections = results[2].status === "fulfilled" && results[2].value ? results[2].value : {};
             renderMatchups(state.matchups, week);
+            state.matchups.forEach(function (m) { if (m && m.roster_id != null) state.previousScores[String(m.roster_id)] = Number(m.points || 0); });
         });
     }
 
