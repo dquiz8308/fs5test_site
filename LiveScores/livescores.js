@@ -604,31 +604,62 @@
         return { active: count, total: total };
     }
 
-    function teamIsMondayBound(m) {
+    function mondayStarterIds(m) {
         var roster = state.rosterMap.get(String(m.roster_id));
-        if (!roster || !roster.roster) return false;
+        if (!roster || !roster.roster) return [];
         var starters = Array.isArray(roster.roster.starters) ? roster.roster.starters.filter(Boolean) : [];
-        var monday = false;
-        starters.forEach(function(id){
+        return starters.filter(function(id){
             var meta = playerMeta(id), game = scheduleGameForTeam(meta && meta.team, state.selectedWeek);
-            if (!game || gameStatus(game) === 'complete') return;
+            if (!game) return false;
             var start = gameStartMs(game);
-            if (!Number.isFinite(start)) return;
-            var d = new Date(start);
-            if (d.getDay() === 1) monday = true;
+            return Number.isFinite(start) && new Date(start).getDay() === 1 && gameStatus(game) !== 'complete';
         });
-        return monday;
+    }
+
+    function sundayPlayersFinished(teams) {
+        var sawSunday = false;
+        for (var i = 0; i < teams.length; i++) {
+            var roster = state.rosterMap.get(String(teams[i].roster_id));
+            var starters = roster && roster.roster && Array.isArray(roster.roster.starters) ? roster.roster.starters.filter(Boolean) : [];
+            for (var j = 0; j < starters.length; j++) {
+                var meta = playerMeta(starters[j]), game = scheduleGameForTeam(meta && meta.team, state.selectedWeek);
+                if (!game) continue;
+                var start = gameStartMs(game);
+                if (!Number.isFinite(start)) continue;
+                var day = new Date(start).getDay();
+                if (day !== 0) continue;
+                sawSunday = true;
+                if (gameStatus(game) !== 'complete') return false;
+            }
+        }
+        return sawSunday;
+    }
+
+    function mondayProjectedForTeam(m) {
+        var total = 0;
+        mondayStarterIds(m).forEach(function(id){
+            total += Math.max(0, getProjection(id) - getPlayerPoints(id));
+        });
+        return total;
     }
 
     function matchupHasMondayTakeover(teams) {
-        var monday = teams.some(teamIsMondayBound);
-        if (!monday) return false;
-        var remaining = 0;
-        teams.forEach(function(m){
-            var info = state.rosterMap.get(String(m.roster_id));
-            remaining += projectedRemaining(info && info.roster);
-        });
-        return remaining > 0;
+        if (!teams || teams.length < 2 || !sundayPlayersFinished(teams)) return false;
+        var mondayA = mondayStarterIds(teams[0]);
+        var mondayB = mondayStarterIds(teams[1]);
+        if (!mondayA.length && !mondayB.length) return false;
+
+        var aPoints = Number(teams[0].points || 0), bPoints = Number(teams[1].points || 0);
+        var gap = Math.abs(aPoints - bPoints);
+        var mondayAProj = mondayProjectedForTeam(teams[0]);
+        var mondayBProj = mondayProjectedForTeam(teams[1]);
+        var totalMondayProj = mondayAProj + mondayBProj;
+
+        // Monday only takes over when the remaining Monday production can realistically affect the outcome.
+        // If the current leader's margin exceeds all projected Monday production, the matchup is effectively decided.
+        if (gap > totalMondayProj) return false;
+        // Otherwise, require at least one side's Monday projection to be large enough to overcome the current deficit.
+        return mondayAProj >= Math.max(0, bPoints - aPoints) || mondayBProj >= Math.max(0, aPoints - bPoints);
     }
 
     function formatEventTime(ts) {
