@@ -557,10 +557,15 @@
         var key = String(matchup.roster_id);
         var now = Number(matchup.points || 0);
         var previous = state.previousScores[key];
-        if (previous == null || !Number.isFinite(Number(previous))) return null;
-        var delta = now - Number(previous);
-        if (Math.abs(delta) < 0.001) return null;
+        var delta = previous == null ? 0 : now - Number(previous);
+
+        // Check for a new TD independently of the score delta. Sleeper can update
+        // the matchup score before the player stat feed reports the touchdown.
+        // This lets the animation fire on the next refresh instead of being missed.
         if (teamHasNewTouchdown(matchup)) return { type: "touchdown", delta: delta };
+
+        if (previous == null || !Number.isFinite(Number(previous))) return null;
+        if (Math.abs(delta) < 0.001) return null;
         return { type: delta > 0 ? "up" : "down", delta: delta };
     }
 
