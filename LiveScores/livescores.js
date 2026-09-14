@@ -55,52 +55,47 @@
         status.className = "live-status" + (kind ? " is-" + kind : "");
     }
 
-    // Match the Owners tab exactly: use the existing owner artwork under
-    // /owners/artwork/profile-current/<owner>.png.
-    // Sleeper only supplies the username, so we translate that username to
-    // the FS5 owner name; the image path itself is the same path the Owners
-    // page uses.
-    var OWNER_LOGO_BY_USERNAME = {
-        "diabeastus": "will",
-        "atlnitrohawgs": "cody",
-        "thejamyricals": "matthew",
-        "armoryroadtrucks": "mike",
-        "wornoutsocks": "keith",
-        "fs5chair": "ethan",
-        "btb1022": "bailey",
-        "davidquiz": "david",
-        "brycen3time": "brycen",
-        "maxxmatistic": "max",
-        "chrismapel": "chris",
-        "jordanlynch22": "jordan"
-    };
-
-    function normalizeOwnerKey(value) {
-        return String(value || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
-    }
-
-    function ownerLogoUrl(user) {
-        var username = normalizeOwnerKey(user && user.username);
-        var owner = OWNER_LOGO_BY_USERNAME[username];
-        if (!owner) {
-            return "/artwork/logo.png";
+    // Use Sleeper's custom team image when one is set. Sleeper stores custom
+    // team images in user.metadata.avatar. If none is set, fall back to the
+    // user's normal Sleeper avatar, then the site logo as a final fallback.
+    function sleeperTeamImageUrl(user) {
+        var metadataAvatar = user && user.metadata && user.metadata.avatar;
+        if (metadataAvatar) {
+            var custom = String(metadataAvatar).trim();
+            if (custom) {
+                if (/^https?:\/\//i.test(custom)) return custom;
+                if (/^\/\//.test(custom)) return 'https:' + custom;
+                if (custom.charAt(0) === '/') return 'https://sleepercdn.com' + custom;
+                return 'https://sleepercdn.com/' + custom.replace(/^\/+/, '');
+            }
         }
-
-        // This is intentionally relative, exactly like owners/ownerscript.js:
-        // teamLogoImage.src = 'artwork/profile-current/' + owner + '.png';
-        return "../owners/artwork/profile-current/" + owner + ".png";
+        if (user && user.avatar) {
+            return 'https://sleepercdn.com/avatars/' + encodeURIComponent(String(user.avatar));
+        }
+        return '/artwork/logo.png';
     }
 
     function avatarUrl(user) {
-        return ownerLogoUrl(user);
+        return sleeperTeamImageUrl(user);
     }
 
     function teamImage(info, className) {
         var img = document.createElement("img");
         img.className = className || "team-avatar";
-        img.src = info && info.ownerLogo ? info.ownerLogo : "/artwork/logo.png";
+        img.src = info && info.avatar ? info.avatar : "/artwork/logo.png";
         img.alt = ""; img.width = 48; img.height = 48;
-        img.onerror = function () { this.onerror = null; this.src = "/artwork/logo.png"; };
+        var fallback = info && info.user && info.user.avatar ?
+            "https://sleepercdn.com/avatars/" + encodeURIComponent(String(info.user.avatar)) :
+            "/artwork/logo.png";
+        img.onerror = function () {
+            if (this.src !== fallback) {
+                this.onerror = null;
+                this.src = fallback;
+            } else {
+                this.onerror = null;
+                this.src = "/artwork/logo.png";
+            }
+        };
         return img;
     }
 
@@ -130,7 +125,7 @@
                 teamName: teamName(user),
                 account: user && user.username ? "@" + user.username : "",
                 avatar: avatarUrl(user),
-                ownerLogo: ownerLogoUrl(user),
+                ownerLogo: avatarUrl(user),
                 wins: Number(settings.wins || 0),
                 losses: Number(settings.losses || 0),
                 ties: Number(settings.ties || 0),
