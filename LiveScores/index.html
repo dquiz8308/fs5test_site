@@ -64,7 +64,13 @@
 <div class="live-shell">
 <section class="live-hero">
   <div><p class="live-kicker">FastStrongFive · 2026</p><h1>Live Scores</h1><p class="live-subtitle">Real-time FS5 matchups and live scores powered directly by Sleeper.</p></div>
-  <div id="live-status" class="live-status">Connecting to Sleeper…</div>
+  <div class="live-hero__tools">
+    <div id="live-status" class="live-status">Connecting to Sleeper…</div>
+    <div class="live-theme-toggle" role="group" aria-label="Live Scores theme">
+      <button type="button" data-live-theme="light" aria-pressed="true">☀️ Light</button>
+      <button type="button" data-live-theme="dark" aria-pressed="false">🌙 Dark</button>
+    </div>
+  </div>
 </section>
 <section class="week-toolbar">
   <div class="week-control"><label for="week-select">Week</label><select id="week-select" disabled></select></div>
