@@ -256,3 +256,17 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .leaderboard-row strong{color:#70bdf0}
 .fs5-live-dark .leaderboard-row span small{color:#8299a8}
 .fs5-live-dark .league-chaos{box-shadow:0 8px 22px rgba(0,0,0,.18)}
+
+/* Matchup modal player game-time details */
+.player-row--game-data .player-main{padding-right:4px}
+.player-game-info{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;font-size:.59rem;line-height:1.2}
+.player-game-info b{font-size:.56rem;letter-spacing:.05em;font-weight:900}
+.player-game-info span{color:#70818d;font-weight:700}
+.player-game-info--live b{color:#12804a}
+.player-game-info--final b{color:#74828d}
+.player-game-info--upcoming b{color:#1976d2}
+.fs5-live-dark .player-game-info span{color:#91a6b4}
+.fs5-live-dark .player-game-info--live b{color:#6ed6a0}
+.fs5-live-dark .player-game-info--final b{color:#9aabb6}
+.fs5-live-dark .player-game-info--upcoming b{color:#70bdf0}
+@media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}}

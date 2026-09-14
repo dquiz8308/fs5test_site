@@ -258,7 +258,43 @@
         return badges.join('');
     }
 
-    function renderPlayer(id, started) {
+    function playerGameStartMs(game) {
+        if (!game) return NaN;
+        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff, game.datetime, game.date];
+        for (var i = 0; i < candidates.length; i++) {
+            var value = candidates[i];
+            if (value == null || value === "") continue;
+            if (typeof value === "number") {
+                var n = value < 100000000000 ? value * 1000 : value;
+                if (Number.isFinite(n)) return n;
+            }
+            var parsed = Date.parse(String(value));
+            if (Number.isFinite(parsed)) return parsed;
+        }
+        return NaN;
+    }
+
+    function playerGameInfo(id) {
+        var p = playerMeta(id) || {};
+        var game = scheduleGameForTeam(p.team, state.selectedWeek);
+        if (!game) return null;
+        var status = gameStatus(game);
+        var start = playerGameStartMs(game);
+        var dateText = Number.isFinite(start) ? new Date(start).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" }) : "Date TBD";
+        var timeText = Number.isFinite(start) && /(?:T|\s)\d{2}:\d{2}/.test(String(game.start_time || game.startTime || game.start || game.scheduled || game.kickoff || game.datetime || game.date || ""))
+            ? new Date(start).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) + " ET"
+            : "Time TBD";
+        var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
+        var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
+        var team = String(p.team || "").toUpperCase();
+        var opponent = team === home ? away : (team === away ? home : "");
+        var venueText = opponent ? (team === home ? "vs " : "@ ") + opponent : "";
+        var stateText = status === "complete" ? "FINAL" : status === "in_game" ? "LIVE" : "UPCOMING";
+        var stateClass = status === "complete" ? "final" : status === "in_game" ? "live" : "upcoming";
+        return { game: game, status: status, stateText: stateText, stateClass: stateClass, dateText: dateText, timeText: timeText, venueText: venueText };
+    }
+
+    function renderPlayer(id, started, showGameData) {
         var p = playerMeta(id);
         var pos = p.position || "--";
         var nflTeam = p.team || "FA";
@@ -267,8 +303,10 @@
         var projection = getProjection(id);
         var row = document.createElement("button");
         row.type = "button";
-        row.className = "player-row";
-        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small></span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
+        row.className = "player-row" + (showGameData ? " player-row--game-data" : "");
+        var gameInfo = showGameData ? playerGameInfo(id) : null;
+        var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameInfo.dateText + " · " + gameInfo.timeText + (gameInfo.venueText ? " · " + gameInfo.venueText : "")) + '</span></span>' : '';
+        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small>' + gameMarkup + '</span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
         row.addEventListener("click", function () { openPlayerModal(id); });
         row.setAttribute("aria-label", "View " + playerName(id));
         return row;
@@ -1185,8 +1223,8 @@
             var set = new Set(starters.map(String));
             var bench = all.filter(function (id) { return !set.has(String(id)); });
             var startHeading = document.createElement("h4"); startHeading.textContent = "STARTERS"; col.appendChild(startHeading);
-            starters.forEach(function (id) { col.appendChild(renderPlayer(id, true)); });
-            var benchDetails = document.createElement("details"); benchDetails.className = "modal-bench"; var summary = document.createElement("summary"); summary.textContent = "BENCH · " + bench.length; benchDetails.appendChild(summary); var bl = document.createElement("div"); bench.forEach(function (id) { bl.appendChild(renderPlayer(id, false)); }); benchDetails.appendChild(bl); col.appendChild(benchDetails);
+            starters.forEach(function (id) { col.appendChild(renderPlayer(id, true, true)); });
+            var benchDetails = document.createElement("details"); benchDetails.className = "modal-bench"; var summary = document.createElement("summary"); summary.textContent = "BENCH · " + bench.length; benchDetails.appendChild(summary); var bl = document.createElement("div"); bench.forEach(function (id) { bl.appendChild(renderPlayer(id, false, true)); }); benchDetails.appendChild(bl); col.appendChild(benchDetails);
             columns.appendChild(col);
         });
         body.appendChild(columns);
