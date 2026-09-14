@@ -808,6 +808,16 @@
             badge.setAttribute("aria-label", reaction.type === "touchdown" ? "Touchdown" : (reaction.type === "up" ? "Score increased" : "Score decreased"));
             badge.textContent = reaction.type === "touchdown" ? "🏈🔥" : (reaction.type === "up" ? "▲" : "▼");
             box.appendChild(badge);
+
+            if (reaction.type === "touchdown") {
+                box.classList.add("score-box--touchdown");
+                var burst = document.createElement("div");
+                burst.className = "td-animation";
+                burst.setAttribute("aria-label", "Touchdown scored");
+                burst.innerHTML = '<span class="td-animation__label">TOUCHDOWN!</span><span class="td-animation__ball td-animation__ball--1">🏈</span><span class="td-animation__ball td-animation__ball--2">🏈</span><span class="td-animation__ball td-animation__ball--3">🏈</span><span class="td-animation__spark td-animation__spark--1">✦</span><span class="td-animation__spark td-animation__spark--2">✦</span>';
+                box.appendChild(burst);
+            }
+
             var timerKey = String(matchup.roster_id);
             clearTimeout(state.reactionTimers[timerKey]);
             state.reactionTimers[timerKey] = setTimeout(function () {
@@ -815,6 +825,9 @@
                     badge.classList.add("is-hiding");
                     setTimeout(function () { if (badge && badge.parentNode) badge.parentNode.removeChild(badge); }, 220);
                 }
+                if (box) box.classList.remove("score-box--touchdown");
+                var animation = box && box.querySelector ? box.querySelector(".td-animation") : null;
+                if (animation) { animation.classList.add("is-hiding"); setTimeout(function () { if (animation && animation.parentNode) animation.parentNode.removeChild(animation); }, 350); }
             }, reaction.type === "touchdown" ? 10000 : 2200);
         }
         return box;
@@ -1103,16 +1116,46 @@
         });
     }
 
+    function loadReactionSnapshot() {
+        try {
+            var saved = JSON.parse(localStorage.getItem("fs5_live_reaction_snapshot") || "null");
+            if (!saved || !saved.saved || Date.now() - Number(saved.saved) > 30 * 60 * 1000) return null;
+            return saved;
+        } catch (e) { return null; }
+    }
+
+    function saveReactionSnapshot() {
+        var tdKeys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
+        var td = {};
+        Object.keys(state.stats || {}).forEach(function (id) {
+            var stats = state.stats[id] || {};
+            td[String(id)] = tdKeys.reduce(function (sum, key) { return sum + statNumber(stats, [key]); }, 0);
+        });
+        var scores = {};
+        state.matchups.forEach(function (m) { if (m && m.roster_id != null) scores[String(m.roster_id)] = Number(m.points || 0); });
+        try { localStorage.setItem("fs5_live_reaction_snapshot", JSON.stringify({ saved: Date.now(), td: td, scores: scores })); } catch (e) {}
+    }
+
     function loadSupplemental(week) {
         var season = 2026;
+        var persisted = loadReactionSnapshot();
         var statsPaths = ["/stats/nfl/regular/" + season + "/" + week, "/stats/nfl/" + season + "/" + week + "?season_type=regular"];
         var projectionPaths = ["/projections/nfl/regular/" + season + "/" + week, "/projections/nfl/" + season + "/" + week + "?season_type=regular"];
         return Promise.allSettled([loadPlayerCache(), optionalApi(statsPaths).catch(function () { return {}; }), optionalApi(projectionPaths).catch(function () { return {}; })]).then(function (results) {
-            state.previousStats = state.stats || {};
+            if (state.stats && Object.keys(state.stats).length) {
+                state.previousStats = state.stats;
+            } else if (persisted && persisted.td) {
+                state.previousStats = {};
+                Object.keys(persisted.td).forEach(function (id) { state.previousStats[id] = { rec_td: Number(persisted.td[id] || 0) }; });
+            } else {
+                state.previousStats = {};
+            }
+            if (!Object.keys(state.previousScores || {}).length && persisted && persisted.scores) state.previousScores = persisted.scores;
             state.stats = results[1].status === "fulfilled" && results[1].value ? results[1].value : {};
             state.projections = results[2].status === "fulfilled" && results[2].value ? results[2].value : {};
             renderMatchups(state.matchups, week);
             state.matchups.forEach(function (m) { if (m && m.roster_id != null) state.previousScores[String(m.roster_id)] = Number(m.points || 0); });
+            saveReactionSnapshot();
         });
     }
 
