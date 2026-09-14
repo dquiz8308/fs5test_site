@@ -270,3 +270,5 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .player-game-info--final b{color:#9aabb6}
 .fs5-live-dark .player-game-info--upcoming b{color:#70bdf0}
 @media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}}
+/* Dark mode: keep the tiny available-playing-time percentage readable. */
+.fs5-live-dark .playing-time-label strong{color:#f0f6f9!important;opacity:1}
