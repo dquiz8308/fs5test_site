@@ -770,12 +770,31 @@
 
     function renderLeagueLeaderboard() {
         var box=$('league-leaderboard'); if(!box)return;
-        var rows=[];
-        state.matchups.forEach(function(m){var info=state.rosterMap.get(String(m.roster_id));if(info)rows.push({team:info.teamName,score:Number(m.points||0)});});
-        rows.sort(function(a,b){return b.score-a.score;});
-        if(!rows.length){box.hidden=true;return;}
+        var teamRows=[];
+        var playerRows=[];
+        var seenPlayers={};
+        state.matchups.forEach(function(m){
+            var info=state.rosterMap.get(String(m.roster_id));
+            if(info) teamRows.push({team:info.teamName,score:Number(m.points||0)});
+            var rosterPlayers=(info && info.roster && Array.isArray(info.roster.players)) ? info.roster.players : (Array.isArray(m.players) ? m.players : []);
+            var starters=(info && info.roster && Array.isArray(info.roster.starters)) ? info.roster.starters.filter(Boolean) : [];
+            var ids=starters.length ? starters : rosterPlayers;
+            ids.forEach(function(id){
+                var key=String(id);
+                if(seenPlayers[key]) return;
+                seenPlayers[key]=true;
+                var pts=getPlayerPoints(id);
+                playerRows.push({name:playerName(id),score:Number(pts||0),team:info ? info.teamName : ''});
+            });
+        });
+        teamRows.sort(function(a,b){return b.score-a.score;});
+        playerRows.sort(function(a,b){return b.score-a.score;});
+        if(!teamRows.length && !playerRows.length){box.hidden=true;return;}
         box.hidden=false;
-        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div>'+rows.slice(0,3).map(function(r,i){return '<div class="leaderboard-row"><b>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
+        var medals=['🥇','🥈','🥉'];
+        var teamHtml=teamRows.slice(0,3).map(function(r,i){return '<div class="leaderboard-row"><b>'+medals[i]+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
+        var playerHtml=playerRows.slice(0,3).map(function(r,i){return '<div class="leaderboard-row"><b>'+medals[i]+'</b><span><strong class="leaderboard-player-name">'+esc(r.name)+'</strong><small>'+esc(r.team)+'</small></span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
+        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div><div class="leaderboard-columns"><div class="leaderboard-column"><div class="leaderboard-column-title">🏆 TOP 3 TEAMS</div>'+teamHtml+'</div><div class="leaderboard-column leaderboard-column--players"><div class="leaderboard-column-title">🔥 TOP 3 SCORING PLAYERS</div>'+playerHtml+'</div></div>';
     }
 
     function trashTalk(a,b) {
