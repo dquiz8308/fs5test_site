@@ -21,7 +21,9 @@
         reactionTimers: {},
         previousProbabilities: {},
         previousPlayerPoints: {},
-        eventHistory: []
+        eventHistory: [],
+        snapshot: null,
+        gameFlow: {}
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -480,6 +482,95 @@
         });
     }
 
+    function teamProjectedFinish(matchup) {
+        var info = state.rosterMap.get(String(matchup.roster_id));
+        var current = Number(matchup.points || 0);
+        return current + projectedRemaining(info && info.roster);
+    }
+
+    function currentPlayingCount() {
+        var count = 0, total = 0;
+        state.matchups.forEach(function (m) {
+            getTeamPlayerIds(m).forEach(function (id) {
+                total++;
+                var meta = playerMeta(id), game = scheduleGameForTeam(meta.team);
+                if (game && String(game.status || '').toLowerCase() === 'in_game') count++;
+            });
+        });
+        return { active: count, total: total };
+    }
+
+    function renderBroadcastHeader() {
+        var box = $('fs5-broadcast');
+        if (!box) return;
+        var rows = state.matchups.map(function(m){
+            var pred = matchupProbability(m, state.matchups.find(function(x){return matchupKey(x)===matchupKey(m) && String(x.roster_id)!==String(m.roster_id)}) || m);
+            return {m:m,p:pred};
+        });
+        var leader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
+        var text = '🎙️ FS5 LIVE: ' + (leader ? teamLabel(leader) + ' currently leads the league with ' + formatScore(leader.points) + ' points.' : 'The live scoreboard is ready.');
+        var close = null;
+        var groups = new Map();
+        state.matchups.forEach(function(m){var k=matchupKey(m);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(m);});
+        groups.forEach(function(t){if(t.length>=2){var d=Math.abs(Number(t[0].points||0)-Number(t[1].points||0));if(!close||d<close.d)close={d:d,a:t[0],b:t[1]};}});
+        if(close && close.d <= 8) text = '🎙️ FS5 LIVE: ' + teamLabel(close.a) + ' and ' + teamLabel(close.b) + ' are separated by only ' + formatScore(close.d) + ' points.';
+        box.hidden=false; box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace('🎙️ FS5 LIVE: ',''))+'</span>';
+    }
+
+    function renderWatching() {
+        var box=$('fs5-watching'); if(!box)return;
+        var c=currentPlayingCount();
+        box.hidden=false; box.innerHTML='<span>👀 FS5 WATCHING</span><strong>'+c.active+' active player'+(c.active===1?'':'s')+'</strong><small>of '+c.total+' starters currently in NFL games</small>';
+    }
+
+    function renderWhatJustHappened() {
+        var box=$('what-just-happened'); if(!box)return;
+        var items=state.eventHistory.slice(0,3);
+        if(!items.length){box.hidden=true;return;}
+        box.hidden=false;
+        box.innerHTML='<strong>WHAT JUST HAPPENED</strong>'+items.map(function(e){return '<span>'+esc(e.icon)+' '+esc(e.message)+'</span>';}).join('');
+    }
+
+    function renderLeagueLeaderboard() {
+        var box=$('league-leaderboard'); if(!box)return;
+        var rows=[];
+        state.matchups.forEach(function(m){var info=state.rosterMap.get(String(m.roster_id));if(info)rows.push({team:info.teamName,score:Number(m.points||0)});});
+        rows.sort(function(a,b){return b.score-a.score;});
+        if(!rows.length){box.hidden=true;return;}
+        box.hidden=false;
+        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div>'+rows.slice(0,5).map(function(r,i){return '<div class="leaderboard-row"><b>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
+    }
+
+    function trashTalk(a,b) {
+        var pa=Number(a.points||0), pb=Number(b.points||0), diff=Math.abs(pa-pb);
+        var winner=pa>=pb?teamLabel(a):teamLabel(b), loser=pa>=pb?teamLabel(b):teamLabel(a);
+        if(diff<2) return '😈 TRASH TALK: Nobody is talking yet. This one is too close.';
+        if(diff<8) return '😈 TRASH TALK: '+esc(winner)+' has the bragging rights… for now.';
+        if(diff<20) return '😈 TRASH TALK: '+esc(loser)+' may want to check the waiver wire.';
+        return '😈 TRASH TALK: '+esc(loser)+' is currently getting sent to the shadow realm.';
+    }
+
+    function appendProjectedFinish(card, teams) {
+        var vals=teams.map(function(m){return {team:teamLabel(m),finish:teamProjectedFinish(m),current:Number(m.points||0),remaining:projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster)}});
+        var el=document.createElement('div'); el.className='projected-finish';
+        el.innerHTML=vals.map(function(v){return '<div><span>🎯 '+esc(v.team)+'</span><strong>'+formatScore(v.finish)+'</strong><small>Projected final · '+formatScore(v.remaining)+' left</small></div>';}).join('');
+        card.appendChild(el);
+    }
+
+    function appendPointsBank(card, teams) {
+        var el=document.createElement('div'); el.className='points-bank';
+        el.innerHTML=teams.map(function(m){var cur=Number(m.points||0), rem=projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster), total=Math.max(0,cur+rem), pct=total?Math.max(0,Math.min(100,cur/total*100)):0;return '<div class="points-bank__team"><div><span>💰 '+esc(teamLabel(m))+'</span><strong>'+formatScore(cur)+' banked</strong></div><div class="points-bank__track"><i style="width:'+pct.toFixed(1)+'%"></i></div><small>'+formatScore(rem)+' projected remaining</small></div>';}).join('');
+        card.appendChild(el);
+    }
+
+    function cardVibe(teams) {
+        var p=matchupProbability(teams[0],teams[1]), max=Math.max(p.a,p.b), min=Math.min(p.a,p.b);
+        if(min>=45&&max<=55)return ' matchup-card--nail';
+        if(max>=90)return ' matchup-card--danger';
+        if(Math.abs(Number(teams[0].points||0)-Number(teams[1].points||0))<=5)return ' matchup-card--close';
+        return '';
+    }
+
     function renderLiveTicker() {
         var ticker = $("live-event-ticker");
         if (!ticker) return;
@@ -567,14 +658,50 @@
         return box;
     }
 
+    function captureGameFlow(matchups, week) {
+        if (week !== state.currentWeek) return;
+        var key = 'fs5_gameflow_' + LEAGUE_ID + '_w' + week;
+        var data={};
+        try { data=JSON.parse(localStorage.getItem(key)||'{}')||{}; } catch(e) { data={}; }
+        var stamp=Date.now();
+        matchups.forEach(function(m){
+            var k=matchupKey(m); if(!data[k]) data[k]=[];
+            var pts=Number(m.points||0);
+            var last=data[k][data[k].length-1];
+            if(!last || Math.abs(Number(last.points)-pts)>=0.01) data[k].push({time:stamp,points:pts});
+            if(data[k].length>80) data[k]=data[k].slice(-80);
+        });
+        try { localStorage.setItem(key,JSON.stringify(data)); } catch(e) {}
+        state.gameFlow=data;
+    }
+
+    function renderGameFlow(teams) {
+        var wrap=document.createElement('div'); wrap.className='game-flow';
+        var key=matchupKey(teams[0]), points=(state.gameFlow&&state.gameFlow[key])||[];
+        var byTeam={};
+        [teams[0],teams[1]].forEach(function(m){byTeam[String(m.roster_id)]=(state.gameFlow&&state.gameFlow[matchupKey(m)])||[];});
+        var all=[]; Object.keys(byTeam).forEach(function(k){byTeam[k].forEach(function(x){all.push(x.time);});});
+        var minT=all.length?Math.min.apply(null,all):Date.now()-3600000, maxT=all.length?Math.max.apply(null,all):Date.now();
+        if(maxT<=minT) maxT=minT+1;
+        var w=560,h=170,pad=26;
+        var lines=Object.keys(byTeam).map(function(rid,idx){var pts=byTeam[rid];var m=teams.find(function(t){return String(t.roster_id)===rid;}); if(!pts.length) pts=[{time:minT,points:Number(m.points||0)}]; var minP=0,maxP=Math.max.apply(null,pts.map(function(x){return Number(x.points)||0}).concat([Number(m.points||0),1])); var path=pts.map(function(x,i){var xPos=pad+(Number(x.time)-minT)/(maxT-minT)*(w-2*pad);var y=h-pad-(Number(x.points)||0)/maxP*(h-2*pad);return (i?'L':'M')+xPos.toFixed(1)+' '+y.toFixed(1);}).join(' ');return {path:path,name:teamLabel(m)};});
+        wrap.innerHTML='<div class="game-flow__head"><strong>📊 GAME FLOW</strong><span>Score history since Live Scores opened</span></div><svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="Matchup score history"><line x1="'+pad+'" y1="'+(h-pad)+'" x2="'+(w-pad)+'" y2="'+(h-pad)+'"/><line x1="'+pad+'" y1="'+pad+'" x2="'+pad+'" y2="'+(h-pad)+'"/>'+lines.map(function(l,i){return '<path class="game-flow__line game-flow__line--'+i+'" d="'+l.path+'"/><text x="'+(w-pad)+'" y="'+(pad+14+i*18)+'" text-anchor="end">'+esc(l.name)+'</text>';}).join('')+'</svg>';
+        return wrap;
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
         kicker.textContent = "WEEK " + week;
         heading.textContent = weekLabel(week);
         badge.textContent = "Week " + week;
         state.matchups = Array.isArray(matchups) ? matchups : [];
+        captureGameFlow(state.matchups, week);
         analyzeLiveEvents(state.matchups, week);
         renderLiveTicker();
+        renderWhatJustHappened();
+        renderBroadcastHeader();
+        renderWatching();
+        renderLeagueLeaderboard();
         var groups = new Map();
         state.matchups.forEach(function (item) {
             if (!item || item.matchup_id == null) return;
@@ -590,7 +717,7 @@
             var teams = entry[1].slice(0, 2);
             if (teams.length < 2) return;
             var card = document.createElement("article");
-            card.className = "matchup-card matchup-card--clickable";
+            card.className = "matchup-card matchup-card--clickable" + cardVibe(teams);
             card.tabIndex = 0;
             card.setAttribute("role", "button");
             card.setAttribute("aria-label", "Open matchup " + entry[0]);
@@ -615,6 +742,9 @@
             });
             appendPredictor(card, teams);
             appendMatchupSuperlatives(card, teams);
+            appendProjectedFinish(card, teams);
+            appendPointsBank(card, teams);
+            var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash);
             var alert = matchupAlert(teams[0], teams[1]);
             if (!alert) { var sweat = mondayNightSweat(teams[0], teams[1]); if (sweat) alert = { type: 'sweat', text: sweat }; }
             appendMatchupAlert(card, alert, teamIsFinished(teams[0]) && teamIsFinished(teams[1]));
@@ -672,6 +802,7 @@
         var pred = document.createElement("div"); pred.className = "modal-predictor";
         pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="modal-prob-track"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
         body.appendChild(pred);
+        body.appendChild(renderGameFlow(teams));
         var columns = document.createElement("div"); columns.className = "modal-lineups";
         [teams[0], teams[1]].forEach(function (team) {
             var info = state.rosterMap.get(String(team.roster_id));
