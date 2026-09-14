@@ -640,7 +640,7 @@
         rows.sort(function(a,b){return b.score-a.score;});
         if(!rows.length){box.hidden=true;return;}
         box.hidden=false;
-        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div>'+rows.slice(0,5).map(function(r,i){return '<div class="leaderboard-row"><b>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
+        box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div>'+rows.slice(0,3).map(function(r,i){return '<div class="leaderboard-row"><b>'+(['🥇','🥈','🥉'][i]||('#'+(i+1)))+'</b><span>'+esc(r.team)+'</span><strong>'+formatScore(r.score)+'</strong></div>';}).join('');
     }
 
     function trashTalk(a,b) {

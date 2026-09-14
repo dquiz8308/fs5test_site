@@ -102,7 +102,7 @@ body.modal-open{overflow:hidden}
 .matchup-card--witching{background:radial-gradient(circle at 50% 0%,rgba(74,47,104,.20),transparent 52%),radial-gradient(circle at 18% 18%,rgba(246,201,77,.08),transparent 28%),linear-gradient(180deg,#fbf8ff,#fff 48%);border-color:#b7a3ca;box-shadow:0 0 0 2px rgba(74,47,104,.16),0 12px 30px rgba(74,47,104,.12);position:relative;overflow:hidden}
 .matchup-card--close .matchup-card__head{background:rgba(231,242,250,.95)}
 .matchup-card--nail .matchup-card__head{background:linear-gradient(90deg,rgba(222,239,250,.98),rgba(246,250,253,.98),rgba(222,239,250,.98))}
-.matchup-card--witching .matchup-card__head{background:linear-gradient(90deg,rgba(35,24,55,.98),rgba(57,39,79,.98),rgba(35,24,55,.98));color:#f6e9b8}.matchup-card--witching .matchup-card__state{color:#f6e9b8}.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:12px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
+.matchup-card--witching .matchup-card__head{background:linear-gradient(90deg,rgba(35,24,55,.98),rgba(57,39,79,.98),rgba(35,24,55,.98));color:#f6e9b8}.matchup-card--witching .matchup-card__state{color:#f6e9b8}.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:62px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
 .matchup-card--nail:before,.matchup-card--witching:before{content:"";display:block;height:3px;background:linear-gradient(90deg,transparent,rgba(25,118,210,.7),transparent)}
 .matchup-card--witching:before{background:linear-gradient(90deg,transparent,#6b4b8e,#f0c85b,#6b4b8e,transparent)}
 /* Witching Hour + Victory Imminent */
@@ -110,7 +110,7 @@ body.modal-open{overflow:hidden}
 .matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.22),transparent 52%),radial-gradient(circle at 82% 18%,rgba(255,238,170,.18),transparent 28%),linear-gradient(180deg,#fffdf4,#fff 48%);border-color:#d9bd67;box-shadow:0 0 0 2px rgba(211,172,55,.18),0 12px 30px rgba(190,150,35,.12);position:relative;overflow:hidden}
 .matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,rgba(74,55,15,.98),rgba(112,84,22,.98),rgba(74,55,15,.98));color:#fff2b5}
 .matchup-card--victory .matchup-card__state{color:#fff2b5}
-.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:14px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
+.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:62px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
 @keyframes fs5-victory{from{filter:brightness(.98)}to{filter:brightness(1.08)}}
 /* Game Flow interaction and checkpoint visibility */
 .player-trend--mvp{filter:drop-shadow(0 1px 2px rgba(138,106,0,.25))}.player-trend--over{filter:drop-shadow(0 1px 2px rgba(220,80,20,.2))}
@@ -130,10 +130,10 @@ body.modal-open{overflow:hidden}
 .matchup-card--nail .matchup-card__head{background:linear-gradient(90deg,rgba(222,239,250,.98),rgba(246,250,253,.98),rgba(222,239,250,.98))}
 .matchup-card--witching .matchup-card__head{background:linear-gradient(90deg,rgba(35,24,55,.98),rgba(57,39,79,.98),rgba(35,24,55,.98));color:#f6e9b8}
 .matchup-card--witching .matchup-card__state{color:#f6e9b8}
-.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:12px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
+.matchup-card--witching:after{content:"☾  ✦  🕯️  ✦  ☽";position:absolute;right:62px;top:7px;color:rgba(246,233,184,.28);font-size:10px;letter-spacing:4px;pointer-events:none}
 .matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,rgba(74,55,15,.98),rgba(112,84,22,.98),rgba(74,55,15,.98));color:#fff2b5}
 .matchup-card--victory .matchup-card__state{color:#fff2b5}
-.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:14px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
+.matchup-card--victory:before{content:"✦  🏆  ✦";position:absolute;right:62px;top:7px;color:rgba(255,235,150,.38);font-size:10px;letter-spacing:3px;pointer-events:none}
 .matchup-card--nail:before,.matchup-card--witching:before{content:"";display:block;height:3px;background:linear-gradient(90deg,transparent,rgba(25,118,210,.7),transparent)}
 .matchup-card--witching:before{background:linear-gradient(90deg,transparent,#6b4b8e,#f0c85b,#6b4b8e,transparent)}
 .trash-talk.is-expiring{opacity:0;transform:translateY(-3px);transition:opacity .3s ease,transform .3s ease}
