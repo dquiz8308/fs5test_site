@@ -239,3 +239,20 @@ body.modal-open{overflow:hidden}
 
 .fs5-live-dark .league-chaos{background:linear-gradient(180deg,#152a39,#122331);border-color:#2b4556}.fs5-live-dark .league-chaos__title{color:#91aab9}.fs5-live-dark .league-chaos__body strong{color:#7fc4ee}.fs5-live-dark .league-chaos__body span{color:#8ea4b2}.fs5-live-dark .league-chaos__track{background:#263d4c}
 .fs5-live-dark .odds-change-reason{background:rgba(224,188,69,.09);border-color:rgba(224,188,69,.22);color:#dbc879}.fs5-live-dark .monday-takeover{background:linear-gradient(100deg,rgba(24,18,37,.98),rgba(55,39,74,.94));border-color:#654b7e}
+
+/* Dark-mode polish for the live scoreboard summary area. Keep all utility cards
+   visually consistent with the dark FS5 shell instead of falling back to light cards. */
+.fs5-live-dark .league-superlatives{color:#e5f0f5}
+.fs5-live-dark .superlative-card{background:linear-gradient(180deg,#172b39,#132633);border-color:#2b4556;box-shadow:0 6px 16px rgba(0,0,0,.16)}
+.fs5-live-dark .superlative-card span{color:#8fa8b8}
+.fs5-live-dark .superlative-card strong{color:#e8f2f7}
+.fs5-live-dark .superlative-card b{color:#70bdf0}
+.fs5-live-dark .league-leaderboard{background:#122331;border-color:#294052}
+.fs5-live-dark .leaderboard-title{background:linear-gradient(180deg,#172b39,#152936);color:#9eb4c1}
+.fs5-live-dark .leaderboard-column-title{background:#152a38;color:#91aab9}
+.fs5-live-dark .leaderboard-row{background:#122331;border-top-color:#2b4556}
+.fs5-live-dark .leaderboard-row:hover{background:#18303f}
+.fs5-live-dark .leaderboard-row span{color:#e5f0f5!important}
+.fs5-live-dark .leaderboard-row strong{color:#70bdf0}
+.fs5-live-dark .leaderboard-row span small{color:#8299a8}
+.fs5-live-dark .league-chaos{box-shadow:0 8px 22px rgba(0,0,0,.18)}
