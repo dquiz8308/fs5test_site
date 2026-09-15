@@ -294,7 +294,9 @@
         var status = gameStatus(game);
         var start = playerGameStartMs(game);
         var dateText = Number.isFinite(start) ? new Date(start).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" }) : "Date TBD";
-        var timeText = Number.isFinite(start) && /(?:T|\s)\d{2}:\d{2}/.test(String(game.start_time || game.startTime || game.start || game.scheduled || game.kickoff || game.datetime || game.date || ""))
+        var rawStart = game.start_time || game.startTime || game.start || game.scheduled || game.kickoff || game.datetime || "";
+        var hasRealClock = rawStart && /(?:T|\s)\d{2}:\d{2}/.test(String(rawStart));
+        var timeText = Number.isFinite(start) && hasRealClock
             ? new Date(start).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) + " ET"
             : "Time TBD";
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
@@ -362,6 +364,18 @@
         var rosterB = state.rosterMap.get(String(b.roster_id));
         var scoreA = Number(a.points || 0);
         var scoreB = Number(b.points || 0);
+
+        // Once every active starter on both sides has finished, there is no
+        // remaining production to model. The completed scoreboard is definitive:
+        // winner = 100%, loser = 0% (50/50 only for an actual tie). Bench players
+        // are deliberately ignored because projectedRemaining() only uses starters.
+        var finishedA = teamIsFinished(a);
+        var finishedB = teamIsFinished(b);
+        if (finishedA && finishedB) {
+            if (scoreA > scoreB) return { a: 100, b: 0, meanA: scoreA, meanB: scoreB, remainingA: 0, remainingB: 0 };
+            if (scoreB > scoreA) return { a: 0, b: 100, meanA: scoreA, meanB: scoreB, remainingA: 0, remainingB: 0 };
+            return { a: 50, b: 50, meanA: scoreA, meanB: scoreB, remainingA: 0, remainingB: 0 };
+        }
         var remainingA = projectedRemaining(rosterA && rosterA.roster);
         var remainingB = projectedRemaining(rosterB && rosterB.roster);
         var meanA = scoreA + remainingA;
@@ -466,19 +480,56 @@
         card.appendChild(section);
     }
 
+    function nflTeamAliases(team) {
+        var t = String(team || '').trim().toUpperCase();
+        var map = {
+            'ARI':['ARI','ARIZONA','CARDINALS'], 'ATL':['ATL','ATLANTA','FALCONS'],
+            'BAL':['BAL','BALTIMORE','RAVENS'], 'BUF':['BUF','BUFFALO','BILLS'],
+            'CAR':['CAR','CAROLINA','PANTHERS'], 'CHI':['CHI','CHICAGO','BEARS'],
+            'CIN':['CIN','CINCINNATI','BENGALS'], 'CLE':['CLE','CLEVELAND','BROWNS'],
+            'DAL':['DAL','DALLAS','COWBOYS'], 'DEN':['DEN','DENVER','BRONCOS'],
+            'DET':['DET','DETROIT','LIONS'], 'GB':['GB','GNB','GREEN BAY','PACKERS'],
+            'HOU':['HOU','HOUSTON','TEXANS'], 'IND':['IND','INDIANAPOLIS','COLTS'],
+            'JAX':['JAX','JAC','JACKSONVILLE','JAGUARS'], 'KC':['KC','KAN','KANSAS CITY','CHIEFS'],
+            'LV':['LV','LVR','OAK','LAS VEGAS','OAKLAND','RAIDERS'], 'LAC':['LAC','LA CHARGERS','LOS ANGELES CHARGERS','CHARGERS'],
+            'LAR':['LAR','LA RAMS','LOS ANGELES RAMS','RAMS'], 'MIA':['MIA','MIAMI','DOLPHINS'],
+            'MIN':['MIN','MINNESOTA','VIKINGS'], 'NE':['NE','NWE','NEW ENGLAND','PATRIOTS'],
+            'NO':['NO','NOR','NEW ORLEANS','SAINTS'], 'NYG':['NYG','NEW YORK GIANTS','GIANTS'],
+            'NYJ':['NYJ','NEW YORK JETS','JETS'], 'PHI':['PHI','PHILADELPHIA','EAGLES'],
+            'PIT':['PIT','PITTSBURGH','STEELERS'], 'SEA':['SEA','SEATTLE','SEAHAWKS'],
+            'SF':['SF','SFO','SAN FRANCISCO','49ERS'], 'TB':['TB','TAMPA BAY','BUCCANEERS','BUCS'],
+            'TEN':['TEN','TENNESSEE','TITANS'], 'WAS':['WAS','WSH','WASHINGTON','COMMANDERS']
+        };
+        for (var key in map) if (map[key].indexOf(t) !== -1) return map[key];
+        return [t];
+    }
+
     function scheduleGameForTeam(team, week) {
         if (!team) return null;
-        var t = String(team).toUpperCase();
+        var aliases = nflTeamAliases(team);
         var targetWeek = Number(week != null ? week : state.selectedWeek);
+        // Prefer the live ESPN scoreboard because it contains the actual kickoff,
+        // quarter/clock, live score and final score. Only fall back to Sleeper's
+        // calendar schedule when ESPN does not have the game.
         var pools = [state.nflGames || [], state.schedule || []];
         for (var pi=0; pi<pools.length; pi++) {
             var games = pools[pi].filter(function (game) {
                 var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
                 var away = String(game.away || game.away_team || game.awayTeam || '').toUpperCase();
+                var homeAliases = nflTeamAliases(home);
+                var awayAliases = nflTeamAliases(away);
                 var gameWeek = Number(game.week);
-                return (home === t || away === t) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
+                var homeMatch = aliases.some(function(x){ return homeAliases.indexOf(x) !== -1; });
+                var awayMatch = aliases.some(function(x){ return awayAliases.indexOf(x) !== -1; });
+                return (homeMatch || awayMatch) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
             });
-            games.sort(function(a,b){ return gameStartMs(a)-gameStartMs(b); });
+            games.sort(function(a,b){
+                var as=gameStartMs(a), bs=gameStartMs(b);
+                if(Number.isFinite(as)&&Number.isFinite(bs)) return as-bs;
+                if(Number.isFinite(as)) return -1;
+                if(Number.isFinite(bs)) return 1;
+                return 0;
+            });
             if (games.length) return games[0];
         }
         return null;
@@ -841,7 +892,7 @@
         try { localStorage.setItem(storageKey, JSON.stringify(queue.slice(-Math.max(messages.length-1,1)))); } catch(e) {}
 
         box.hidden=false;
-        box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span>'+esc(text.replace(/^🎙️ FS5 LIVE:\s*/,'')).replace(/&amp;/g,'&amp;')+'</span>';
+        box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span class="fs5-broadcast__viewport"><span class="fs5-broadcast__track">'+esc(text.replace(/^🎙️ FS5 LIVE:\s*/,''))+'</span></span>';
     }
 
     function renderWatching() {
@@ -1323,7 +1374,9 @@
         var stats = state.stats && state.stats[String(id)] || {};
         body.replaceChildren();
         var detail = document.createElement('div'); detail.className = 'player-detail';
-        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div></div>';
+        var pGame = playerGameInfo(id);
+        var pGameMarkup = pGame ? '<div class="player-detail__game"><b>' + esc(pGame.stateText) + '</b><span>' + esc(pGame.dateText + ' · ' + pGame.timeText + (pGame.venueText ? ' · ' + pGame.venueText : '') + (pGame.scoreText ? ' · ' + pGame.scoreText : '')) + '</span></div>' : '';
+        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div>' + pGameMarkup + '</div>';
         body.appendChild(detail);
         var meta = document.createElement('dl'); meta.className = 'player-meta';
         meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';

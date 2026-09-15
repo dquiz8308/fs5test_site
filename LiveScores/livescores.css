@@ -303,3 +303,38 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
 }
 @keyframes fs5-mobile-crawl{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.fs5-broadcast span,.live-ticker__track{animation:none;transform:none}}
+
+
+/* FS5 neutral matchup cards: keep ordinary games in the core red/white/blue palette. */
+.matchup-card:not(.matchup-card--close):not(.matchup-card--nail):not(.matchup-card--witching):not(.matchup-card--victory):not(.matchup-card--final){
+  background:linear-gradient(180deg,#ffffff,#f8fbfd 70%);
+  border-color:#cbd9e4;
+  box-shadow:0 7px 20px rgba(0,55,107,.07);
+}
+.matchup-card:not(.matchup-card--close):not(.matchup-card--nail):not(.matchup-card--witching):not(.matchup-card--victory):not(.matchup-card--final) .matchup-card__head{
+  background:linear-gradient(90deg,#eef4f8,#f8fbfd,#eef4f8);
+  color:#294a61;
+}
+.fs5-live-dark .matchup-card:not(.matchup-card--close):not(.matchup-card--nail):not(.matchup-card--witching):not(.matchup-card--victory):not(.matchup-card--final){background:#122331;border-color:#30495a;box-shadow:0 7px 20px rgba(0,0,0,.18)}
+.fs5-live-dark .matchup-card:not(.matchup-card--close):not(.matchup-card--nail):not(.matchup-card--witching):not(.matchup-card--victory):not(.matchup-card--final) .matchup-card__head{background:#172b3a;color:#9eb3c0}
+
+/* Broadcast crawl: the moving text gets its own clipped viewport so it can never
+   cross over the FS5 BROADCAST title. */
+.fs5-broadcast{min-width:0;overflow:hidden}
+.fs5-broadcast__viewport{display:block;min-width:0;overflow:hidden;position:relative;white-space:nowrap}
+.fs5-broadcast__track{display:inline-block;white-space:nowrap;will-change:transform;animation:fs5-broadcast-crawl 15s linear infinite}
+@keyframes fs5-broadcast-crawl{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+@media(max-width:700px){
+  .fs5-broadcast{grid-template-columns:auto minmax(0,1fr)!important}
+  .fs5-broadcast>strong{grid-column:1;position:relative;z-index:3;white-space:nowrap}
+  .fs5-broadcast__viewport{grid-column:2;width:100%;min-width:0}
+  .fs5-broadcast__track{animation-duration:16s}
+}
+@media(prefers-reduced-motion:reduce){.fs5-broadcast__track{animation:none;transform:none}}
+
+/* Player game status in matchup/player detail views. */
+.player-detail__game{margin-top:9px;display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:.62rem}
+.player-detail__game b{font-size:.58rem;letter-spacing:.06em;color:#1976d2}
+.player-detail__game span{color:#657786;font-weight:800}
+.fs5-live-dark .player-detail__game span{color:#a9bcc8}
+.fs5-live-dark .player-detail__game b{color:#70bdf0}
