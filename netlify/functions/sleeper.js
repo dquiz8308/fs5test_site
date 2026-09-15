@@ -83,9 +83,12 @@ async function getNflScoreboard(season, week) {
         const type = st.type || {};
         const mapTeam = c => c.team && (c.team.abbreviation || c.team.shortDisplayName || c.team.displayName) || '';
         return {
-          id: event.id, week: Number(week), date: event.date, start_time: event.date,
-          home: mapTeam(home), away: mapTeam(away), home_score: Number(home.score || 0), away_score: Number(away.score || 0),
+          id: event.id, week: Number(week), date: event.date, start_time: comp.date || event.date,
+          home: mapTeam(home), away: mapTeam(away),
+          home_id: home.team && (home.team.id || home.team.uid) || '', away_id: away.team && (away.team.id || away.team.uid) || '',
+          home_score: Number(home.score || 0), away_score: Number(away.score || 0),
           status: type.completed ? 'complete' : (type.state === 'in' ? 'in_game' : 'pre_game'),
+          status_detail: type.shortDetail || type.detail || '', status_state: type.state || '', status_name: type.name || '',
           period: Number(st.period || 0), clock: st.displayClock || '', detail: type.shortDetail || type.detail || ''
         };
       });
