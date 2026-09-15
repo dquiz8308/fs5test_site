@@ -4,7 +4,11 @@
 
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
-  const source = qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app'));
+  const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app')));
+
+  if (source === 'scoreboard') {
+    return getNflScoreboard(qs.season || '2026', qs.week || '1');
+  }
 
   if (source === 'news') {
     return getPlayerNews(qs.player || '', qs.team || '');
@@ -57,6 +61,32 @@ exports.handler = async function (event) {
   }
   return json(502, { error: lastError, path, source });
 };
+
+
+async function getNflScoreboard(season, week) {
+  const url = 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + encodeURIComponent(season) + '&seasontype=2&week=' + encodeURIComponent(week);
+  try {
+    const response = await fetch(url, { headers: { 'Accept':'application/json', 'User-Agent':'FS5-Live-Scores/1.0' } });
+    if (!response.ok) return json(502, { error: `NFL scoreboard returned ${response.status}.` });
+    const data = await response.json();
+    const games = (data.events || []).map(event => {
+      const comp = event.competitions && event.competitions[0] || {};
+      const competitors = comp.competitors || [];
+      const home = competitors.find(c => c.homeAway === 'home') || {};
+      const away = competitors.find(c => c.homeAway === 'away') || {};
+      const st = comp.status || event.status || {};
+      const type = st.type || {};
+      const mapTeam = c => c.team && (c.team.abbreviation || c.team.shortDisplayName) || '';
+      return {
+        id: event.id, week: Number(week), date: event.date, start_time: event.date,
+        home: mapTeam(home), away: mapTeam(away), home_score: Number(home.score || 0), away_score: Number(away.score || 0),
+        status: type.completed ? 'complete' : (type.state === 'in' ? 'in_game' : 'pre_game'),
+        period: Number(st.period || 0), clock: st.displayClock || '', detail: type.shortDetail || type.detail || ''
+      };
+    });
+    return { statusCode:200, headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store, max-age=0'}, body:JSON.stringify(games) };
+  } catch (err) { return json(502, { error: err && err.message ? err.message : 'NFL scoreboard unavailable.' }); }
+}
 
 async function getRequestedPlayers(idsParam) {
   const ids = String(idsParam || '')
