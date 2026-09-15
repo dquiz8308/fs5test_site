@@ -272,3 +272,34 @@ body.modal-open{overflow:hidden}
 @media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}}
 /* Dark mode: keep the tiny available-playing-time percentage readable. */
 .fs5-live-dark .playing-time-label strong{color:#f0f6f9!important;opacity:1}
+
+/* FS5 mobile alignment + live presentation reliability */
+html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
+.live-main,.live-shell,.scoreboard,.matchup-grid,.matchup-card{max-width:100%;min-width:0;box-sizing:border-box}
+
+/* Completed matchup presentation */
+.matchup-card--final{border-color:#d3b24e;box-shadow:0 0 0 1px rgba(211,178,78,.24),0 10px 28px rgba(121,91,12,.10)}
+.matchup-card--final .matchup-card__head{background:linear-gradient(90deg,#5f4a13,#92701d,#5f4a13);color:#fff2b5}
+.matchup-card--final .matchup-card__state{color:#fff2b5}
+.matchup-team--winner{background:radial-gradient(circle at 85% 50%,rgba(255,215,86,.28),transparent 42%),linear-gradient(90deg,#fffdf5,#fff7d8)!important;box-shadow:inset 5px 0 0 #d5aa26}
+.matchup-team--winner .score-box strong{color:#8a6500}
+.matchup-team--victory{background:linear-gradient(90deg,#fffdf7,#fff5c9)!important;box-shadow:inset 4px 0 0 #e0bb42}
+.fs5-live-dark .matchup-team--winner,.fs5-live-dark .matchup-team--victory{background:linear-gradient(90deg,#2c291c,#403719)!important;box-shadow:inset 5px 0 0 #d5aa26}
+
+/* Ice Watch */
+.ice-watch{display:grid;gap:10px;margin:0 0 14px}.ice-panel{position:relative;overflow:hidden;border:1px solid #91d8f5;border-radius:13px;padding:13px 15px;background:linear-gradient(135deg,#e9f9ff,#ccefff 55%,#eefbff);color:#0d4f70;box-shadow:0 7px 18px rgba(44,157,205,.12)}
+.ice-panel>div:first-of-type:not(.ice-snow){display:flex;align-items:baseline;justify-content:space-between;gap:12px}.ice-panel b{font-size:.72rem;letter-spacing:.09em}.ice-panel>div>span{font-size:.62rem;font-weight:800;opacity:.75}.ice-players{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.ice-player{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid rgba(55,158,205,.24);border-radius:999px;background:rgba(255,255,255,.72);font-size:.65rem}.ice-player small{opacity:.68}.ice-panel--baby{background:linear-gradient(135deg,#dff7ff,#bfeaff 45%,#f4fdff);border-color:#65c9ef;box-shadow:0 8px 24px rgba(52,173,220,.18)}.ice-snow{position:absolute;inset:-8px -10px auto auto;font-size:2rem;letter-spacing:12px;color:rgba(255,255,255,.78);transform:rotate(-8deg);pointer-events:none;white-space:nowrap}.fs5-live-dark .ice-panel{background:linear-gradient(135deg,#102d3c,#123f55);border-color:#347fa0;color:#d9f5ff}.fs5-live-dark .ice-player{background:rgba(255,255,255,.07);border-color:#347fa0;color:#e9faff}
+
+/* Keep modal centered and independently scrollable on iOS */
+.fs5-modal{display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left));box-sizing:border-box;overflow:hidden}
+.fs5-modal[hidden]{display:none}.fs5-modal__panel{margin:0;max-height:calc(100dvh - 24px);overscroll-behavior:contain;-webkit-overflow-scrolling:touch}.fs5-modal__close{right:16px}
+
+@media(max-width:700px){
+  .live-shell{width:100%;padding-left:10px;padding-right:10px;box-sizing:border-box}.scoreboard{width:100%;overflow:hidden}.matchup-grid{width:100%}
+  .fs5-modal{align-items:center;padding-left:10px;padding-right:10px}.fs5-modal__panel{width:100%;max-width:calc(100vw - 20px);max-height:calc(100dvh - 24px);padding:16px;box-sizing:border-box}.fs5-modal__close{right:10px;top:10px}
+  .fs5-broadcast{display:grid!important;grid-template-columns:auto minmax(0,1fr);align-items:center!important;gap:9px!important;width:100%;height:42px;min-height:42px;box-sizing:border-box;overflow:hidden;padding:8px 10px}.fs5-broadcast strong{grid-column:1}.fs5-broadcast span{grid-column:2;display:block;width:max-content;max-width:none;overflow:visible;text-overflow:clip;animation:fs5-mobile-crawl 14s linear infinite;will-change:transform;white-space:nowrap}
+  .live-event-ticker{display:grid;grid-template-columns:auto minmax(0,1fr);width:100%;height:40px;min-height:40px;box-sizing:border-box;overflow:hidden;gap:8px}.live-ticker__viewport{min-width:0;overflow:hidden}.live-ticker__track{display:flex;width:max-content;gap:18px;white-space:nowrap;animation:fs5-mobile-crawl 18s linear infinite;will-change:transform}.live-ticker__item:nth-of-type(n){display:inline-flex}
+  .ice-panel>div:first-of-type:not(.ice-snow){display:block}.ice-panel>div>span{display:block;margin-top:3px}
+}
+@keyframes fs5-mobile-crawl{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+@media(prefers-reduced-motion:reduce){.fs5-broadcast span,.live-ticker__track{animation:none;transform:none}}
