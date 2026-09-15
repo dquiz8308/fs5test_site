@@ -340,10 +340,21 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
 .fs5-live-dark .player-detail__game b{color:#70bdf0}
 
 
-/* Victory Imminent: FS5 red, white and gold. */
-.matchup-card--victory{background:linear-gradient(180deg,#fff 0%,#fff 55%,#fff8e5 100%)!important;border-color:#d8b23f!important;box-shadow:0 0 0 2px rgba(216,178,63,.18),0 12px 30px rgba(191,35,35,.14)!important}
-.matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,#a71919,#d22f2f 50%,#a71919)!important;color:#fff!important;border-bottom-color:#e0b944!important}
-.matchup-card--victory .matchup-card__state{color:#ffe9a6!important}
-.matchup-card--victory .predictor{background:linear-gradient(180deg,#fff,#fff8e7)!important;border-color:#ead58f!important}
-.fs5-live-dark .matchup-card--victory{background:linear-gradient(180deg,#261f1c,#321d1d 58%,#2c2618 100%)!important;border-color:#cba83d!important}
-.fs5-live-dark .matchup-card--victory .predictor{background:#2a2420!important;border-color:#6e5b2b!important}
+/* Victory Imminent: FS5 blue/white/gold treatment. Witching Hour remains purple. */
+.matchup-card--victory{
+  background:radial-gradient(circle at 50% 0%,rgba(33,105,175,.14),transparent 52%),linear-gradient(180deg,#ffffff,#f7fbff 56%,#fffdf3);
+  border-color:#d6b74a;
+  box-shadow:0 0 0 2px rgba(214,183,74,.18),0 14px 34px rgba(0,55,107,.12);
+}
+.matchup-card--victory .matchup-card__head{
+  background:linear-gradient(90deg,#00376b,#1976b9,#00376b);
+  color:#fff;
+  border-bottom:1px solid #d6b74a;
+}
+.matchup-card--victory .matchup-card__state{color:#fff!important}
+.matchup-card--victory:before{color:rgba(255,224,104,.55)}
+.fs5-live-dark .matchup-card--victory{
+  background:radial-gradient(circle at 50% 0%,rgba(41,124,190,.22),transparent 52%),linear-gradient(180deg,#132c3d,#122331 58%,#282718);
+  border-color:#a98b2e;
+}
+.fs5-live-dark .matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,#063b70,#176fa8,#063b70);color:#fff}

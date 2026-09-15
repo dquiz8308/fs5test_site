@@ -289,14 +289,15 @@
 
     function playerGameInfo(id) {
         var p = playerMeta(id) || {};
-        // Prefer the normalized live NFL scoreboard. Sleeper's calendar can contain
-        // only a date, which caused incorrect dates and "Time TBD" in the modal.
         var game = scheduleGameForTeam(p.team, state.selectedWeek);
         if (!game) return null;
         var status = gameStatus(game);
-        var start = gameStartMs(game);
-        var dateText = Number.isFinite(start) ? new Date(start).toLocaleDateString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" }) : "Date TBD";
-        var timeText = Number.isFinite(start) ? new Date(start).toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) + " ET" : "Time TBD";
+        var start = playerGameStartMs(game);
+        // Always display game date/time in Eastern Time. The scoreboard proxy
+        // supplies preformatted Eastern values so browser locale/time-zone settings
+        // cannot shift the displayed date or kickoff time.
+        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" }).format(new Date(start)) : "Date TBD");
+        var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }).format(new Date(start)) + " ET" : "Time TBD");
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
         var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
         var team = String(p.team || "").toUpperCase();
@@ -306,9 +307,7 @@
         var stateClass = status === "complete" ? "final" : status === "in_game" ? "live" : "upcoming";
         var scoreText = "";
         if (status === "in_game") scoreText = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" · ");
-        if ((status === "in_game" || status === "complete") && game.home_score != null && game.away_score != null) {
-            scoreText += (scoreText ? " · " : "") + away + " " + game.away_score + " – " + home + " " + game.home_score;
-        }
+        if ((status === "in_game" || status === "complete") && game.home_score != null && game.away_score != null) scoreText += (scoreText ? " · " : "") + away + " " + game.away_score + " – " + home + " " + game.home_score;
         return { game: game, status: status, stateText: stateText, stateClass: stateClass, dateText: dateText, timeText: timeText, venueText: venueText, scoreText: scoreText };
     }
 
@@ -521,7 +520,7 @@
                 var gameWeek = Number(game.week);
                 var homeMatch = aliases.some(function(x){ return homeAliases.indexOf(x) !== -1; });
                 var awayMatch = aliases.some(function(x){ return awayAliases.indexOf(x) !== -1; });
-                return (homeMatch || awayMatch) && (pi === 0 || !Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
+                return (homeMatch || awayMatch) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
             });
             games.sort(function(a,b){
                 var as=gameStartMs(a), bs=gameStartMs(b);
