@@ -906,54 +906,83 @@
         groups.forEach(function(t){
             if(t.length >= 2){
                 var a=t[0], b=t[1], p=matchupProbability(a,b);
-                rows.push({a:a,b:b,p:p,diff:Math.abs(Number(a.points||0)-Number(b.points||0))});
+                rows.push({a:a,b:b,p:p,diff:Math.abs(Number(a.points||0)-Number(b.points||0)), finished:teamIsFinished(a)&&teamIsFinished(b)});
             }
         });
 
         var leader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
-        var leagueLeader = leader ? teamLabel(leader) + ' leads the league at ' + formatScore(leader.points) + ' points.' : 'The live scoreboard is ready.';
+        var leagueLeader = leader ? teamLabel(leader) + ' leads the league at ' + formatScore(leader.points) + ' points.' : 'The scoreboard is ready.';
         var messages = [];
+        var activeRows = rows.filter(function(r){ return !r.finished; });
+        var finalRows = rows.filter(function(r){ return r.finished; });
 
-        if (leader) messages.push('🎙️ ' + leagueLeader);
-
-        rows.forEach(function(r){
+        // FINAL matchups get their own postgame broadcast language. Do not use
+        // live-game language, projected remaining points, Witching Hour, or
+        // "coming down to the wire" messages once both NFL/fantasy sides are final.
+        finalRows.forEach(function(r){
             var a=teamLabel(r.a), b=teamLabel(r.b), pa=Number(r.a.points||0), pb=Number(r.b.points||0);
-            var leaderTeam=pa>=pb?a:b, trailer=pa>=pb?b:a;
-            var lp=pa>=pb?r.p.a:r.p.b, tp=pa>=pb?r.p.b:r.p.a;
-            if(r.diff < 1) messages.push('⚖️ ' + a + ' and ' + b + ' are dead even. This one is coming down to the wire.');
-            else if(r.diff < 3) messages.push('🔥 ' + leaderTeam + ' leads ' + trailer + ' by less than three points. One play can flip this matchup.');
-            else if(r.diff < 8) messages.push('📣 ' + leaderTeam + ' has the scoreboard lead, but ' + trailer + ' is still firmly within striking distance.');
-            else if(r.diff >= 20) messages.push('🚨 ' + leaderTeam + ' has opened a ' + formatScore(r.diff) + '-point gap on ' + trailer + '. That is a serious hill to climb.');
-            if(lp >= 90) messages.push('🏆 ' + leaderTeam + ' has crossed 90% win probability. The FS5 broadcast is calling this one Victory Imminent.');
-            else if(tp >= 65 && pa !== pb) messages.push('📈 The model still likes ' + trailer + ' at ' + tp.toFixed(0) + '%. The scoreboard lead may not be as comfortable as it looks.');
-            if(r.p.a < 30 && r.p.b > 70) messages.push('🎯 The model has a strong opinion here: ' + b + ' owns ' + r.p.b.toFixed(0) + '% win probability.');
-            if(r.p.b < 30 && r.p.a > 70) messages.push('🎯 The model has a strong opinion here: ' + a + ' owns ' + r.p.a.toFixed(0) + '% win probability.');
+            var winner=pa>=pb?a:b, loser=pa>=pb?b:a, margin=Math.abs(pa-pb), total=pa+pb;
+            if (margin < 1) messages.push('🏁 Final: ' + a + ' and ' + b + ' finished tied at ' + formatScore(pa) + ' points.');
+            else messages.push('🏁 Final: ' + winner + ' beat ' + loser + ' by ' + formatScore(margin) + ' points, ' + formatScore(Math.max(pa,pb)) + '–' + formatScore(Math.min(pa,pb)) + '.');
+            messages.push('📊 ' + a + ' vs ' + b + ' combined for ' + formatScore(total) + ' fantasy points.');
+            if (margin >= 20) messages.push('💥 Final margin: ' + winner + ' finished ' + formatScore(margin) + ' points ahead of ' + loser + '.');
+            else if (margin < 5 && margin > 0) messages.push('😮 Final margin: just ' + formatScore(margin) + ' points separated ' + winner + ' and ' + loser + '.');
 
-            var timePct=matchupPlayingTimePct(r.a,r.b);
-            if(timePct != null && timePct < 10 && (r.p.a < 70 || r.p.b < 70)) messages.push('🕯️ The Witching Hour is here in ' + a + ' vs ' + b + '. Less than 10% of the matchup remains.');
-            if(timePct != null && timePct < 25 && r.diff < 10) messages.push('⏳ ' + a + ' vs ' + b + ' is entering the late-game sweat. Less than a quarter of the matchup remains.');
-
-            var remA=projectedRemaining((state.rosterMap.get(String(r.a.roster_id))||{}).roster);
-            var remB=projectedRemaining((state.rosterMap.get(String(r.b.roster_id))||{}).roster);
-            if(remA === 0 && remB === 0 && r.diff > 0) messages.push('🏁 ' + leaderTeam + ' has the lead and both teams are out of players. The scoreboard can finally exhale.');
-            else if(remA === 0 && remB > 0) messages.push('👀 ' + a + ' is done scoring. ' + b + ' still has ' + formatScore(remB) + ' projected points available.');
-            else if(remB === 0 && remA > 0) messages.push('👀 ' + b + ' is done scoring. ' + a + ' still has ' + formatScore(remA) + ' projected points available.');
-            if(remA + remB > 0 && remA + remB < 10) messages.push('🧨 There are fewer than 10 projected points left in ' + a + ' vs ' + b + '. Every possession matters now.');
+            // Highlight the highest individual fantasy scorer in the matchup when available.
+            var idsA=getTeamPlayerIds(r.a), idsB=getTeamPlayerIds(r.b), ids=idsA.concat(idsB), best=null;
+            ids.forEach(function(id){
+                var pts=Number(getPlayerPoints(id)||0);
+                if(!best || pts>best.points) best={id:id,points:pts};
+            });
+            if(best && best.points>0) messages.push('⭐ ' + playerName(best.id) + ' led this matchup with ' + formatScore(best.points) + ' fantasy points.');
         });
 
-        var active=currentPlayingCount();
-        if(active.total) messages.push('👀 FS5 has ' + active.active + ' of ' + active.total + ' starters currently playing across the league.');
-        if(state.eventHistory && state.eventHistory.length) {
+        if (activeRows.length) {
+            var activeLeader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
+            if (activeLeader) messages.push('🎙️ ' + teamLabel(activeLeader) + ' leads the league at ' + formatScore(activeLeader.points) + ' points.');
+
+            activeRows.forEach(function(r){
+                var a=teamLabel(r.a), b=teamLabel(r.b), pa=Number(r.a.points||0), pb=Number(r.b.points||0);
+                var leaderTeam=pa>=pb?a:b, trailer=pa>=pb?b:a;
+                var lp=pa>=pb?r.p.a:r.p.b, tp=pa>=pb?r.p.b:r.p.a;
+                if(r.diff < 1) messages.push('⚖️ ' + a + ' and ' + b + ' are dead even. This one is coming down to the wire.');
+                else if(r.diff < 3) messages.push('🔥 ' + leaderTeam + ' leads ' + trailer + ' by less than three points. One play can flip this matchup.');
+                else if(r.diff < 8) messages.push('📣 ' + leaderTeam + ' has the scoreboard lead, but ' + trailer + ' is still firmly within striking distance.');
+                else if(r.diff >= 20) messages.push('🚨 ' + leaderTeam + ' has opened a ' + formatScore(r.diff) + '-point gap on ' + trailer + '. That is a serious hill to climb.');
+                if(lp >= 90) messages.push('🏆 ' + leaderTeam + ' has crossed 90% win probability. The FS5 broadcast is calling this one Victory Imminent.');
+                else if(tp >= 65 && pa !== pb) messages.push('📈 The model still likes ' + trailer + ' at ' + tp.toFixed(0) + '%. The scoreboard lead may not be as comfortable as it looks.');
+                if(r.p.a < 30 && r.p.b > 70) messages.push('🎯 The model has a strong opinion here: ' + b + ' owns ' + r.p.b.toFixed(0) + '% win probability.');
+                if(r.p.b < 30 && r.p.a > 70) messages.push('🎯 The model has a strong opinion here: ' + a + ' owns ' + r.p.a.toFixed(0) + '% win probability.');
+
+                var timePct=matchupPlayingTimePct(r.a,r.b);
+                if(timePct != null && timePct < 10 && (r.p.a < 70 || r.p.b < 70)) messages.push('🕯️ The Witching Hour is here in ' + a + ' vs ' + b + '. Less than 10% of the matchup remains.');
+                if(timePct != null && timePct < 25 && r.diff < 10) messages.push('⏳ ' + a + ' vs ' + b + ' is entering the late-game sweat. Less than a quarter of the matchup remains.');
+
+                var remA=projectedRemaining((state.rosterMap.get(String(r.a.roster_id))||{}).roster);
+                var remB=projectedRemaining((state.rosterMap.get(String(r.b.roster_id))||{}).roster);
+                if(remA === 0 && remB === 0 && r.diff > 0) messages.push('🏁 ' + leaderTeam + ' has the lead and both teams are out of players. The scoreboard can finally exhale.');
+                else if(remA === 0 && remB > 0) messages.push('👀 ' + a + ' is done scoring. ' + b + ' still has ' + formatScore(remB) + ' projected points available.');
+                else if(remB === 0 && remA > 0) messages.push('👀 ' + b + ' is done scoring. ' + a + ' still has ' + formatScore(remA) + ' projected points available.');
+                if(remA + remB > 0 && remA + remB < 10) messages.push('🧨 There are fewer than 10 projected points left in ' + a + ' vs ' + b + '. Every possession matters now.');
+            });
+
+            var active=currentPlayingCount();
+            if(active.total) messages.push('👀 FS5 has ' + active.active + ' of ' + active.total + ' starters currently playing across the league.');
+        } else if (finalRows.length) {
+            // Everything is final: make the booth explicitly postgame rather than
+            // suggesting that any matchup is still underway.
+            var finalLeader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
+            if (finalLeader) messages.push('🏆 Week ' + state.selectedWeek + ' is final. ' + teamLabel(finalLeader) + ' finished as the league scoring leader at ' + formatScore(finalLeader.points) + ' points.');
+            messages.push('🎙️ FS5 POSTGAME: The scoreboard is final. The booth is breaking down the biggest performances and margins from the week.');
+        }
+
+        if(state.eventHistory && state.eventHistory.length && activeRows.length) {
             var latest=state.eventHistory[0];
             messages.push(latest.icon + ' Fresh off the live feed: ' + latest.message + '.');
         }
 
-        if(!messages.length) messages.push('🎙️ FS5 LIVE: The broadcast booth is watching for the next big swing.');
+        if(!messages.length) messages.push('🎙️ FS5 POSTGAME: Final results are in.');
 
-        /* Cycle through the current relevant broadcast messages one at a time.
-           Keep a small persistent queue so changing event data does not make the
-           booth appear to skip every other message. A message is not repeated
-           until the currently relevant pool has been exhausted. */
         var storageKey='fs5_broadcast_queue_' + LEAGUE_ID + '_w' + state.selectedWeek;
         var queue=[];
         try { queue=JSON.parse(localStorage.getItem(storageKey)||'[]')||[]; } catch(e) { queue=[]; }
@@ -962,7 +991,6 @@
         if(!available.length){ queue=[]; available=messages.slice(); }
         var text=available[0] || messages[0];
         queue.push(text);
-        /* Keep only messages that still exist so stale events do not block the cycle. */
         queue=queue.filter(function(msg,idx){ return messages.indexOf(msg)!==-1 && queue.indexOf(msg)===idx; });
         try { localStorage.setItem(storageKey, JSON.stringify(queue.slice(-Math.max(messages.length-1,1)))); } catch(e) {}
 
