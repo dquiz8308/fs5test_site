@@ -296,8 +296,10 @@
         // Always display game date/time in Eastern Time. The scoreboard proxy
         // supplies preformatted Eastern values so browser locale/time-zone settings
         // cannot shift the displayed date or kickoff time.
-        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" }).format(new Date(start)) : "Date TBD");
-        var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }).format(new Date(start)) + " ET" : "Time TBD");
+        var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", year: "numeric" };
+        var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
+        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
+        var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
         var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
         var team = String(p.team || "").toUpperCase();

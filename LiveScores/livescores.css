@@ -358,3 +358,30 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
   border-color:#a98b2e;
 }
 .fs5-live-dark .matchup-card--victory .matchup-card__head{background:linear-gradient(90deg,#063b70,#176fa8,#063b70);color:#fff}
+
+
+/* FINAL Victory Imminent override: blue header, white/red/gold body.
+   Kept at the end of the stylesheet so older purple/gold rules cannot win. */
+.matchup-card--victory {
+  background: linear-gradient(180deg,#ffffff 0%,#f7fbff 58%,#fff8df 100%) !important;
+  border-color:#d6b74a !important;
+  box-shadow:0 0 0 2px rgba(214,183,74,.20),0 14px 34px rgba(0,55,107,.14),inset 0 1px 0 rgba(255,255,255,.95) !important;
+}
+.matchup-card--victory .matchup-card__head {
+  background:linear-gradient(90deg,#00376b 0%,#1976b9 50%,#00376b 100%) !important;
+  color:#fff !important;
+  border-bottom:2px solid #d6b74a !important;
+}
+.matchup-card--victory .matchup-card__state { color:#fff !important; }
+.matchup-card--victory .matchup-team--victory {
+  background:linear-gradient(90deg,#fffdf7,#fff1bf) !important;
+  box-shadow:inset 5px 0 0 #d6b74a !important;
+}
+.fs5-live-dark .matchup-card--victory {
+  background:linear-gradient(180deg,#122d40 0%,#102531 58%,#302b18 100%) !important;
+  border-color:#d6b74a !important;
+}
+.fs5-live-dark .matchup-card--victory .matchup-card__head {
+  background:linear-gradient(90deg,#00376b 0%,#1976b9 50%,#00376b 100%) !important;
+  color:#fff !important;
+}
