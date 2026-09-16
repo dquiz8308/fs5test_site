@@ -332,6 +332,15 @@
         el('balance').textContent = money(data.balances && data.balances.cash);
         el('free-bet-balance').textContent = money(data.balances && data.balances.freeBet);
         const gotw = Array.isArray(data.gotw) ? data.gotw : [];
+        try {
+            const publicGotw = gotw.filter(Boolean).map(market => ({
+                marketId: market.marketId ?? null, gotwNumber: market.gotwNumber ?? null,
+                marketTitle: market.marketTitle || '', weekNumber: market.weekNumber ?? market.week ?? null,
+                status: market.status || '', opensAt: market.opensAt || null, closesAt: market.closesAt || null,
+                owner1: owner(market, 1), owner2: owner(market, 2)
+            }));
+            localStorage.setItem('fs5_public_gotw_markets', JSON.stringify({savedAt: Date.now(), markets: publicGotw}));
+        } catch (error) { console.warn('FS5 GOTW public snapshot unavailable:', error); }
         renderMarket(1, gotw[0]); renderMarket(2, gotw[1]);
         renderGotwHistory(Array.isArray(data.gotwHistory) ? data.gotwHistory : []);
         renderFutures(Array.isArray(data.futuresOffered) ? data.futuresOffered : [], Array.isArray(data.futureHistory) ? data.futureHistory : []);
