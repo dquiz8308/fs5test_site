@@ -313,7 +313,7 @@
         // cannot shift the displayed date or kickoff time.
         var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", year: "numeric" };
         var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
-        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : playerGameCalendarDate(game) || "Date TBD");
+        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
         var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
         var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
@@ -436,7 +436,10 @@
 
     function gameStartMs(game) {
         if (!game) return NaN;
-        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff, game.datetime, game.date];
+        // Only accept an actual kickoff timestamp from the real-world scoreboard.
+        // Do not parse Sleeper's date-only `date` field and do not invent kickoff
+        // times from generic NFL day-of-week estimates.
+        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff, game.datetime];
         for (var i = 0; i < candidates.length; i++) {
             var value = candidates[i];
             if (value == null || value === '') continue;
@@ -446,23 +449,6 @@
             }
             var parsed = Date.parse(String(value));
             if (Number.isFinite(parsed)) return parsed;
-        }
-        // Sleeper's regular-season schedule normally provides a calendar date,
-        // not a kickoff clock. Use a conservative NFL slot estimate so a date-only
-        // schedule never gets interpreted as midnight and marked complete too early.
-        if (game.date) {
-            var parts = String(game.date).slice(0,10).split('-').map(Number);
-            if (parts.length === 3 && parts.every(Number.isFinite)) {
-                var y=parts[0], mo=parts[1]-1, d=parts[2];
-                var day=new Date(y,mo,d).getDay();
-                var hour=13, minute=0;
-                if (day===1) { hour=20; minute=15; }
-                else if (day===4) { hour=20; minute=15; }
-                else if (day===6) { hour=16; minute=30; }
-                else if (day===5) { hour=20; minute=0; }
-                else if (day===0) { hour=13; minute=0; }
-                return new Date(y,mo,d,hour,minute,0,0).getTime();
-            }
         }
         return NaN;
     }
@@ -536,7 +522,11 @@
         // Prefer the live ESPN scoreboard because it contains the actual kickoff,
         // quarter/clock, live score and final score. Only fall back to Sleeper's
         // calendar schedule when ESPN does not have the game.
-        var pools = [state.nflGames || [], state.schedule || []];
+        // IMPORTANT: player game date/time/status must come ONLY from the
+        // real-world NFL scoreboard feed (ESPN via the Netlify proxy).
+        // Never fall back to Sleeper's calendar schedule here: Sleeper's
+        // date-only values do not contain reliable kickoff times.
+        var pools = [state.nflGames || []];
         for (var pi=0; pi<pools.length; pi++) {
             var games = pools[pi].filter(function (game) {
                 var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
