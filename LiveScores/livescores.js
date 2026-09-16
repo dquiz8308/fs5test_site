@@ -325,6 +325,14 @@
         var scoreText = "";
         if (status === "in_game") scoreText = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" · ");
         if ((status === "in_game" || status === "complete") && game.home_score != null && game.away_score != null) scoreText += (scoreText ? " · " : "") + away + " " + game.away_score + " – " + home + " " + game.home_score;
+        // Final games should show the result beneath the player instead of a
+        // kickoff time. Upcoming games should show the actual ET kickoff.
+        if (status === "complete" && game.home_score != null && game.away_score != null) {
+            timeText = "";
+            dateText = "";
+            venueText = "";
+            scoreText = away + " " + game.away_score + " – " + home + " " + game.home_score;
+        }
         return { game: game, status: status, stateText: stateText, stateClass: stateClass, dateText: dateText, timeText: timeText, venueText: venueText, scoreText: scoreText };
     }
 
@@ -339,7 +347,8 @@
         row.type = "button";
         row.className = "player-row" + (showGameData ? " player-row--game-data" : "");
         var gameInfo = showGameData ? playerGameInfo(id) : null;
-        var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameInfo.dateText + " · " + gameInfo.timeText + (gameInfo.venueText ? " · " + gameInfo.venueText : "") + (gameInfo.scoreText ? " · " + gameInfo.scoreText : "")) + '</span></span>' : '';
+        var gameDetails = [gameInfo && gameInfo.dateText, gameInfo && gameInfo.timeText, gameInfo && gameInfo.venueText, gameInfo && gameInfo.scoreText].filter(Boolean).join(" · ");
+        var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameDetails) + '</span></span>' : '';
         row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small>' + gameMarkup + '</span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
         row.addEventListener("click", function () { openPlayerModal(id); });
         row.setAttribute("aria-label", "View " + playerName(id));
