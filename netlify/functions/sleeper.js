@@ -73,12 +73,21 @@ async function getNflScoreboard(season, week) {
   const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
   const ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
   const dateRange = ymd(weekStart) + '-' + ymd(weekEnd);
-  const urls = [
+  // ESPN can intermittently return an empty event list for a multi-day range.
+  // Query each calendar day first so completed games still return their real
+  // kickoff time and final score; keep the broader queries as fallbacks.
+  const urls = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart.getTime() + i * 86400000);
+    urls.push('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + ymd(d) + '&limit=1000');
+  }
+  urls.push(
     'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + dateRange + '&limit=1000',
     'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=' + encodeURIComponent(week) + '&seasontype=2&limit=1000',
     'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + encodeURIComponent(season) + '&seasontype=2&week=' + encodeURIComponent(week)
-  ];
+  );
   let lastError = 'NFL scoreboard unavailable.';
+  const collected = new Map();
   for (const url of urls) {
     try {
       const response = await fetch(url, { headers: { 'Accept':'application/json', 'User-Agent':'FS5-Live-Scores/1.0' } });
@@ -105,9 +114,15 @@ async function getNflScoreboard(season, week) {
           period: Number(st.period || 0), clock: st.displayClock || '', detail: type.shortDetail || type.detail || ''
         };
       });
-      if (games.length) return { statusCode:200, headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store, max-age=0'}, body:JSON.stringify(games) };
+      games.forEach(game => {
+        if (game && game.id) collected.set(String(game.id), game);
+      });
+      if (collected.size >= 16) break;
       lastError = 'NFL scoreboard returned no games.';
     } catch (err) { lastError = err && err.message ? err.message : lastError; }
+  }
+  if (collected.size) {
+    return { statusCode:200, headers:{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store, max-age=0'}, body:JSON.stringify(Array.from(collected.values())) };
   }
   return json(502, { error: lastError });
 }
