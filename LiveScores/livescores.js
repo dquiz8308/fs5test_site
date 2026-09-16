@@ -273,7 +273,10 @@
 
     function playerGameStartMs(game) {
         if (!game) return NaN;
-        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff, game.datetime, game.date];
+        // Prefer an actual kickoff timestamp. Do NOT parse a date-only Sleeper
+        // value as UTC midnight: e.g. `2026-09-13` becomes Sep 12 at 8 PM ET,
+        // which was the source of the incorrect dates/times in the matchup popup.
+        var candidates = [game.start_time, game.startTime, game.start, game.scheduled, game.kickoff, game.datetime];
         for (var i = 0; i < candidates.length; i++) {
             var value = candidates[i];
             if (value == null || value === "") continue;
@@ -287,6 +290,18 @@
         return NaN;
     }
 
+    function playerGameCalendarDate(game) {
+        if (!game) return "";
+        if (game.eastern_date) return String(game.eastern_date);
+        var raw = String(game.date || "");
+        var match = raw.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+        if (!match) return "";
+        var y = Number(match[1]), m = Number(match[2]), d = Number(match[3]);
+        if (!y || !m || !d) return "";
+        var dt = new Date(y, m - 1, d, 12, 0, 0, 0);
+        return new Intl.DateTimeFormat("en-US", { weekday:"short", month:"short", day:"numeric", year:"numeric" }).format(dt);
+    }
+
     function playerGameInfo(id) {
         var p = playerMeta(id) || {};
         var game = scheduleGameForTeam(p.team, state.selectedWeek);
@@ -298,7 +313,7 @@
         // cannot shift the displayed date or kickoff time.
         var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", year: "numeric" };
         var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
-        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
+        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : playerGameCalendarDate(game) || "Date TBD");
         var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
         var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
