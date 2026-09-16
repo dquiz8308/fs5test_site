@@ -446,3 +446,52 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
     animation:fs5-broadcast-crawl 16s linear infinite!important;
   }
 }
+
+/* FINAL MOBILE CLEANUP: keep the broadcast label and moving text in separate
+   layers, and keep decorative ICE snow behind the readable heading. */
+@media (max-width:700px){
+  .fs5-broadcast > .fs5-broadcast__viewport{
+    animation:none!important;
+    transform:none!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    position:relative!important;
+    z-index:1!important;
+  }
+  .fs5-broadcast > .fs5-broadcast__viewport > .fs5-broadcast__track{
+    animation:fs5-broadcast-crawl 16s linear infinite!important;
+    transform:translateX(100%);
+    position:relative;
+    z-index:1;
+  }
+  .fs5-broadcast > strong{
+    position:relative!important;
+    z-index:10!important;
+    background:#0b2b46;
+    padding-right:4px;
+  }
+}
+
+.ice-panel .ice-snow{
+  z-index:0;
+}
+.ice-panel .ice-panel-heading,
+.ice-panel > div:not(.ice-snow){
+  position:relative;
+  z-index:2;
+}
+@media(max-width:700px){
+  .ice-panel .ice-snow{
+    opacity:.45;
+    font-size:1.65rem;
+    letter-spacing:8px;
+    z-index:0;
+  }
+  .ice-panel--baby > div:not(.ice-snow) b,
+  .ice-panel--baby > div:not(.ice-snow) span{
+    position:relative;
+    z-index:3;
+  }
+}
