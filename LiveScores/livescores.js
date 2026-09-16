@@ -1627,7 +1627,12 @@
         try {
             var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
             var nflState = results[0] || {};
-            state.currentWeek = Number(nflState.display_week || nflState.week || 1);
+            // Always open on the current Sleeper/NFL fantasy week. Prefer
+            // Sleeper display_week, then week; never hard-code Week 1.
+            // Keep the value constrained to the 2026 regular-season range.
+            var detectedWeek = Number(nflState.display_week || nflState.week);
+            if (!Number.isFinite(detectedWeek) || detectedWeek < 1 || detectedWeek > 18) detectedWeek = 1;
+            state.currentWeek = Math.floor(detectedWeek);
             state.selectedWeek = state.currentWeek;
             state.rosters = Array.isArray(results[1]) ? results[1] : [];
             state.users = Array.isArray(results[2]) ? results[2] : [];
