@@ -1068,26 +1068,81 @@
         var remB=projectedRemaining((state.rosterMap.get(String(b.roster_id))||{}).roster);
         var totalRem=remA+remB;
         var options=[];
-        if (max>90) options.push('🏆 '+esc(winner)+' is already picking out the victory speech. '+winnerProb.toFixed(0)+'% says this one is basically theirs.');
-        if (min<20 && diff<15) options.push('😈 '+esc(loser)+' has the score deficit, the bad odds, and absolutely no excuse left.');
-        if (diff<2) options.push('😈 '+esc(winner)+' leads by less than two points. Talk big now, regret it later.');
-        if (diff>=2 && diff<5) options.push('😈 '+esc(winner)+' has a lead so small it barely qualifies as bragging rights.');
-        if (diff>=5 && diff<10) options.push('😈 '+esc(loser)+', this is your official warning to stop refreshing and start praying.');
-        if (diff>=10 && diff<20) options.push('😈 '+esc(loser)+' may want to check the waiver wire for a miracle.');
-        if (diff>=20) options.push('😈 '+esc(loser)+' is currently being escorted to the shadow realm.');
-        if (winnerProb>=75 && diff<8) options.push('📈 '+esc(winner)+' has the lead AND the model. That is a particularly rude combination.');
-        if (loserProb>=45 && loserProb<=55 && diff>=8) options.push('😈 The scoreboard says '+esc(winner)+', but the model says '+esc(loser)+' still has a pulse.');
-        if (totalRem>0 && totalRem<15) options.push('⏳ The fantasy clock is almost empty. '+esc(loser)+' needs a miracle, not a strategy.');
-        if (totalRem>0 && totalRem<30 && diff<10) options.push('🔥 Less than 30 projected points remain between them. Every catch is now personal.');
-        if (remA===0 && remB===0 && diff>0) options.push('🏁 No players left. '+esc(winner)+' just closed the casket on '+esc(loser)+'. Somebody check on their group chat.');
-        if (remA===0 && remB>0 && pa>pb) options.push('😈 '+esc(a===winner?teamLabel(a):teamLabel(b))+' has already run out of players. Bold move to keep this interesting.');
-        if (remB===0 && remA>0 && pb>pa) options.push('😈 '+esc(b===winner?teamLabel(b):teamLabel(a))+' has already run out of players. Bold move to keep this interesting.');
-        if (pred.a>pred.b+20 && pa<pb) options.push('🚨 '+esc(teamLabel(a))+' is losing on the scoreboard but winning the model. Somebody tell '+esc(teamLabel(b))+' to look up.');
-        if (pred.b>pred.a+20 && pb<pa) options.push('🚨 '+esc(teamLabel(b))+' is losing on the scoreboard but winning the model. Somebody tell '+esc(teamLabel(a))+' to look up.');
-        if (pred.a>=60 && pa<pb) options.push('😈 '+esc(teamLabel(a))+' is behind right now, but the model has already started the comeback parade.');
-        if (pred.b>=60 && pb<pa) options.push('😈 '+esc(teamLabel(b))+' is behind right now, but the model has already started the comeback parade.');
-        if (!options.length) options.push('😈 TRASH TALK: Nobody has earned the bragging rights yet.');
-        var hash=Math.abs((String(a.roster_id)+'|'+String(b.roster_id)+'|'+Math.floor((pa+pb)*10)).split('').reduce(function(h,c){return ((h<<5)-h)+c.charCodeAt(0)|0;},7));
+        var finished=false;
+        try { finished=teamIsFinished(a) && teamIsFinished(b); } catch(e) { finished=(remA===0 && remB===0); }
+
+        /*
+         * FINAL MATCHUPS: use a dedicated postgame bank. This prevents the
+         * broadcast from sounding like the matchup is still being played and
+         * gives each matchup a different line instead of recycling 1-2 jokes.
+         */
+        if (finished) {
+            if (diff < 1) options.push('🏁 Dead even. Nobody won, nobody lost, and both managers can blame the fantasy gods.');
+            if (diff < 2) options.push('😮 Final margin: '+formatScore(diff)+' points. That is not a victory; that is a clerical error with bragging rights.');
+            if (diff >= 2 && diff < 5) options.push('😮 '+esc(winner)+' survived by '+formatScore(diff)+' points. Please send the loser a sympathy GIF.');
+            if (diff >= 5 && diff < 10) options.push('📏 '+esc(winner)+' won by '+formatScore(diff)+' points. The scoreboard officially says “close enough to talk trash.”');
+            if (diff >= 10 && diff < 20) options.push('💀 '+esc(winner)+' put '+formatScore(diff)+' points between them. The postgame excuses have officially begun.');
+            if (diff >= 20) options.push('💥 '+esc(winner)+' finished '+formatScore(diff)+' points ahead. That was less a matchup and more a scheduled demolition.');
+            if (pa >= 150 || pb >= 150) options.push('🔥 Somebody in this matchup dropped '+formatScore(Math.max(pa,pb))+' points. The fantasy scoreboard needs a fire extinguisher.');
+            if (pa < 100 && pb < 100) options.push('🪦 Both teams finished under 100. The fantasy football gods have ruled this matchup a crime scene.');
+            if (Math.max(pa,pb) - Math.min(pa,pb) >= 30) options.push('🚨 A '+formatScore(diff)+'-point gap? That is not a close loss. That is a group-chat event.');
+            if (Math.max(pa,pb) >= 140 && Math.min(pa,pb) >= 130) options.push('📈 Both teams cleared 130. This matchup had more production than some entire fantasy leagues.');
+            if (pa === pb) options.push('🤝 A tie! The rare fantasy result where everyone gets to say they deserved to win.');
+            options.push('🏁 Final is final. '+esc(winner)+' gets the win, while '+esc(loser)+' gets the valuable life lesson of checking the lineup earlier.');
+            options.push('🎙️ Postgame report: '+esc(winner)+' has the points, '+esc(loser)+' has the screenshots, and neither has an excuse left.');
+            options.push('🧾 The receipts have been printed. '+esc(winner)+' wins; '+esc(loser)+' may now begin the audit of every questionable lineup decision.');
+            options.push('📣 Breaking: '+esc(winner)+' has officially been granted permission to mention this victory approximately 47 times.');
+            options.push('😈 '+esc(winner)+' can talk trash until next Tuesday. '+esc(loser)+' can appeal to the fantasy commissioner.');
+            options.push('🏆 '+esc(winner)+' takes the W. '+esc(loser)+' takes the postgame press conference and the microphone nobody asked for.');
+            options.push('🛋️ '+esc(winner)+' gets to relax. '+esc(loser)+' gets to stare at the bench and ask “what if?” for the next six days.');
+            options.push('📱 The matchup is final, which means the group chat is now the most dangerous place in the league.');
+            options.push('🧠 Final score posted. '+esc(winner)+' made the right fantasy decisions; '+esc(loser)+' has several theories about why.');
+            options.push('🎯 '+esc(winner)+' hit the target. '+esc(loser)+' brought a dartboard and called it strategy.');
+            options.push('🫡 Respectfully, '+esc(loser)+': the scoreboard has spoken and it is not accepting counterarguments.');
+            options.push('☠️ '+esc(winner)+' closed the book on this one. '+esc(loser)+' can stop refreshing the app now.');
+            options.push('📊 The numbers are official: '+formatScore(pa)+'–'+formatScore(pb)+'. The excuses are unofficial and already circulating.');
+            options.push('🍿 Final whistle. '+esc(winner)+' gets the popcorn; '+esc(loser)+' gets to explain that lineup to the league.');
+            options.push('🗞️ Tomorrow’s headline: “'+esc(winner)+' wins.” Subheadline: “'+esc(loser)+' has thoughts.”');
+            options.push('🔒 Matchup locked. '+esc(winner)+' has the W and '+esc(loser)+' has absolutely no more players to blame.');
+            options.push('🎬 That is a wrap. '+esc(winner)+' gets the ending they wanted; '+esc(loser)+' gets the director’s cut of the excuses.');
+            options.push('🏁 No more projections. No more sweat. No more “wait until Monday.” '+esc(winner)+' is officially on top of this matchup.');
+        } else {
+            // LIVE / ACTIVE MATCHUPS: keep the existing situational trash talk.
+            if (max>90) options.push('🏆 '+esc(winner)+' is already picking out the victory speech. '+winnerProb.toFixed(0)+'% says this one is basically theirs.');
+            if (min<20 && diff<15) options.push('😈 '+esc(loser)+' has the score deficit, the bad odds, and absolutely no excuse left.');
+            if (diff<2) options.push('😈 '+esc(winner)+' leads by less than two points. Talk big now, regret it later.');
+            if (diff>=2 && diff<5) options.push('😈 '+esc(winner)+' has a lead so small it barely qualifies as bragging rights.');
+            if (diff>=5 && diff<10) options.push('😈 '+esc(loser)+', this is your official warning to stop refreshing and start praying.');
+            if (diff>=10 && diff<20) options.push('😈 '+esc(loser)+' may want to check the waiver wire for a miracle.');
+            if (diff>=20) options.push('😈 '+esc(loser)+' is currently being escorted to the shadow realm.');
+            if (winnerProb>=75 && diff<8) options.push('📈 '+esc(winner)+' has the lead AND the model. That is a particularly rude combination.');
+            if (loserProb>=45 && loserProb<=55 && diff>=8) options.push('😈 The scoreboard says '+esc(winner)+', but the model says '+esc(loser)+' still has a pulse.');
+            if (totalRem>0 && totalRem<15) options.push('⏳ The fantasy clock is almost empty. '+esc(loser)+' needs a miracle, not a strategy.');
+            if (totalRem>0 && totalRem<30 && diff<10) options.push('🔥 Less than 30 projected points remain between them. Every catch is now personal.');
+            if (remA===0 && remB===0 && diff>0) options.push('🏁 No players left. '+esc(winner)+' just closed the casket on '+esc(loser)+'. Somebody check on their group chat.');
+            if (remA===0 && remB>0 && pa>pb) options.push('😈 '+esc(teamLabel(a))+' has already run out of players. Bold move to keep this interesting.');
+            if (remB===0 && remA>0 && pb>pa) options.push('😈 '+esc(teamLabel(b))+' has already run out of players. Bold move to keep this interesting.');
+            if (pred.a>pred.b+20 && pa<pb) options.push('🚨 '+esc(teamLabel(a))+' is losing on the scoreboard but winning the model. Somebody tell '+esc(teamLabel(b))+' to look up.');
+            if (pred.b>pred.a+20 && pb<pa) options.push('🚨 '+esc(teamLabel(b))+' is losing on the scoreboard but winning the model. Somebody tell '+esc(teamLabel(a))+' to look up.');
+            if (pred.a>=60 && pa<pb) options.push('😈 '+esc(teamLabel(a))+' is behind right now, but the model has already started the comeback parade.');
+            if (pred.b>=60 && pb<pa) options.push('😈 '+esc(teamLabel(b))+' is behind right now, but the model has already started the comeback parade.');
+            if (diff<3 && totalRem>40) options.push('📞 The fantasy emergency hotline is open. '+esc(loser)+' is currently within striking distance.');
+            if (diff>=15 && totalRem>40) options.push('🚨 '+esc(loser)+' has plenty of players left, which is exactly why '+esc(winner)+' should remain nervous.');
+            if (remA===0 && remB>0 && pb>pa) options.push('⏰ '+esc(teamLabel(b))+' still has players left and '+esc(teamLabel(a))+' does not. The clock is doing some heavy lifting here.');
+            if (remB===0 && remA>0 && pa>pb) options.push('⏰ '+esc(teamLabel(a))+' still has players left and '+esc(teamLabel(b))+' does not. This is getting uncomfortable.');
+            if (pa>=120 && pb>=120 && diff<15) options.push('🔥 Both managers showed up with points. Unfortunately, one of them has to experience character development.');
+            if (pa<80 && pb<80) options.push('🪦 The scoreboard is requesting a wellness check.');
+            if (winnerProb>=85) options.push('📢 The model is yelling '+esc(winner)+' while '+esc(loser)+' is pretending not to hear it.');
+            if (max<60 && diff<10) options.push('🎲 Nobody has earned the right to celebrate yet. This matchup is basically fantasy roulette.');
+            if (totalRem>60 && diff<20) options.push('🍿 There is still enough football left for this to become somebody else’s problem.');
+            if (totalRem>0 && totalRem<10) options.push('🫣 Less than 10 projected points remain. Refreshing the app will not create a touchdown.');
+            if (diff>=30) options.push('💀 '+esc(loser)+' is down '+formatScore(diff)+'. At this point, even the waiver wire is offering thoughts and prayers.');
+            if (!options.length) options.push('😈 TRASH TALK: Nobody has earned the bragging rights yet.');
+        }
+
+        if(!options.length) options.push('🎙️ FS5 BOOTH: The matchup is final, the numbers are official, and the group chat is already forming its opinions.');
+        // Stable per matchup so the joke does not change every 10-second refresh.
+        var hash=Math.abs((String(a.roster_id)+'|'+String(b.roster_id)+'|'+String(state.selectedWeek)).split('').reduce(function(h,c){return ((h<<5)-h)+c.charCodeAt(0)|0;},7));
         return options[hash % options.length];
     }
 
