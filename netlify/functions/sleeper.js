@@ -10,6 +10,10 @@ exports.handler = async function (event) {
     return getNflScoreboard(qs.season || '2026', qs.week || '1');
   }
 
+  if (source === 'diagnostic') {
+    return getScoreboardDiagnostic(qs.season || '2026', qs.week || '1');
+  }
+
   if (source === 'news') {
     return getPlayerNews(qs.player || '', qs.team || '');
   }
@@ -64,31 +68,26 @@ exports.handler = async function (event) {
 
 
 async function getNflScoreboard(season, week) {
-  // ESPN is the source for real-world NFL kickoff times and scores. Query the
-  // seven calendar days of the NFL week IN PARALLEL so the Netlify function does
-  // not time out before it can return completed games. Sleeper's schedule is
-  // merged in the browser only for fantasy game state (pre_game/in_game/complete).
-  const seasonStart = new Date(Date.UTC(Number(season), 8, 9));
-  const weekStart = new Date(seasonStart.getTime() + (Math.max(1, Number(week) || 1) - 1) * 7 * 86400000);
-  const ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
-  const urls = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(weekStart.getTime() + i * 86400000);
-    urls.push('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + ymd(d) + '&limit=1000');
+  // Primary source: ESPN's week-specific NFL scoreboard. This is a single request
+  // and is much more reliable for Netlify than making seven date requests.
+  const year = Number(season) || 2026;
+  const wk = Math.max(1, Number(week) || 1);
+  const headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'FS5-Live-Scores/1.0'
+  };
+
+  async function fetchJson(url) {
+    const response = await fetch(url, { headers });
+    const text = await response.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch (_) {}
+    if (!response.ok) throw new Error(`Scoreboard returned ${response.status}.`);
+    return data || {};
   }
 
-  const results = await Promise.allSettled(urls.map(async url => {
-    const response = await fetch(url, {
-      headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
-    });
-    if (!response.ok) throw new Error(`NFL scoreboard returned ${response.status}.`);
-    return response.json();
-  }));
-
-  const collected = new Map();
-  for (const result of results) {
-    if (result.status !== 'fulfilled') continue;
-    const data = result.value || {};
+  function mapScoreboard(data) {
+    const collected = new Map();
     for (const event of (data.events || [])) {
       const comp = event.competitions && event.competitions[0] || {};
       const competitors = comp.competitors || [];
@@ -107,7 +106,7 @@ async function getNflScoreboard(season, week) {
       const easternTime = eastern.length ? `${part('hour')}:${part('minute')} ${part('dayPeriod')} ET` : '';
       const game = {
         id: event.id,
-        week: Number(week),
+        week: wk,
         date: event.date,
         start_time: event.date,
         eastern_date: easternDate,
@@ -123,13 +122,117 @@ async function getNflScoreboard(season, week) {
       };
       if (game.id) collected.set(String(game.id), game);
     }
+    return Array.from(collected.values());
   }
 
-  if (!collected.size) {
-    return json(502, { error: 'NFL scoreboard unavailable.' });
+  const errors = [];
+
+  // 1) Week-specific endpoint: preferred for both live and completed weeks.
+  try {
+    const data = await fetchJson(
+      `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${wk}&seasontype=2&season=${year}&limit=1000`
+    );
+    const games = mapScoreboard(data);
+    if (games.length) {
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store, max-age=0',
+          'X-FS5-Scoreboard-Source': 'ESPN-week'
+        },
+        body: JSON.stringify(games)
+      };
+    }
+    errors.push('ESPN week endpoint returned zero games.');
+  } catch (err) {
+    errors.push('ESPN week: ' + (err && err.message ? err.message : 'request failed'));
   }
 
-  return json(200, Array.from(collected.values()));
+  // 2) Fallback: date window around the NFL week. This protects against an
+  // ESPN week endpoint change while still avoiding the old seven-request-only path.
+  try {
+    const seasonStart = new Date(Date.UTC(year, 8, 9));
+    const weekStart = new Date(seasonStart.getTime() + (wk - 1) * 7 * 86400000);
+    const ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+    const urls = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(weekStart.getTime() + i * 86400000);
+      urls.push(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${ymd(d)}&limit=1000`);
+    }
+    const results = await Promise.allSettled(urls.map(fetchJson));
+    const merged = new Map();
+    for (const result of results) {
+      if (result.status !== 'fulfilled') continue;
+      for (const game of mapScoreboard(result.value)) merged.set(String(game.id), game);
+    }
+    if (merged.size) {
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-store, max-age=0',
+          'X-FS5-Scoreboard-Source': 'ESPN-dates'
+        },
+        body: JSON.stringify(Array.from(merged.values()))
+      };
+    }
+    errors.push('ESPN date fallback returned zero games.');
+  } catch (err) {
+    errors.push('ESPN date fallback: ' + (err && err.message ? err.message : 'request failed'));
+  }
+
+  return json(502, {
+    error: 'NFL scoreboard unavailable.',
+    source: 'ESPN',
+    week: wk,
+    season: year,
+    details: errors
+  });
+}
+
+async function getScoreboardDiagnostic(season, week) {
+  const year = Number(season) || 2026;
+  const wk = Math.max(1, Number(week) || 1);
+  const sleeperUrl = `https://api.sleeper.app/schedule/nfl/regular/${year}`;
+  const espnUrl = `https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=${wk}&seasontype=2&season=${year}&limit=1000`;
+  const result = {
+    season: year,
+    week: wk,
+    sleeper: { ok: false, games: 0, error: '' },
+    espn: { ok: false, games: 0, error: '' },
+    sample: []
+  };
+  try {
+    const r = await fetch(sleeperUrl, { headers: { 'Accept':'application/json', 'User-Agent':'FS5-Live-Scores/1.0' } });
+    const d = await r.json();
+    const games = Array.isArray(d) ? d.filter(g => Number(g.week) === wk) : [];
+    result.sleeper.ok = r.ok;
+    result.sleeper.games = games.length;
+  } catch (e) { result.sleeper.error = e.message || String(e); }
+  try {
+    const r = await fetch(espnUrl, { headers: { 'Accept':'application/json', 'User-Agent':'FS5-Live-Scores/1.0' } });
+    const d = await r.json();
+    const events = Array.isArray(d.events) ? d.events : [];
+    result.espn.ok = r.ok;
+    result.espn.games = events.length;
+    result.sample = events.slice(0, 5).map(e => {
+      const c = e.competitions && e.competitions[0] || {};
+      const teams = c.competitors || [];
+      const home = teams.find(x => x.homeAway === 'home') || {};
+      const away = teams.find(x => x.homeAway === 'away') || {};
+      const st = c.status && c.status.type || {};
+      return {
+        id: e.id,
+        matchup: `${away.team && away.team.abbreviation || ''} @ ${home.team && home.team.abbreviation || ''}`,
+        status: st.name || '',
+        completed: !!st.completed,
+        away_score: away.score != null ? Number(away.score) : null,
+        home_score: home.score != null ? Number(home.score) : null
+      };
+    });
+  } catch (e) { result.espn.error = e.message || String(e); }
+  return json(200, result);
 }
 
 async function getPlayerNews(playerName, team) {
