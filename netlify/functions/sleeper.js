@@ -64,9 +64,19 @@ exports.handler = async function (event) {
 
 
 async function getNflScoreboard(season, week) {
+  // ESPN's scoreboard is most reliable when queried by the actual calendar
+  // window for the NFL week. The old `dates=2026&week=1` request could fall
+  // through to incomplete/current data and caused the client to use Sleeper's
+  // date-only schedule (which is stored at UTC midnight).
+  const seasonStart = new Date(Date.UTC(Number(season), 8, 9)); // 2026 regular season begins Sep 9
+  const weekStart = new Date(seasonStart.getTime() + (Math.max(1, Number(week) || 1) - 1) * 7 * 86400000);
+  const weekEnd = new Date(weekStart.getTime() + 6 * 86400000);
+  const ymd = d => d.toISOString().slice(0, 10).replace(/-/g, '');
+  const dateRange = ymd(weekStart) + '-' + ymd(weekEnd);
   const urls = [
-    'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + encodeURIComponent(season) + '&seasontype=2&week=' + encodeURIComponent(week),
-    'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=' + encodeURIComponent(week) + '&seasontype=2'
+    'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + dateRange + '&limit=1000',
+    'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=' + encodeURIComponent(week) + '&seasontype=2&limit=1000',
+    'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=' + encodeURIComponent(season) + '&seasontype=2&week=' + encodeURIComponent(week)
   ];
   let lastError = 'NFL scoreboard unavailable.';
   for (const url of urls) {
