@@ -878,6 +878,24 @@
         if (!box) return;
         var groups = new Map();
         state.matchups.forEach(function(m){ var k=matchupKey(m); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(m); });
+
+        // The Chaos Meter is a live-week feature. Hide it on historical/future
+        // weeks and once every matchup in the current week is officially final.
+        // This prevents a stale "chaos" readout from hanging around after
+        // Monday Night Football and keeps the meter focused on active matchups.
+        var hasCompleteMatchupData = groups.size > 0;
+        var allResultsFinal = hasCompleteMatchupData;
+        groups.forEach(function(t){
+            if (t.length < 2 || !teamIsFinished(t[0]) || !teamIsFinished(t[1])) {
+                allResultsFinal = false;
+            }
+        });
+        if (state.selectedWeek !== state.currentWeek || allResultsFinal) {
+            box.hidden = true;
+            box.innerHTML = '';
+            return;
+        }
+
         var close = 0, undecided = 0, monday = 0;
         groups.forEach(function(t){
             if(t.length<2) return;
