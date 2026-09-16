@@ -495,3 +495,13 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
     z-index:3;
   }
 }
+
+
+/* FS5 SPORTSBOOK GAME OF THE WEEK */
+.matchup-card--gotw{position:relative!important;border:2px solid #d4af37!important;box-shadow:0 0 0 3px rgba(212,175,55,.14),0 16px 38px rgba(8,42,72,.18)!important;background:linear-gradient(180deg,#fffdf5 0%,#fff 34%,#fffaf0 100%)!important;overflow:hidden!important}
+.gotw-ribbon{display:flex;align-items:center;gap:10px;min-height:58px;padding:8px 16px;color:#fff;background:linear-gradient(90deg,#071d31 0%,#0d4268 45%,#071d31 100%);border-bottom:3px solid #d4af37;letter-spacing:.04em}
+.gotw-ribbon__star{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;color:#d4af37;font-size:24px;text-shadow:0 1px 8px rgba(212,175,55,.45)}
+.gotw-ribbon strong{display:block;font-size:.78rem;letter-spacing:.12em}.gotw-ribbon small{display:block;margin-top:3px;color:#dceaf5;font-size:.78rem;letter-spacing:.02em}
+.matchup-card__gotw-badge{margin-left:8px;padding:4px 8px;border-radius:999px;background:#d4af37;color:#071d31;font-size:.67rem;font-weight:900;letter-spacing:.08em;white-space:nowrap}
+.fs5-live-dark .matchup-card--gotw{background:linear-gradient(180deg,#132f42 0%,#10232f 45%,#302b1a 100%)!important;border-color:#d4af37!important}.fs5-live-dark .gotw-ribbon{background:linear-gradient(90deg,#050f18 0%,#0b3450 45%,#050f18 100%)}
+@media(max-width:700px){.gotw-ribbon{min-height:54px;padding:7px 11px;gap:8px}.gotw-ribbon__star{width:29px;height:29px;flex-basis:29px;font-size:21px}.gotw-ribbon strong{font-size:.68rem;letter-spacing:.08em}.gotw-ribbon small{font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:270px}.matchup-card__gotw-badge{font-size:.58rem;padding:3px 6px;margin-left:5px}}

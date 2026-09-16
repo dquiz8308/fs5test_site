@@ -27,7 +27,8 @@
         broadcastCycle: 0,
         lowerThirdTimer: null,
         snapshot: null,
-        gameFlow: {}
+        gameFlow: {},
+        gotwMarkets: []
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -1355,6 +1356,47 @@
         box.innerHTML=(watch.length?'<section class="ice-panel ice-panel--watch"><div><b>🧊 ICE WATCH</b><span>Zero points entering the 4th quarter</span></div><div class="ice-players">'+chips(watch)+'</div></section>':'')+(frozen.length?'<section class="ice-panel ice-panel--baby"><div class="ice-snow">❄︎ ✦ ❄︎ ✧ ❄︎ ✦ ❄︎</div><div><b>❄️ ICE ICE BABY</b><span>Final · starting lineup goose eggs</span></div><div class="ice-players">'+chips(frozen)+'</div></section>':'');
     }
 
+    async function loadPublicGotwMarkets() {
+        try {
+            var response = await fetch("/gotw.json?ts=" + Date.now(), { cache: "no-store" });
+            if (!response.ok) throw new Error("GOTW configuration unavailable");
+            var payload = await response.json();
+            state.gotwMarkets = payload && Array.isArray(payload.markets) ? payload.markets : [];
+        } catch (e) {
+            state.gotwMarkets = [];
+        }
+    }
+
+    function isGotwMatchup(teams, week) {
+        if (!Array.isArray(teams) || teams.length < 2) return null;
+        var teamNames = teams.map(function(m) {
+            var info = state.rosterMap.get(String(m.roster_id));
+            return String(info && info.teamName || "").trim().toLowerCase();
+        });
+        return state.gotwMarkets.find(function(market) {
+            var marketWeek = Number(market && (market.weekNumber ?? market.week));
+            if (Number.isFinite(marketWeek) && marketWeek !== Number(week)) return false;
+            var names = [market && market.owner1, market && market.owner2].map(function(side) {
+                return String(side && (side.teamName || side.ownerName) || "").trim().toLowerCase();
+            });
+            return names.length === 2 && names.indexOf(teamNames[0]) !== -1 && names.indexOf(teamNames[1]) !== -1;
+        }) || null;
+    }
+
+    function addGotwPresentation(card, market) {
+        if (!market) return;
+        card.classList.add("matchup-card--gotw");
+        var number = Number(market.gotwNumber);
+        var ribbon = document.createElement("div");
+        ribbon.className = "gotw-ribbon";
+        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK</strong><small>' + esc(market.marketTitle || (Number.isFinite(number) ? "GOTW #" + number : "LIVE FROM THE FS5 SPORTSBOOK")) + '</small></span>';
+        card.insertBefore(ribbon, card.firstChild);
+        var badgeEl = document.createElement("span");
+        badgeEl.className = "matchup-card__gotw-badge";
+        badgeEl.textContent = Number.isFinite(number) ? "GOTW " + number : "GOTW";
+        card.querySelector(".matchup-card__head").appendChild(badgeEl);
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
         renderLiveGuide();
@@ -1386,6 +1428,7 @@
             if (teams.length < 2) return;
             var card = document.createElement("article");
             card.className = "matchup-card matchup-card--clickable" + cardVibe(teams);
+            var gotwMarket = isGotwMatchup(teams, week);
             card.tabIndex = 0;
             card.setAttribute("role", "button");
             card.setAttribute("aria-label", "Open matchup " + entry[0]);
@@ -1394,6 +1437,7 @@
             var matchupFinished = teamIsFinished(teams[0]) && teamIsFinished(teams[1]);
             head.innerHTML = '<span>Matchup ' + esc(entry[0]) + '</span><span class="matchup-card__state' + (week === state.currentWeek && !matchupFinished ? ' is-current' : '') + '">' + (matchupFinished || week < state.currentWeek ? 'FINAL' : (week === state.currentWeek ? 'LIVE' : 'UPCOMING')) + '</span>';
             card.appendChild(head);
+            addGotwPresentation(card, gotwMarket);
             teams.forEach(function (matchup, index) {
                 var info = state.rosterMap.get(String(matchup.roster_id));
                 var team = document.createElement("div"); team.className = "matchup-team";
@@ -1740,6 +1784,7 @@
             state.schedule = Array.isArray(results[3]) ? results[3] : [];
             buildRosterMap(); populateWeeks();
             api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
+            await loadPublicGotwMarkets();
             await loadWeek(state.currentWeek);
         } catch (error) {
             console.error("FS5 Sleeper initialization failed", error);
