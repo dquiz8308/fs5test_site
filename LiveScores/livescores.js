@@ -519,35 +519,66 @@
         if (!team) return null;
         var aliases = nflTeamAliases(team);
         var targetWeek = Number(week != null ? week : state.selectedWeek);
-        // Prefer the live ESPN scoreboard because it contains the actual kickoff,
-        // quarter/clock, live score and final score. Only fall back to Sleeper's
-        // calendar schedule when ESPN does not have the game.
-        // IMPORTANT: player game date/time/status must come ONLY from the
-        // real-world NFL scoreboard feed (ESPN via the Netlify proxy).
-        // Never fall back to Sleeper's calendar schedule here: Sleeper's
-        // date-only values do not contain reliable kickoff times.
-        var pools = [state.nflGames || []];
-        for (var pi=0; pi<pools.length; pi++) {
-            var games = pools[pi].filter(function (game) {
-                var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
-                var away = String(game.away || game.away_team || game.awayTeam || '').toUpperCase();
-                var homeAliases = nflTeamAliases(home);
-                var awayAliases = nflTeamAliases(away);
-                var gameWeek = Number(game.week);
-                var homeMatch = aliases.some(function(x){ return homeAliases.indexOf(x) !== -1; });
-                var awayMatch = aliases.some(function(x){ return awayAliases.indexOf(x) !== -1; });
-                return (homeMatch || awayMatch) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
-            });
-            games.sort(function(a,b){
-                var as=gameStartMs(a), bs=gameStartMs(b);
-                if(Number.isFinite(as)&&Number.isFinite(bs)) return as-bs;
-                if(Number.isFinite(as)) return -1;
-                if(Number.isFinite(bs)) return 1;
-                return 0;
-            });
-            if (games.length) return games[0];
+
+        // Sleeper is the authoritative source for fantasy-week/game state because
+        // it reliably tells us whether the NFL game is pre_game, in_game or complete.
+        // ESPN is the authoritative source for real-world kickoff time and NFL score.
+        // Merge the two feeds by team + week. NEVER use Sleeper's `date` as a kickoff
+        // timestamp; it is date-only and can shift a day when parsed as UTC.
+        var sleeperGames = Array.isArray(state.schedule) ? state.schedule.filter(function (game) {
+            var home = String(game.home || '').toUpperCase();
+            var away = String(game.away || '').toUpperCase();
+            var gameWeek = Number(game.week);
+            var homeMatch = aliases.some(function(x){ return nflTeamAliases(home).indexOf(x) !== -1; });
+            var awayMatch = aliases.some(function(x){ return nflTeamAliases(away).indexOf(x) !== -1; });
+            return (homeMatch || awayMatch) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
+        }) : [];
+
+        var espnGames = Array.isArray(state.nflGames) ? state.nflGames.filter(function (game) {
+            var home = String(game.home || game.home_team || game.homeTeam || '').toUpperCase();
+            var away = String(game.away || game.away_team || game.awayTeam || '').toUpperCase();
+            var gameWeek = Number(game.week);
+            var homeMatch = aliases.some(function(x){ return nflTeamAliases(home).indexOf(x) !== -1; });
+            var awayMatch = aliases.some(function(x){ return nflTeamAliases(away).indexOf(x) !== -1; });
+            return (homeMatch || awayMatch) && (!Number.isFinite(targetWeek) || !Number.isFinite(gameWeek) || gameWeek === targetWeek);
+        }) : [];
+
+        // Match the real-world ESPN game to the Sleeper game by both teams.
+        var sleeper = sleeperGames[0] || null;
+        var espn = espnGames[0] || null;
+        if (!sleeper && !espn) return null;
+
+        if (espn) {
+            var merged = Object.assign({}, espn);
+            if (sleeper) {
+                // Sleeper status is used when it explicitly says complete/in_game/
+                // pre_game. This prevents an unavailable/stale ESPN status from making
+                // an already-finished fantasy matchup appear LIVE.
+                var ss = String(sleeper.status || '').toLowerCase();
+                if (ss) merged.sleeper_status = ss;
+                if (ss === 'complete' || ss === 'completed' || ss === 'final') merged.status = 'complete';
+                else if (ss === 'in_game' || ss === 'in_progress' || ss === 'live') merged.status = 'in_game';
+                else if (ss === 'pre_game' || ss === 'scheduled' || ss === 'pregame' || ss === 'pre') merged.status = 'pre_game';
+                if (!merged.home) merged.home = sleeper.home;
+                if (!merged.away) merged.away = sleeper.away;
+            }
+            return merged;
         }
-        return null;
+
+        // ESPN did not return this game. Keep the Sleeper game so FINAL/LIVE/UPCOMING
+        // state still works, but deliberately do not manufacture a kickoff time.
+        return Object.assign({}, sleeper, {
+            start_time: null,
+            startTime: null,
+            start: null,
+            scheduled: null,
+            kickoff: null,
+            datetime: null,
+            eastern_date: '',
+            eastern_time: '',
+            home_score: null,
+            away_score: null
+        });
     }
 
     function playerAvailableTimePct(playerIds) {
