@@ -935,6 +935,26 @@
         var activeRows = rows.filter(function(r){ return !r.finished; });
         var finalRows = rows.filter(function(r){ return r.finished; });
 
+        // A selected week can be completely pregame (especially Week 2+).
+        // In that state, do not use live-game language such as "coming down to the wire"
+        // or "one play can flip this matchup". Treat the broadcast as a matchup-preview booth.
+        function matchupHasStarted(r) {
+            var ids = getTeamPlayerIds(r.a).concat(getTeamPlayerIds(r.b));
+            var seen = {};
+            for (var i = 0; i < ids.length; i++) {
+                var meta = playerMeta(ids[i]) || {};
+                var nflTeam = meta.team;
+                if (!nflTeam || seen[String(nflTeam).toUpperCase()]) continue;
+                seen[String(nflTeam).toUpperCase()] = true;
+                var game = scheduleGameForTeam(nflTeam, state.selectedWeek);
+                var status = gameStatus(game);
+                if (status === 'in_game' || status === 'complete') return true;
+            }
+            return false;
+        }
+        var pregameRows = rows.filter(function(r){ return !matchupHasStarted(r); });
+        var weekHasStarted = rows.some(function(r){ return matchupHasStarted(r); });
+
         // FINAL matchups get their own postgame broadcast language. Do not use
         // live-game language, projected remaining points, Witching Hour, or
         // "coming down to the wire" messages once both NFL/fantasy sides are final.
@@ -956,7 +976,32 @@
             if(best && best.points>0) messages.push('⭐ ' + playerName(best.id) + ' led this matchup with ' + formatScore(best.points) + ' fantasy points.');
         });
 
-        if (activeRows.length) {
+        if (rows.length && !weekHasStarted && !finalRows.length) {
+            // PREVIEW MODE: every matchup in the selected week is still waiting
+            // for its first NFL game to kick off. Keep the booth focused on
+            // projected scores, win probabilities, and the matchups to watch.
+            messages.push('🎬 FS5 WEEK ' + state.selectedWeek + ' PREVIEW: The matchups are set. Here is what the booth is watching before kickoff.');
+
+            var previewRows = rows.slice().sort(function(a,b){
+                return Math.max(b.p.a, b.p.b) - Math.max(a.p.a, a.p.b);
+            });
+            previewRows.forEach(function(r, index){
+                var a=teamLabel(r.a), b=teamLabel(r.b);
+                var projectedA=Number(r.p.meanA||0), projectedB=Number(r.p.meanB||0);
+                var favored=Number(r.p.a||50) >= Number(r.p.b||50) ? a : b;
+                var favoredPct=Math.max(Number(r.p.a||50), Number(r.p.b||50));
+                if (index < 3) {
+                    messages.push('🔮 Preview: ' + a + ' vs ' + b + ' — projected ' + formatScore(projectedA) + ' to ' + formatScore(projectedB) + '. The model gives ' + favored + ' a ' + favoredPct.toFixed(0) + '% win probability.');
+                }
+            });
+
+            var topProjected = rows.slice().sort(function(a,b){
+                return (Number(b.p.meanA||0)+Number(b.p.meanB||0)) - (Number(a.p.meanA||0)+Number(a.p.meanB||0));
+            })[0];
+            if (topProjected) {
+                messages.push('👀 Matchup to watch: ' + teamLabel(topProjected.a) + ' vs ' + teamLabel(topProjected.b) + ' has the highest projected combined score on the board.');
+            }
+        } else if (activeRows.length) {
             var activeLeader = state.matchups.slice().sort(function(a,b){return Number(b.points||0)-Number(a.points||0);})[0];
             if (activeLeader) messages.push('🎙️ ' + teamLabel(activeLeader) + ' leads the league at ' + formatScore(activeLeader.points) + ' points.');
 
