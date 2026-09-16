@@ -1014,7 +1014,19 @@
         try { localStorage.setItem(storageKey, JSON.stringify(queue.slice(-Math.max(messages.length-1,1)))); } catch(e) {}
 
         box.hidden=false;
-        box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span class="fs5-broadcast__viewport"><span class="fs5-broadcast__track">'+esc(text.replace(/^🎙️ FS5 LIVE:\s*/,''))+'</span></span>';
+        var displayText = text.replace(/^🎙️ FS5 LIVE:\s*/, '');
+        // Keep the existing broadcast track node during the 10-second data
+        // refresh. Replacing the HTML recreates the animated element and
+        // restarts the desktop ticker from the beginning. Updating only the
+        // text lets the CSS animation keep its current position/timeline.
+        var viewport = box.querySelector('.fs5-broadcast__viewport');
+        var track = viewport && viewport.querySelector('.fs5-broadcast__track');
+        if (!viewport || !track) {
+            box.innerHTML='<strong>🎙️ FS5 BROADCAST</strong><span class="fs5-broadcast__viewport"><span class="fs5-broadcast__track"></span></span>';
+            viewport = box.querySelector('.fs5-broadcast__viewport');
+            track = viewport && viewport.querySelector('.fs5-broadcast__track');
+        }
+        if (track) track.textContent = displayText;
     }
 
     function renderWatching() {
