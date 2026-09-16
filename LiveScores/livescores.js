@@ -7,6 +7,7 @@
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
+        openPlayerId: null,
         rosters: [],
         users: [],
         league: {},
@@ -58,7 +59,12 @@
             return response.text().then(function (text) {
                 var data = [];
                 try { data = text ? JSON.parse(text) : []; } catch (e) {}
-                if (!response.ok) throw new Error((data && data.error) || "NFL scoreboard unavailable");
+                if (!response.ok) {
+                    console.warn("FS5 NFL scoreboard failed", { status: response.status, data: data });
+                    throw new Error((data && data.error) || "NFL scoreboard unavailable");
+                }
+                var source = response.headers.get("X-FS5-Scoreboard-Source") || "unknown";
+                console.info("FS5 NFL scoreboard connected", { source: source, games: Array.isArray(data) ? data.length : 0 });
                 return Array.isArray(data) ? data : [];
             });
         });
@@ -306,34 +312,58 @@
         var p = playerMeta(id) || {};
         var game = scheduleGameForTeam(p.team, state.selectedWeek);
         if (!game) return null;
+
         var status = gameStatus(game);
         var start = playerGameStartMs(game);
-        // Always display game date/time in Eastern Time. The scoreboard proxy
-        // supplies preformatted Eastern values so browser locale/time-zone settings
-        // cannot shift the displayed date or kickoff time.
-        var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", year: "numeric" };
-        var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
-        var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
-        var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
         var home = String(game.home || game.home_team || game.homeTeam || "").toUpperCase();
         var away = String(game.away || game.away_team || game.awayTeam || "").toUpperCase();
         var team = String(p.team || "").toUpperCase();
         var opponent = team === home ? away : (team === away ? home : "");
-        var venueText = opponent ? (team === home ? "vs " : "@ ") + opponent : "";
+        var location = opponent ? (team === home ? "vs " : "@ ") + opponent : "";
+
+        // The player line intentionally mirrors Sleeper's useful game context:
+        // LIVE  -> current quarter/clock + live score
+        // FINAL -> final score only
+        // UPCOMING -> real Eastern kickoff + opponent
+        // Never parse Sleeper's date-only field as a timestamp.
         var stateText = status === "complete" ? "FINAL" : status === "in_game" ? "LIVE" : "UPCOMING";
         var stateClass = status === "complete" ? "final" : status === "in_game" ? "live" : "upcoming";
-        var scoreText = "";
-        if (status === "in_game") scoreText = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" · ");
-        if ((status === "in_game" || status === "complete") && game.home_score != null && game.away_score != null) scoreText += (scoreText ? " · " : "") + away + " " + game.away_score + " – " + home + " " + game.home_score;
-        // Final games should show the result beneath the player instead of a
-        // kickoff time. Upcoming games should show the actual ET kickoff.
-        if (status === "complete" && game.home_score != null && game.away_score != null) {
-            timeText = "";
-            dateText = "";
-            venueText = "";
-            scoreText = away + " " + game.away_score + " – " + home + " " + game.home_score;
+        var detailText = "";
+
+        var hasScore = game.home_score != null && game.away_score != null &&
+            Number.isFinite(Number(game.home_score)) && Number.isFinite(Number(game.away_score));
+
+        if ((status === "in_game" || status === "complete") && hasScore) {
+            var score = away + " " + game.away_score + " – " + home + " " + game.home_score;
+            if (status === "in_game") {
+                var clock = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" ");
+                detailText = [clock, score].filter(Boolean).join(" · ");
+            } else {
+                detailText = score;
+            }
+        } else if (status === "in_game") {
+            // Status can arrive a few seconds before the scoreboard has a score.
+            // Keep the line useful instead of falling back to an incorrect kickoff.
+            var liveClock = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" ");
+            detailText = liveClock || "Game in progress";
+        } else if (status === "pre_game") {
+            var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" };
+            var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
+            var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
+            var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
+            detailText = [dateText, timeText, location].filter(Boolean).join(" · ");
         }
-        return { game: game, status: status, stateText: stateText, stateClass: stateClass, dateText: dateText, timeText: timeText, venueText: venueText, scoreText: scoreText };
+
+        return {
+            game: game,
+            status: status,
+            stateText: stateText,
+            stateClass: stateClass,
+            dateText: "",
+            timeText: "",
+            venueText: "",
+            scoreText: detailText
+        };
     }
 
     function renderPlayer(id, started, showGameData) {
@@ -347,8 +377,7 @@
         row.type = "button";
         row.className = "player-row" + (showGameData ? " player-row--game-data" : "");
         var gameInfo = showGameData ? playerGameInfo(id) : null;
-        var gameDetails = [gameInfo && gameInfo.dateText, gameInfo && gameInfo.timeText, gameInfo && gameInfo.venueText, gameInfo && gameInfo.scoreText].filter(Boolean).join(" · ");
-        var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameDetails) + '</span></span>' : '';
+        var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameInfo.scoreText || '') + '</span></span>' : '';
         row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small>' + gameMarkup + '</span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
         row.addEventListener("click", function () { openPlayerModal(id); });
         row.setAttribute("aria-label", "View " + playerName(id));
@@ -1416,12 +1445,13 @@
 
     function openPlayerModal(id) {
         var modal = $("player-modal"); if (!modal) return;
+        state.openPlayerId = String(id);
         var p = playerMeta(id); var body = $("player-modal-body");
         var stats = state.stats && state.stats[String(id)] || {};
         body.replaceChildren();
         var detail = document.createElement('div'); detail.className = 'player-detail';
         var pGame = playerGameInfo(id);
-        var pGameMarkup = pGame ? '<div class="player-detail__game"><b>' + esc(pGame.stateText) + '</b><span>' + esc(pGame.dateText + ' · ' + pGame.timeText + (pGame.venueText ? ' · ' + pGame.venueText : '') + (pGame.scoreText ? ' · ' + pGame.scoreText : '')) + '</span></div>' : '';
+        var pGameMarkup = pGame ? '<div class="player-detail__game player-detail__game--' + pGame.stateClass + '"><b>' + esc(pGame.stateText) + '</b><span>' + esc(pGame.scoreText || '') + '</span></div>' : '';
         detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div>' + pGameMarkup + '</div>';
         body.appendChild(detail);
         var meta = document.createElement('dl'); meta.className = 'player-meta';
@@ -1446,7 +1476,7 @@
         modal.hidden = false; document.body.classList.add("modal-open"); $("player-modal-close").focus();
     }
 
-    function closeModals() { document.querySelectorAll(".fs5-modal").forEach(function (m) { m.hidden = true; }); document.body.classList.remove("modal-open"); }
+    function closeModals() { document.querySelectorAll(".fs5-modal").forEach(function (m) { m.hidden = true; }); document.body.classList.remove("modal-open"); state.openPlayerId = null; }
 
     function esc(value) { return String(value == null ? "" : value).replace(/[&<>'"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]; }); }
 
@@ -1532,6 +1562,25 @@
         });
     }
 
+    function refreshOpenPlayerModal() {
+        if (!state.openPlayerId) return;
+        var modal = $("player-modal");
+        if (!modal || modal.hidden) return;
+        var detail = modal.querySelector(".player-detail");
+        if (!detail) return;
+        var pGame = playerGameInfo(state.openPlayerId);
+        var old = detail.querySelector(".player-detail__game");
+        if (old) old.remove();
+        if (pGame) {
+            var game = document.createElement("div");
+            game.className = "player-detail__game player-detail__game--" + pGame.stateClass;
+            game.innerHTML = "<b>" + esc(pGame.stateText) + "</b><span>" + esc(pGame.scoreText || "") + "</span>";
+            var chips = detail.querySelector(".player-detail__chips");
+            if (chips) chips.insertAdjacentElement("afterend", game);
+            else detail.appendChild(game);
+        }
+    }
+
     async function loadWeek(week) {
         grid.setAttribute("aria-busy", "true");
         weekContext.textContent = "Loading Week " + week + "...";
@@ -1547,7 +1596,10 @@
             console.error("FS5 Sleeper matchup request failed", error);
             grid.replaceChildren(); grid.hidden = true; empty.hidden = false; empty.textContent = "Sleeper matchup data could not be loaded. Please try again.";
             weekContext.textContent = "Unable to load Week " + week + ". " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
-        } finally { grid.setAttribute("aria-busy", "false"); }
+        } finally {
+            grid.setAttribute("aria-busy", "false");
+            refreshOpenPlayerModal();
+        }
     }
 
     function setLiveTheme(theme) {

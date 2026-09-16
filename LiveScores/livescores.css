@@ -385,3 +385,21 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
   background:linear-gradient(90deg,#00376b 0%,#1976b9 50%,#00376b 100%) !important;
   color:#fff !important;
 }
+
+/* Sleeper-style player game status: one compact, useful game line. */
+.player-game-info{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;margin-top:4px;font-size:.60rem;line-height:1.2;min-width:0;white-space:nowrap}
+.player-game-info b{font-size:.55rem;letter-spacing:.06em;font-weight:900;flex:0 0 auto}
+.player-game-info span{color:#60727f;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.player-game-info--live b{color:#11834a}
+.player-game-info--final b{color:#6d7881}
+.player-game-info--upcoming b{color:#1976d2}
+.player-detail__game{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;padding:9px 11px;border-radius:10px;background:#f5f8fa;border:1px solid #dfe7ec}
+.player-detail__game b{font-size:.66rem;letter-spacing:.06em}
+.player-detail__game span{font-weight:800;font-size:.78rem}
+.player-detail__game--live b{color:#11834a}
+.player-detail__game--final b{color:#68757e}
+.player-detail__game--upcoming b{color:#1976d2}
+.fs5-live-dark .player-game-info span{color:#9cafba}
+.fs5-live-dark .player-detail__game{background:#17242d;border-color:#2b3c47}
+.fs5-live-dark .player-detail__game span{color:#d0dce3}
+@media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}.player-detail__game span{font-size:.72rem}}
