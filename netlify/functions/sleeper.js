@@ -82,8 +82,14 @@ async function getNflScoreboard(season, week) {
         const st = comp.status || event.status || {};
         const type = st.type || {};
         const mapTeam = c => c.team && (c.team.abbreviation || c.team.shortDisplayName || c.team.displayName) || '';
+        const startMs = Date.parse(String(event.date || ''));
+        const eastern = Number.isFinite(startMs) ? new Intl.DateTimeFormat('en-US', { timeZone:'America/New_York', weekday:'short', month:'short', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true }).formatToParts(new Date(startMs)) : [];
+        const part = key => { const hit = eastern.find(x => x.type === key); return hit ? hit.value : ''; };
+        const easternDate = eastern.length ? [part('weekday'), part('month'), part('day'), part('year')].filter(Boolean).join(' ') : '';
+        const easternTime = eastern.length ? [part('hour'), part('minute'), part('dayPeriod')].filter(Boolean).join(':').replace(':AM', ' AM').replace(':PM', ' PM') + ' ET' : '';
         return {
           id: event.id, week: Number(week), date: event.date, start_time: event.date,
+          eastern_date: easternDate, eastern_time: easternTime,
           home: mapTeam(home), away: mapTeam(away), home_score: Number(home.score || 0), away_score: Number(away.score || 0),
           status: type.completed ? 'complete' : (type.state === 'in' ? 'in_game' : 'pre_game'),
           period: Number(st.period || 0), clock: st.displayClock || '', detail: type.shortDetail || type.detail || ''
