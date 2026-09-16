@@ -403,3 +403,46 @@ html,body{max-width:100%;overflow-x:hidden;overscroll-behavior-x:none}
 .fs5-live-dark .player-detail__game{background:#17242d;border-color:#2b3c47}
 .fs5-live-dark .player-detail__game span{color:#d0dce3}
 @media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}.player-detail__game span{font-size:.72rem}}
+
+/* FS5 Broadcast mobile overlap fix: the crawl viewport must occupy only the
+   space to the right of the fixed title.  The older mobile span rule was
+   making the viewport itself width:max-content, allowing the crawl to pass
+   underneath the title on phones. */
+@media (max-width:700px){
+  .fs5-broadcast{
+    display:grid!important;
+    grid-template-columns:max-content minmax(0,1fr)!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    overflow:hidden!important;
+  }
+  .fs5-broadcast > strong{
+    grid-column:1!important;
+    grid-row:1!important;
+    width:max-content!important;
+    min-width:0!important;
+    position:relative!important;
+    z-index:5!important;
+    white-space:nowrap!important;
+  }
+  .fs5-broadcast > .fs5-broadcast__viewport{
+    grid-column:2!important;
+    grid-row:1!important;
+    display:block!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    position:relative!important;
+    white-space:nowrap!important;
+  }
+  .fs5-broadcast > .fs5-broadcast__viewport > .fs5-broadcast__track{
+    display:inline-block!important;
+    width:max-content!important;
+    max-width:none!important;
+    white-space:nowrap!important;
+    animation:fs5-broadcast-crawl 16s linear infinite!important;
+  }
+}
