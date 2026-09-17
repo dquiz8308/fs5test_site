@@ -1428,6 +1428,36 @@
         card.appendChild(recap);
     }
 
+    function benchPlayerIds(matchup) {
+        var roster = (state.rosterMap.get(String(matchup.roster_id)) || {}).roster || {};
+        var starters = new Set(getTeamPlayerIds(matchup));
+        return (Array.isArray(roster.players) ? roster.players : []).filter(function (id) { return id && !starters.has(String(id)); }).map(String);
+    }
+
+    function appendPostgameAwards(card, teams) {
+        var starters = [], benches = [];
+        teams.forEach(function (team) {
+            getTeamPlayerIds(team).forEach(function (id) { starters.push({ id: id, team: team, points: getPlayerPoints(id), projection: getProjection(id) }); });
+            benchPlayerIds(team).forEach(function (id) { benches.push({ id: id, team: team, points: getPlayerPoints(id) }); });
+        });
+        var mvp = starters.slice().sort(function (a, b) { return b.points - a.points; })[0];
+        var boom = starters.filter(function (player) { return player.projection > 0; }).sort(function (a, b) { return (b.points - b.projection) - (a.points - a.projection); })[0];
+        var benchByTeam = teams.map(function (team) { return { team: team, points: benchPlayerIds(team).reduce(function (sum, id) { return sum + getPlayerPoints(id); }, 0) }; });
+        var mostBench = benchByTeam.slice().sort(function (a, b) { return b.points - a.points; })[0];
+        var aScore = Number(teams[0].points || 0), bScore = Number(teams[1].points || 0), margin = Math.abs(aScore - bScore);
+        var loser = aScore === bScore ? null : (aScore < bScore ? teams[0] : teams[1]);
+        var regret = loser ? benches.filter(function (player) { return player.team === loser; }).sort(function (a, b) { return b.points - a.points; })[0] : null;
+        var awards = [];
+        if (boom && boom.points - boom.projection > 0) awards.push({ label: '🚀 BIGGEST BOOM', value: playerName(boom.id), detail: '+' + formatScore(boom.points - boom.projection) + ' vs projection' });
+        else awards.push({ label: '📏 FINAL MARGIN', value: formatScore(margin) + ' pts', detail: margin < 5 ? 'A true escape' : 'The final separation' });
+        if (regret && regret.points > margin) awards.push({ label: '🪑 BENCH REGRET', value: playerName(regret.id), detail: formatScore(regret.points) + ' bench points would have covered it' });
+        else if (mostBench && mostBench.points > 0) awards.push({ label: '💺 MOST ON BENCH', value: teamLabel(mostBench.team), detail: formatScore(mostBench.points) + ' bench points' });
+        if (!awards.length || !mvp) return;
+        var section = document.createElement('section'); section.className = 'postgame-awards';
+        section.innerHTML = awards.map(function (award) { return '<div class="postgame-award"><span>' + award.label + '</span><strong>' + esc(award.value) + '</strong><small>' + esc(award.detail) + '</small></div>'; }).join('');
+        card.appendChild(section);
+    }
+
     function cardVibe(teams) {
         var p=matchupProbability(teams[0],teams[1]), max=Math.max(p.a,p.b), min=Math.min(p.a,p.b);
         if(teamIsFinished(teams[0]) && teamIsFinished(teams[1])) return ' matchup-card--final';
@@ -1853,7 +1883,10 @@
             });
             if (isFinalMatchup) {
                 appendPostgameRecap(card, teams);
-                appendMatchupSuperlatives(card, teams);
+                if (state.statsWeek === state.selectedWeek) {
+                    appendMatchupSuperlatives(card, teams);
+                    appendPostgameAwards(card, teams);
+                }
                 var finalTrash = document.createElement("div"); finalTrash.className="trash-talk"; finalTrash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(finalTrash);
             } else {
                 appendPredictor(card, teams);
@@ -1876,6 +1909,28 @@
         });
         state.notificationsPrimed = true;
         renderLeagueSuperlatives();
+        renderWeeklyRecap();
+    }
+
+    function renderWeeklyRecap() {
+        var box = $('weekly-recap'); if (!box) return;
+        if (state.statsWeek !== state.selectedWeek) { box.hidden = true; box.innerHTML = ''; return; }
+        var groups = new Map();
+        state.matchups.forEach(function (matchup) { var key = matchupKey(matchup); if (!groups.has(key)) groups.set(key, []); groups.get(key).push(matchup); });
+        var rows = Array.from(groups.values()).filter(function (teams) { return teams.length >= 2; }).map(function (teams) { return { teams: teams.slice(0, 2), final: (state.selectedWeek < state.currentWeek) || (teamIsFinished(teams[0]) && teamIsFinished(teams[1])) }; });
+        if (!rows.length || !rows.every(function (row) { return row.final; })) { box.hidden = true; box.innerHTML = ''; return; }
+        var high = rows.map(function (row) { return row.teams; }).reduce(function (best, teams) { return Number(teams[0].points || 0) >= Number(teams[1].points || 0) && Number(teams[0].points || 0) > best.score ? { team: teamLabel(teams[0]), score: Number(teams[0].points || 0) } : (Number(teams[1].points || 0) > best.score ? { team: teamLabel(teams[1]), score: Number(teams[1].points || 0) } : best); }, { team: '', score: -Infinity });
+        var closest = rows.slice().sort(function (a, b) { return Math.abs(Number(a.teams[0].points || 0) - Number(a.teams[1].points || 0)) - Math.abs(Number(b.teams[0].points || 0) - Number(b.teams[1].points || 0)); })[0];
+        var closestMargin = Math.abs(Number(closest.teams[0].points || 0) - Number(closest.teams[1].points || 0));
+        var biggestBench = rows.map(function (row) { return row.teams; }).reduce(function (best, teams) { return teams.reduce(function (currentBest, team) { var points = benchPlayerIds(team).reduce(function (sum, id) { return sum + getPlayerPoints(id); }, 0); return points > currentBest.points ? { team: teamLabel(team), points: points } : currentBest; }, best); }, { team: 'No bench scoring', points: 0 });
+        var shareText = 'FS5 Week ' + state.selectedWeek + ' Final Recap\n🏆 High score: ' + high.team + ' (' + formatScore(high.score) + ')\n😬 Closest finish: ' + teamLabel(closest.teams[0]) + ' vs ' + teamLabel(closest.teams[1]) + ' (' + formatScore(closestMargin) + ' pts)\n💺 Most left on bench: ' + biggestBench.team + ' (' + formatScore(Math.max(0, biggestBench.points)) + ')';
+        box.hidden = false;
+        box.innerHTML = '<div class="weekly-recap__head"><strong>🏁 WEEK ' + state.selectedWeek + ' FINAL RECAP</strong><button class="weekly-recap__share" type="button">Share recap</button></div><div class="weekly-recap__stats"><div><span>HIGH SCORE</span><strong>' + esc(high.team) + ' · ' + formatScore(high.score) + '</strong></div><div><span>CLOSEST FINISH</span><strong>' + esc(teamLabel(closest.teams[0])) + ' vs ' + esc(teamLabel(closest.teams[1])) + ' · ' + formatScore(closestMargin) + '</strong></div><div><span>MOST ON BENCH</span><strong>' + esc(biggestBench.team) + ' · ' + formatScore(Math.max(0, biggestBench.points)) + '</strong></div></div>';
+        box.querySelector('.weekly-recap__share').addEventListener('click', function () {
+            var button = this;
+            if (navigator.share) { navigator.share({ title: 'FS5 Week ' + state.selectedWeek + ' Final Recap', text: shareText }).catch(function () {}); return; }
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(shareText).then(function () { button.textContent = 'Copied!'; }).catch(function () {});
+        });
     }
 
     function renderLeagueSuperlatives() {
