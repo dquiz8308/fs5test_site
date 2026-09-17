@@ -1571,13 +1571,22 @@
     }
 
     async function loadPublicGotwMarkets() {
+        var cachedMarkets = [];
+        try {
+            var cached = JSON.parse(localStorage.getItem('fs5_public_gotw_markets') || 'null');
+            cachedMarkets = cached && Array.isArray(cached.markets) ? cached.markets : [];
+        } catch (e) {}
+        state.gotwMarkets = cachedMarkets;
         try {
             var response = await fetch("/gotw.json?ts=" + Date.now(), { cache: "no-store" });
             if (!response.ok) throw new Error("GOTW configuration unavailable");
             var payload = await response.json();
             state.gotwMarkets = payload && Array.isArray(payload.markets) ? payload.markets : [];
         } catch (e) {
-            state.gotwMarkets = [];
+            // FS5 Sportsbook stores its current public market snapshot on the
+            // shared site origin after a member loads the book. Use it when a
+            // standalone published snapshot is unavailable.
+            state.gotwMarkets = cachedMarkets;
         }
     }
 
@@ -1597,13 +1606,14 @@
         }) || null;
     }
 
-    function addGotwPresentation(card, market) {
+    function addGotwPresentation(card, market, matchupState) {
         if (!market) return;
         card.classList.add("matchup-card--gotw");
+        card.classList.toggle("matchup-card--gotw-live", matchupState === "LIVE");
         var number = Number(market.gotwNumber);
         var ribbon = document.createElement("div");
         ribbon.className = "gotw-ribbon";
-        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK</strong><small>' + esc(market.marketTitle || (Number.isFinite(number) ? "GOTW #" + number : "LIVE FROM THE FS5 SPORTSBOOK")) + '</small></span>';
+        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK ' + (Number.isFinite(number) ? "#" + number : "") + '</strong><small>' + esc(market.marketTitle || "FEATURED BY THE FS5 SPORTSBOOK") + '</small></span><span class="gotw-ribbon__signal">' + (matchupState === "LIVE" ? "LIVE FEATURE" : "SPOTLIGHT MATCHUP") + '</span>';
         card.insertBefore(ribbon, card.firstChild);
         var badgeEl = document.createElement("span");
         badgeEl.className = "matchup-card__gotw-badge";
@@ -1650,9 +1660,12 @@
             head.className = "matchup-card__head";
             var matchupFinished = teamIsFinished(teams[0]) && teamIsFinished(teams[1]);
             var matchupState = matchupFinished || week < state.currentWeek ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
-            head.innerHTML = '<span>Matchup ' + esc(entry[0]) + '</span><span class="matchup-card__state' + (matchupState === 'LIVE' ? ' is-current' : '') + '">' + matchupState + '</span>';
+            var gotwNumber = Number(gotwMarket && gotwMarket.gotwNumber);
+            var matchupTitle = gotwMarket && matchupState !== 'FINAL' ? 'Game of the Week ' + (Number.isFinite(gotwNumber) ? gotwNumber : '') : 'Matchup ' + entry[0];
+            card.setAttribute("aria-label", "Open " + matchupTitle.trim());
+            head.innerHTML = '<span>' + esc(matchupTitle.trim()) + '</span><span class="matchup-card__state' + (matchupState === 'LIVE' ? ' is-current' : '') + '">' + matchupState + '</span>';
             card.appendChild(head);
-            addGotwPresentation(card, gotwMarket);
+            if (matchupState !== 'FINAL') addGotwPresentation(card, gotwMarket, matchupState);
             teams.forEach(function (matchup, index) {
                 var info = state.rosterMap.get(String(matchup.roster_id));
                 var team = document.createElement("div"); team.className = "matchup-team";
