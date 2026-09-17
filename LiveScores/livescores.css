@@ -153,6 +153,7 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .week-toolbar,.fs5-live-dark .scoreboard,.fs5-live-dark .live-guide details,.fs5-live-dark .league-leaderboard{background:#122331;border-color:#294052;box-shadow:0 8px 24px rgba(0,0,0,.22)}
 .fs5-live-dark .week-control label,.fs5-live-dark .week-context,.fs5-live-dark .source-note{color:#9cb1c0}
 .fs5-live-dark .week-control select{background:#172b3a;color:#e7f0f5;border-color:#3b5668}
+.fs5-live-dark .week-control select option,.fs5-live-dark .week-control select option:checked{background:#172b3a;color:#f0f6f9}
 .fs5-live-dark .refresh-button{background:#0e6ca7}
 .fs5-live-dark .section-heading h2,.fs5-live-dark .team-identity h3,.fs5-live-dark .player-main strong,.fs5-live-dark .player-detail h2,.fs5-live-dark .modal-matchup-title,.fs5-live-dark .modal-team-header h3,.fs5-live-dark .modal-team-column h4{color:#e8f2f7}
 .fs5-live-dark .section-kicker,.fs5-live-dark .week-control label{color:#8fa8b8}
