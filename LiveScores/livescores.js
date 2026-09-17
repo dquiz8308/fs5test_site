@@ -3,7 +3,9 @@
 
     var LEAGUE_ID = "1387297022695993344";
     var REFRESH_MS = 10000;
+    var IDLE_REFRESH_MS = 30000;
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
+    var PROJECTION_CACHE_MS = 5 * 60 * 1000;
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
@@ -28,7 +30,11 @@
         lowerThirdTimer: null,
         snapshot: null,
         gameFlow: {},
-        gotwMarkets: []
+        gotwMarkets: [],
+        gameCache: new Map(),
+        projectionCache: new Map(),
+        lastAutoRefreshAt: 0,
+        isLoading: false
     };
 
     var $ = function (id) { return document.getElementById(id); };
@@ -607,6 +613,8 @@
         if (!team) return null;
         var aliases = nflTeamAliases(team);
         var targetWeek = Number(week != null ? week : state.selectedWeek);
+        var cacheKey = String(targetWeek) + "|" + String(team).toUpperCase();
+        if (state.gameCache.has(cacheKey)) return state.gameCache.get(cacheKey);
 
         // Sleeper is the authoritative source for fantasy-week/game state because
         // it reliably tells us whether the NFL game is pre_game, in_game or complete.
@@ -634,7 +642,10 @@
         // Match the real-world ESPN game to the Sleeper game by both teams.
         var sleeper = sleeperGames[0] || null;
         var espn = espnGames[0] || null;
-        if (!sleeper && !espn) return null;
+        if (!sleeper && !espn) {
+            state.gameCache.set(cacheKey, null);
+            return null;
+        }
 
         if (espn) {
             var merged = Object.assign({}, espn);
@@ -650,12 +661,13 @@
                 if (!merged.home) merged.home = sleeper.home;
                 if (!merged.away) merged.away = sleeper.away;
             }
+            state.gameCache.set(cacheKey, merged);
             return merged;
         }
 
         // ESPN did not return this game. Keep the Sleeper game so FINAL/LIVE/UPCOMING
         // state still works, but deliberately do not manufacture a kickoff time.
-        return Object.assign({}, sleeper, {
+        var sleeperOnly = Object.assign({}, sleeper, {
             start_time: null,
             startTime: null,
             start: null,
@@ -667,6 +679,8 @@
             home_score: null,
             away_score: null
         });
+        state.gameCache.set(cacheKey, sleeperOnly);
+        return sleeperOnly;
     }
 
     function playerAvailableTimePct(playerIds) {
@@ -1926,7 +1940,11 @@
         var persisted = loadReactionSnapshot();
         var statsPaths = ["/stats/nfl/regular/" + season + "/" + week, "/stats/nfl/" + season + "/" + week + "?season_type=regular"];
         var projectionPaths = ["/projections/nfl/regular/" + season + "/" + week, "/projections/nfl/" + season + "/" + week + "?season_type=regular"];
-        return Promise.allSettled([loadPlayerCache(), optionalApi(statsPaths).catch(function () { return {}; }), optionalApi(projectionPaths).catch(function () { return {}; })]).then(function (results) {
+        var projectionKey = season + "-" + week;
+        var cachedProjection = state.projectionCache.get(projectionKey);
+        var projectionRequest = cachedProjection && Date.now() - cachedProjection.saved < PROJECTION_CACHE_MS ?
+            Promise.resolve(cachedProjection.data) : optionalApi(projectionPaths).catch(function () { return {}; });
+        return Promise.allSettled([loadPlayerCache(), optionalApi(statsPaths).catch(function () { return {}; }), projectionRequest]).then(function (results) {
             if (state.stats && Object.keys(state.stats).length) {
                 state.previousStats = state.stats;
             } else if (persisted && persisted.td) {
@@ -1938,6 +1956,9 @@
             if (!Object.keys(state.previousScores || {}).length && persisted && persisted.scores) state.previousScores = persisted.scores;
             state.stats = results[1].status === "fulfilled" && results[1].value ? results[1].value : {};
             state.projections = results[2].status === "fulfilled" && results[2].value ? results[2].value : {};
+            if (!cachedProjection && Object.keys(state.projections).length) {
+                state.projectionCache.set(projectionKey, { saved: Date.now(), data: state.projections });
+            }
             renderMatchups(state.matchups, week);
             state.matchups.forEach(function (m) { if (m && m.roster_id != null) state.previousScores[String(m.roster_id)] = Number(m.points || 0); });
             saveReactionSnapshot();
@@ -1964,20 +1985,24 @@
     }
 
     async function loadWeek(week) {
+        state.isLoading = true;
         grid.setAttribute("aria-busy", "true");
         weekContext.textContent = "Loading Week " + week + "...";
         try {
-            state.nflGames = await scoreboardApi(week).catch(function (error) {
+            var scoreboardRequest = scoreboardApi(week).catch(function (error) {
                 console.warn("FS5 Netlify scoreboard failed; trying ESPN directly", error);
                 return directScoreboardApi(week).catch(function (fallbackError) {
                     console.warn("FS5 direct ESPN scoreboard failed", fallbackError);
                     return state.nflGames || [];
                 });
             });
-            var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
+            var responses = await Promise.all([scoreboardRequest, api("/league/" + LEAGUE_ID + "/matchups/" + week)]);
+            state.nflGames = responses[0];
+            var matchups = responses[1];
             state.selectedWeek = week; weekSelect.value = String(week);
+            state.gameCache.clear();
             renderMatchups(matchups, week);
-            weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · auto-refresh every 10 seconds" : "2026 season · " + weekLabel(week);
+            weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · adaptive auto-refresh" : "2026 season · " + weekLabel(week);
             setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
             loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
         } catch (error) {
@@ -1986,6 +2011,8 @@
             weekContext.textContent = "Unable to load Week " + week + ". " + (error.message || "Unknown Sleeper error"); setStatus("Sleeper connection error", "error");
         } finally {
             grid.setAttribute("aria-busy", "false");
+            state.lastAutoRefreshAt = Date.now();
+            state.isLoading = false;
             refreshOpenPlayerModal();
         }
     }
@@ -2008,6 +2035,16 @@
         document.querySelectorAll('[data-live-theme]').forEach(function(btn){
             btn.addEventListener('click', function(){ setLiveTheme(btn.getAttribute('data-live-theme')); });
         });
+    }
+
+    function liveNflGameInProgress() {
+        return state.nflGames.some(function (game) { return gameStatus(game) === "in_game"; });
+    }
+
+    function shouldAutoRefresh() {
+        if (state.isLoading || document.visibilityState !== "visible" || state.selectedWeek !== state.currentWeek) return false;
+        var interval = liveNflGameInProgress() ? REFRESH_MS : IDLE_REFRESH_MS;
+        return Date.now() - state.lastAutoRefreshAt >= interval;
     }
 
     async function initialize() {
@@ -2041,7 +2078,7 @@
         if (e.target.matches("[data-close-modal]")) closeModals();
     });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
-    setInterval(function () { if (document.visibilityState === "visible" && state.selectedWeek === state.currentWeek) loadWeek(state.currentWeek); }, REFRESH_MS);
+    setInterval(function () { if (shouldAutoRefresh()) loadWeek(state.currentWeek); }, REFRESH_MS);
     initializeLiveTheme();
     initialize();
 })();
