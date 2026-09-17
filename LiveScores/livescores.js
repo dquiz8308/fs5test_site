@@ -396,9 +396,18 @@
         return gameStatus(game) === "complete";
     }
 
+    function playerGameHasStarted(id) {
+        var p = playerMeta(id) || {};
+        var status = gameStatus(scheduleGameForTeam(p.team, state.selectedWeek));
+        return status === "in_game" || status === "complete";
+    }
+
     function playerTrendBadge(id) {
         var points = getPlayerPoints(id), projection = getProjection(id), prev = getPreviousPlayerPoints(id);
         var badges = [];
+        // Player performance badges describe actual football activity. A future
+        // starter has not had a chance to meet or miss a projection yet.
+        if (!playerGameHasStarted(id)) return "";
         if (points === 0 && playerGameIsFinal(id)) badges.push('<span class="player-trend player-trend--snow" title="Final game · 0 fantasy points">❄️</span>');
         if (playerIsMatchupMvp(id)) badges.push('<span class="player-trend player-trend--mvp">👑</span>');
         var td = playerTouchdownDelta(id);
