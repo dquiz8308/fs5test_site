@@ -184,6 +184,15 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .matchup-card--witching{background:radial-gradient(circle at 50% 0%,rgba(102,68,139,.28),transparent 52%),radial-gradient(circle at 18% 18%,rgba(246,201,77,.10),transparent 28%),linear-gradient(180deg,#1b1527,#122331 55%);border-color:#654b7e}
 .fs5-live-dark .matchup-card--victory{background:radial-gradient(circle at 50% 0%,rgba(240,195,65,.25),transparent 52%),linear-gradient(180deg,#2a2718,#122331 55%);border-color:#806d35}
 
+/* Keep inherited light-theme ink from becoming unreadable on dark Live Scores surfaces. */
+.fs5-live-dark .live-main,.fs5-live-dark .power-rankings,.fs5-live-dark .scoreboard,.fs5-live-dark .matchup-card,.fs5-live-dark .matchup-team,.fs5-live-dark .player-row,.fs5-live-dark .player-modal__panel{color:#dbe8ee}
+.fs5-live-dark .power-row{background:#152a39;border-color:#294052}
+.fs5-live-dark .analytics-note,.fs5-live-dark .power-team span,.fs5-live-dark .power-score small,.fs5-live-dark .muted,.fs5-live-dark .projected-finish small,.fs5-live-dark .points-bank__team small,.fs5-live-dark .bench-details summary{color:#b6cad6}
+.fs5-live-dark .power-rank,.fs5-live-dark .power-team strong,.fs5-live-dark .power-score b,.fs5-live-dark .matchup-mvp strong,.fs5-live-dark .bench-details summary{color:#e8f2f7}
+.fs5-live-dark .player-news{background:#152a39;border-color:#29404f}
+.fs5-live-dark .player-news__head h4{color:#e5f0f5}
+.fs5-live-dark .player-news__head span{color:#91aab9}
+
 @media(max-width:700px){.live-hero__tools{width:100%;align-items:flex-start}.live-theme-toggle{align-self:flex-start}}
 
 /* Full scoreboard touchdown animation — remains visible for 10 seconds after a detected TD. */
