@@ -1332,6 +1332,14 @@
         });
     }
 
+    function matchupHasStarted(a, b) {
+        return getTeamPlayerIds(a).concat(getTeamPlayerIds(b)).some(function (id) {
+            var meta = playerMeta(id) || {};
+            var status = gameStatus(scheduleGameForTeam(meta.team, state.selectedWeek));
+            return status === 'in_game' || status === 'complete';
+        });
+    }
+
     function teamRecordPct(matchup) {
         var info = state.rosterMap.get(String(matchup.roster_id));
         if (!info) return null;
@@ -1606,7 +1614,8 @@
             var head = document.createElement("div");
             head.className = "matchup-card__head";
             var matchupFinished = teamIsFinished(teams[0]) && teamIsFinished(teams[1]);
-            head.innerHTML = '<span>Matchup ' + esc(entry[0]) + '</span><span class="matchup-card__state' + (week === state.currentWeek && !matchupFinished ? ' is-current' : '') + '">' + (matchupFinished || week < state.currentWeek ? 'FINAL' : (week === state.currentWeek ? 'LIVE' : 'UPCOMING')) + '</span>';
+            var matchupState = matchupFinished || week < state.currentWeek ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
+            head.innerHTML = '<span>Matchup ' + esc(entry[0]) + '</span><span class="matchup-card__state' + (matchupState === 'LIVE' ? ' is-current' : '') + '">' + matchupState + '</span>';
             card.appendChild(head);
             addGotwPresentation(card, gotwMarket);
             teams.forEach(function (matchup, index) {
