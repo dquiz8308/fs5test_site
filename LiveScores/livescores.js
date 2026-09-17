@@ -31,6 +31,10 @@
         notificationEventTimes: {},
         notificationMatchupStates: {},
         notificationsPrimed: false,
+        iceNotificationStates: {},
+        iceNotificationsPrimed: false,
+        statsWeek: null,
+        statsReadyForNotifications: false,
         broadcastCycle: 0,
         lowerThirdTimer: null,
         snapshot: null,
@@ -1670,10 +1674,43 @@
             if(st==='complete') frozen.push(item);
             else if(st==='in_game' && Number(game && game.period)>=4) watch.push(item);
         }); });
+        notifyIceWatchPlayers(watch, frozen);
         if(!watch.length && !frozen.length){ box.hidden=true; box.innerHTML=''; return; }
         box.hidden=false;
         function chips(items){return items.map(function(x){return '<span class="ice-player">❄️ <strong>'+esc(x.name)+'</strong><small>'+esc(x.team)+'</small></span>';}).join('');}
         box.innerHTML=(watch.length?'<section class="ice-panel ice-panel--watch"><div><b>🧊 ICE WATCH</b><span>Zero points entering the 4th quarter</span></div><div class="ice-players">'+chips(watch)+'</div></section>':'')+(frozen.length?'<section class="ice-panel ice-panel--baby"><div class="ice-snow">❄︎ ✦ ❄︎ ✧ ❄︎ ✦ ❄︎</div><div><b>❄️ ICE ICE BABY</b><span>Final · starting lineup goose eggs</span></div><div class="ice-players">'+chips(frozen)+'</div></section>':'');
+    }
+
+    function notifyIceWatchPlayers(watch, frozen) {
+        // Ice Watch is deliberately based on getTeamPlayerIds above, which
+        // returns starters only. Do not notify for a bench player with a zero.
+        if (state.selectedWeek !== state.currentWeek || state.statsWeek !== state.selectedWeek || !state.statsReadyForNotifications) return;
+        var weekKey = String(state.selectedWeek) + '-';
+        var nextStates = {};
+        watch.forEach(function (player) { nextStates[weekKey + player.id] = 'watch'; });
+        frozen.forEach(function (player) { nextStates[weekKey + player.id] = 'frozen'; });
+
+        // Seed the first fully loaded view. This prevents an old snapshot or
+        // page hydration from generating a burst of retrospective alerts.
+        if (!state.iceNotificationsPrimed) {
+            state.iceNotificationStates = nextStates;
+            state.iceNotificationsPrimed = true;
+            return;
+        }
+
+        watch.forEach(function (player) {
+            var key = weekKey + player.id;
+            if (state.iceNotificationStates[key] !== 'watch') {
+                sendLiveNotification('🧊 FS5 Ice Watch', player.name + ' is scoreless in the 4th quarter for ' + player.team + '.', 'ice-watch-' + key);
+            }
+        });
+        frozen.forEach(function (player) {
+            var key = weekKey + player.id;
+            if (state.iceNotificationStates[key] !== 'frozen') {
+                sendLiveNotification('❄️ FS5 Ice Ice Baby', player.name + ' finished with 0.00 points for ' + player.team + '.', 'ice-baby-' + key);
+            }
+        });
+        state.iceNotificationStates = nextStates;
     }
 
     async function loadPublicGotwMarkets() {
@@ -2094,6 +2131,7 @@
 
     function loadSupplemental(week) {
         var season = 2026;
+        state.statsReadyForNotifications = false;
         var persisted = loadReactionSnapshot();
         var statsPaths = ["/stats/nfl/regular/" + season + "/" + week, "/stats/nfl/" + season + "/" + week + "?season_type=regular"];
         var projectionPaths = ["/projections/nfl/regular/" + season + "/" + week, "/projections/nfl/" + season + "/" + week + "?season_type=regular"];
@@ -2112,6 +2150,8 @@
             }
             if (!Object.keys(state.previousScores || {}).length && persisted && persisted.scores) state.previousScores = persisted.scores;
             state.stats = results[1].status === "fulfilled" && results[1].value ? results[1].value : {};
+            state.statsWeek = week;
+            state.statsReadyForNotifications = true;
             state.projections = results[2].status === "fulfilled" && results[2].value ? results[2].value : {};
             if (!cachedProjection && Object.keys(state.projections).length) {
                 state.projectionCache.set(projectionKey, { saved: Date.now(), data: state.projections });
