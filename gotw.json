@@ -1,0 +1,28 @@
+{
+  "markets": [
+    {
+      "gotwNumber": 1,
+      "marketTitle": "Week 2 GOTW 1: Will vs Bailey",
+      "weekNumber": 2,
+      "status": "OPEN",
+      "owner1": {
+        "teamName": "Petey Blinders"
+      },
+      "owner2": {
+        "teamName": "The Jaxon FS5"
+      }
+    },
+    {
+      "gotwNumber": 2,
+      "marketTitle": "Week 2 GOTW 2: David vs Cody",
+      "weekNumber": 2,
+      "status": "OPEN",
+      "owner1": {
+        "teamName": "De'Vodgeball"
+      },
+      "owner2": {
+        "teamName": "Atlanta Nitro Hawgs"
+      }
+    }
+  ]
+}
