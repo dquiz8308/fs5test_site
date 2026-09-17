@@ -33,6 +33,7 @@
         gotwMarkets: [],
         gameCache: new Map(),
         projectionCache: new Map(),
+        playerSeasonStatsCache: new Map(),
         lastAutoRefreshAt: 0,
         isLoading: false
     };
@@ -1839,6 +1840,71 @@
         return section;
     }
 
+    function seasonStatNumber(stats, key) {
+        var value = stats && Number(stats[key]);
+        return Number.isFinite(value) ? value : 0;
+    }
+
+    function formatSeasonStat(value) {
+        return Number.isFinite(Number(value)) ? String(Number(value)) : '—';
+    }
+
+    function renderPlayerSeasonStats(section, data) {
+        var body = section.querySelector('.player-season__body');
+        var weeks = data && Array.isArray(data.weeks) ? data.weeks : [];
+        var keys = ['pts_ppr', 'pass_yd', 'pass_td', 'rush_yd', 'rush_td', 'rec', 'rec_yd', 'rec_td'];
+        var totals = {};
+        keys.forEach(function (key) { totals[key] = 0; });
+        var playedWeeks = 0;
+
+        var rows = weeks.map(function (entry) {
+            var stats = entry && entry.stats;
+            if (stats) playedWeeks += 1;
+            keys.forEach(function (key) { totals[key] += seasonStatNumber(stats, key); });
+            return '<tr><th scope="row">W' + esc(entry && entry.week || '—') + '</th>' +
+                '<td>' + (stats ? formatScore(seasonStatNumber(stats, 'pts_ppr')) : '—') + '</td>' +
+                '<td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'pass_yd')) : '—') + '</td><td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'pass_td')) : '—') + '</td>' +
+                '<td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'rush_yd')) : '—') + '</td><td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'rush_td')) : '—') + '</td>' +
+                '<td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'rec')) : '—') + '</td><td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'rec_yd')) : '—') + '</td><td>' + (stats ? formatSeasonStat(seasonStatNumber(stats, 'rec_td')) : '—') + '</td></tr>';
+        }).join('');
+
+        if (!playedWeeks) {
+            body.innerHTML = '<p class="muted">No completed-season stats are available yet.</p>';
+            return;
+        }
+
+        body.innerHTML = '<div class="player-season__totals"><span><b>' + formatScore(totals.pts_ppr) + '</b> PPR points</span><span><b>' + playedWeeks + '</b> week' + (playedWeeks === 1 ? '' : 's') + ' played</span></div>' +
+            '<div class="player-season__table-wrap"><table class="player-season__table"><thead><tr><th>Week</th><th>PPR</th><th>Pass Yds</th><th>Pass TD</th><th>Rush Yds</th><th>Rush TD</th><th>Rec</th><th>Rec Yds</th><th>Rec TD</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><th>Total</th><td>' + formatScore(totals.pts_ppr) + '</td><td>' + formatSeasonStat(totals.pass_yd) + '</td><td>' + formatSeasonStat(totals.pass_td) + '</td><td>' + formatSeasonStat(totals.rush_yd) + '</td><td>' + formatSeasonStat(totals.rush_td) + '</td><td>' + formatSeasonStat(totals.rec) + '</td><td>' + formatSeasonStat(totals.rec_yd) + '</td><td>' + formatSeasonStat(totals.rec_td) + '</td></tr></tfoot></table></div>';
+    }
+
+    function loadPlayerSeasonStats(id) {
+        var section = document.createElement('section');
+        section.className = 'player-season';
+        section.innerHTML = '<div class="player-season__head"><h4>2026 PPR Season</h4><span>Week-by-week totals</span></div><div class="player-season__body"><p class="muted">Loading season stats…</p></div>';
+        var cacheKey = '2026-' + state.selectedWeek + '-' + String(id);
+        var cached = state.playerSeasonStatsCache.get(cacheKey);
+        if (cached && Date.now() - cached.saved < 60 * 1000) {
+            renderPlayerSeasonStats(section, cached.data);
+            return section;
+        }
+        fetch('/.netlify/functions/sleeper?source=season-stats&season=2026&week=' + encodeURIComponent(state.selectedWeek) + '&player=' + encodeURIComponent(id), {
+            cache: 'no-store', headers: { 'Accept': 'application/json' }
+        }).then(function (response) {
+            return response.text().then(function (text) {
+                var data = {};
+                try { data = text ? JSON.parse(text) : {}; } catch (e) {}
+                if (!response.ok) throw new Error(data.error || 'Unable to load season stats.');
+                return data;
+            });
+        }).then(function (data) {
+            state.playerSeasonStatsCache.set(cacheKey, { saved: Date.now(), data: data });
+            renderPlayerSeasonStats(section, data);
+        }).catch(function (error) {
+            section.querySelector('.player-season__body').innerHTML = '<p class="muted">Season stats are temporarily unavailable. ' + esc(error.message || '') + '</p>';
+        });
+        return section;
+    }
+
     function openPlayerModal(id) {
         var modal = $("player-modal"); if (!modal) return;
         state.openPlayerId = String(id);
@@ -1854,6 +1920,7 @@
         meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';
         body.appendChild(meta);
         body.appendChild(loadPlayerNews(id));
+        body.appendChild(loadPlayerSeasonStats(id));
         var statEntries = Object.entries(stats || {}).filter(function (entry) {
             return entry[1] != null && entry[1] !== '' && Number(entry[1]) !== 0 && entry[0] !== 'pts_ppr' && entry[0] !== 'pts_half_ppr' && entry[0] !== 'pts_std';
         });

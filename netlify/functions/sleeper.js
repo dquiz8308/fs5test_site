@@ -5,10 +5,12 @@
 let playerCatalogCache = null;
 let playerCatalogFetchedAt = 0;
 const PLAYER_CATALOG_CACHE_MS = 24 * 60 * 60 * 1000;
+const PLAYER_SEASON_STATS_CACHE_MS = 60 * 1000;
+const playerSeasonStatsCache = new Map();
 
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
-  const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app')));
+  const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'season-stats' ? 'season-stats' : (qs.source === 'news' ? 'news' : 'app'))));
 
   if (source === 'scoreboard') {
     return getNflScoreboard(qs.season || '2026', qs.week || '1');
@@ -24,6 +26,10 @@ exports.handler = async function (event) {
 
   if (source === 'players') {
     return getRequestedPlayers(qs.ids || '');
+  }
+
+  if (source === 'season-stats') {
+    return getPlayerSeasonStats(qs.player || '', qs.season || '2026', qs.week || '1');
   }
 
   let path = qs.path || '';
@@ -120,6 +126,50 @@ async function getRequestedPlayers(idsParam) {
     },
     body: JSON.stringify(players)
   };
+}
+
+async function getPlayerSeasonStats(playerId, season, throughWeek) {
+  const id = String(playerId || '').trim();
+  const year = Number(season) || 2026;
+  const lastWeek = Math.max(1, Math.min(17, Number(throughWeek) || 1));
+  if (!/^[A-Za-z0-9_-]+$/.test(id)) return json(400, { error: 'A valid player ID is required.' });
+
+  const cacheKey = `${year}:${lastWeek}:${id}`;
+  const cached = playerSeasonStatsCache.get(cacheKey);
+  if (cached && Date.now() - cached.saved < PLAYER_SEASON_STATS_CACHE_MS) return cached.response;
+
+  async function getWeek(week) {
+    let lastError = 'Sleeper weekly stats request failed.';
+    for (const host of ['https://api.sleeper.app', 'https://api.sleeper.com']) {
+      try {
+        const response = await fetch(`${host}/v1/stats/nfl/regular/${year}/${week}`, {
+          headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
+        });
+        if (!response.ok) {
+          lastError = `Sleeper weekly stats returned ${response.status}.`;
+          continue;
+        }
+        const data = await response.json();
+        return { week, stats: data && data[id] || null };
+      } catch (err) {
+        lastError = err && err.message ? err.message : lastError;
+      }
+    }
+    throw new Error(lastError);
+  }
+
+  const results = await Promise.allSettled(Array.from({ length: lastWeek }, (_, index) => getWeek(index + 1)));
+  const weeks = results.map((result, index) => result.status === 'fulfilled' ? result.value : { week: index + 1, stats: null });
+  const response = {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=60'
+    },
+    body: JSON.stringify({ playerId: id, season: year, throughWeek: lastWeek, weeks })
+  };
+  playerSeasonStatsCache.set(cacheKey, { saved: Date.now(), response });
+  return response;
 }
 
 
