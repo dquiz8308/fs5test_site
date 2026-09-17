@@ -6,6 +6,7 @@
     var IDLE_REFRESH_MS = 30000;
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
     var PROJECTION_CACHE_MS = 5 * 60 * 1000;
+    var NOTIFICATION_PREFERENCE_KEY = "fs5_live_notifications_enabled";
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
@@ -26,6 +27,10 @@
         previousProbabilities: {},
         previousPlayerPoints: {},
         eventHistory: [],
+        notificationsEnabled: false,
+        notificationEventTimes: {},
+        notificationMatchupStates: {},
+        notificationsPrimed: false,
         broadcastCycle: 0,
         lowerThirdTimer: null,
         snapshot: null,
@@ -48,6 +53,8 @@
     var heading = $("scoreboard-heading");
     var kicker = $("scoreboard-kicker");
     var badge = $("week-badge");
+    var notificationsToggle = $("live-notifications-toggle");
+    var notificationsLabel = $("live-notifications-label");
 
     function api(path) {
         var url = "/.netlify/functions/sleeper?source=app&path=" + encodeURIComponent(path);
@@ -133,6 +140,62 @@
     function setStatus(text, kind) {
         status.textContent = text;
         status.className = "live-status" + (kind ? " is-" + kind : "");
+    }
+
+    function notificationsSupported() {
+        return "Notification" in window;
+    }
+
+    function updateNotificationsToggle() {
+        if (!notificationsToggle || !notificationsLabel) return;
+        var permission = notificationsSupported() ? Notification.permission : "unsupported";
+        var enabled = state.notificationsEnabled && permission === "granted";
+        notificationsToggle.classList.toggle("is-enabled", enabled);
+        notificationsToggle.setAttribute("aria-pressed", enabled ? "true" : "false");
+        notificationsToggle.disabled = permission === "unsupported" || permission === "denied";
+        if (permission === "unsupported") notificationsLabel.textContent = "Notifications unavailable";
+        else if (permission === "denied") notificationsLabel.textContent = "Notifications blocked";
+        else notificationsLabel.textContent = enabled ? "Notifications on" : "Notifications off";
+    }
+
+    function saveNotificationsPreference(enabled) {
+        state.notificationsEnabled = Boolean(enabled);
+        try { localStorage.setItem(NOTIFICATION_PREFERENCE_KEY, state.notificationsEnabled ? "true" : "false"); } catch (e) {}
+        updateNotificationsToggle();
+    }
+
+    function sendLiveNotification(title, message, eventKey) {
+        if (!state.notificationsEnabled || !notificationsSupported() || Notification.permission !== "granted") return;
+        var key = String(eventKey || title);
+        var now = Date.now();
+        if (state.notificationEventTimes[key] && now - state.notificationEventTimes[key] < 2 * 60 * 1000) return;
+        state.notificationEventTimes[key] = now;
+        try {
+            new Notification(title, { body: message, icon: "/artwork/fs5-ios-icon.png", tag: "fs5-live-" + key, renotify: true });
+        } catch (error) {
+            console.warn("FS5 live notification could not be displayed", error);
+        }
+    }
+
+    function initializeLiveNotifications() {
+        var saved = false;
+        try { saved = localStorage.getItem(NOTIFICATION_PREFERENCE_KEY) === "true"; } catch (e) {}
+        state.notificationsEnabled = saved && notificationsSupported() && Notification.permission === "granted";
+        updateNotificationsToggle();
+        if (!notificationsToggle) return;
+        notificationsToggle.addEventListener("click", function () {
+            if (!notificationsSupported() || Notification.permission === "denied") {
+                updateNotificationsToggle();
+                return;
+            }
+            if (state.notificationsEnabled) {
+                saveNotificationsPreference(false);
+                return;
+            }
+            Notification.requestPermission().then(function (permission) {
+                saveNotificationsPreference(permission === "granted");
+            }).catch(function () { saveNotificationsPreference(false); });
+        });
     }
 
     // Use Sleeper's custom team image when one is set. Sleeper stores custom
@@ -822,10 +885,11 @@
         return Math.max(0, n - b);
     }
 
-    function appendEvent(message, icon) {
+    function appendEvent(message, icon, notify, notificationKey) {
         if (!message) return;
         state.eventHistory.unshift({ message: message, icon: icon || "", at: Date.now() });
         state.eventHistory = state.eventHistory.slice(0, 12);
+        if (notify) sendLiveNotification("FS5 Live Scores", message, notificationKey || message);
     }
 
     function analyzeLiveEvents(matchups, week) {
@@ -839,7 +903,7 @@
                 appendEvent(teamLabel(m) + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼");
             }
             liveStarters.forEach(function (id) {
-                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) { seen.add(id); appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥"); }
+                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) { seen.add(id); appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥", true, "touchdown-" + id); }
             });
         });
         state.eventHistory = state.eventHistory.filter(function(e){ return !e.at || Date.now()-e.at < 5*60*1000; });
@@ -1492,7 +1556,19 @@
         if (finished) return;
         if (!alert) return;
         var el = document.createElement('div'); el.className = 'matchup-alert matchup-alert--' + alert.type; el.textContent = alert.text; card.appendChild(el);
+        sendLiveNotification("FS5 matchup alert", alert.text, "matchup-alert-" + alert.type + "-" + card.getAttribute("data-matchup-key"));
         setTimeout(function () { if (el.parentNode) { el.classList.add('is-fading'); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350); } }, 10000);
+    }
+
+    function notifyIfMatchupFinal(teams, isFinalMatchup, week) {
+        if (week !== state.currentWeek) return;
+        var key = matchupKey(teams[0]) || (String(teams[0].roster_id) + "-" + String(teams[1].roster_id));
+        var wasFinal = state.notificationMatchupStates[key];
+        state.notificationMatchupStates[key] = isFinalMatchup;
+        if (!state.notificationsPrimed || !isFinalMatchup || wasFinal) return;
+        var a = Number(teams[0].points || 0), b = Number(teams[1].points || 0);
+        var result = a === b ? "ended in a tie" : teamLabel(a > b ? teams[0] : teams[1]) + " won";
+        sendLiveNotification("FS5 final result", result + " · " + formatScore(a) + "–" + formatScore(b), "final-" + key);
     }
 
     function appendMatchupSuperlatives(card, teams) {
@@ -1699,10 +1775,12 @@
             head.className = "matchup-card__head";
             var matchupFinished = teamIsFinished(teams[0]) && teamIsFinished(teams[1]);
             var isFinalMatchup = matchupFinished || week < state.currentWeek;
+            notifyIfMatchupFinal(teams, isFinalMatchup, week);
             var matchupState = isFinalMatchup ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
             var gotwNumber = Number(gotwMarket && gotwMarket.gotwNumber);
             var matchupTitle = gotwMarket && matchupState !== 'FINAL' ? 'Game of the Week ' + (Number.isFinite(gotwNumber) ? gotwNumber : '') : 'Matchup ' + entry[0];
             card.setAttribute("aria-label", "Open " + matchupTitle.trim());
+            card.setAttribute("data-matchup-key", matchupKey(teams[0]));
             head.innerHTML = '<span>' + esc(matchupTitle.trim()) + '</span><span class="matchup-card__state' + (matchupState === 'LIVE' ? ' is-current' : '') + '">' + matchupState + '</span>';
             card.appendChild(head);
             if (matchupState !== 'FINAL') addGotwPresentation(card, gotwMarket, matchupState);
@@ -1748,6 +1826,7 @@
             card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); } });
             grid.appendChild(card);
         });
+        state.notificationsPrimed = true;
         renderLeagueSuperlatives();
     }
 
@@ -2158,5 +2237,6 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeModals(); });
     setInterval(function () { if (shouldAutoRefresh()) loadWeek(state.currentWeek); }, REFRESH_MS);
     initializeLiveTheme();
+    initializeLiveNotifications();
     initialize();
 })();

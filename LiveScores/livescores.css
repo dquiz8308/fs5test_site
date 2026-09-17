@@ -141,6 +141,7 @@ body.modal-open{overflow:hidden}
 
 /* Light / dark toggle */
 .live-hero__tools{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.live-notification-toggle{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(0,0,0,.16);color:#eaf5fb;font-size:.65rem;font-weight:900;cursor:pointer}.live-notification-toggle.is-enabled{background:rgba(42,180,104,.24);border-color:rgba(147,238,189,.7);color:#fff}.live-notification-toggle:focus-visible{outline:2px solid #fff;outline-offset:2px}.live-notification-toggle:disabled{cursor:not-allowed;opacity:.68}
 .live-theme-toggle{display:flex;align-items:center;padding:3px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:rgba(0,0,0,.16);backdrop-filter:blur(4px)}
 .live-theme-toggle button{border:0;background:transparent;color:#dcebf5;padding:6px 10px;border-radius:999px;font-size:.65rem;font-weight:900;cursor:pointer;transition:background .15s ease,color .15s ease}
 .live-theme-toggle button.is-active{background:#fff;color:#0b3658;box-shadow:0 2px 7px rgba(0,0,0,.16)}
@@ -196,7 +197,7 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .player-news__head h4{color:#e5f0f5}
 .fs5-live-dark .player-news__head span{color:#91aab9}
 
-@media(max-width:700px){.live-hero__tools{width:100%;align-items:flex-start}.live-theme-toggle{align-self:flex-start}}
+@media(max-width:700px){.live-hero__tools{width:100%;align-items:flex-start}.live-notification-toggle,.live-theme-toggle{align-self:flex-start}}
 
 /* Full scoreboard touchdown animation — remains visible for 10 seconds after a detected TD. */
 .score-box--touchdown{z-index:8}
