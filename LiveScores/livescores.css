@@ -220,14 +220,11 @@ body.modal-open{overflow:hidden}
 .score-box--touchdown>strong{animation:fs5-td-score-pulse .8s ease-in-out 2 alternate,fs5-score-emphasis 10s ease-in-out}
 @keyframes fs5-score-emphasis{0%,100%{filter:none}10%{filter:drop-shadow(0 0 8px rgba(242,138,46,.5))}20%{filter:none}}
 
-/* More sophisticated stadium lighting for matchup states. */
-.matchup-card--close:after,.matchup-card--nail:after,.matchup-card--witching:after,.matchup-card--victory:after{content:"";position:absolute;left:0;right:0;bottom:0;height:46%;pointer-events:none;opacity:.7;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.28),transparent 66%);mix-blend-mode:screen}
+/* Matchup-state emphasis without an overlay that obscures lineup details. */
 .matchup-card--close{box-shadow:0 0 0 1px rgba(25,118,210,.08),0 12px 30px rgba(25,118,210,.10),inset 0 1px 0 rgba(255,255,255,.7)}
 .matchup-card--nail{box-shadow:0 0 0 2px rgba(25,118,210,.16),0 12px 30px rgba(25,118,210,.15),inset 0 1px 0 rgba(255,255,255,.75)}
 .matchup-card--witching{box-shadow:0 0 0 2px rgba(107,75,142,.16),0 14px 34px rgba(73,49,96,.17),inset 0 1px 0 rgba(255,245,211,.35)}
 .matchup-card--victory{box-shadow:0 0 0 2px rgba(211,172,55,.18),0 14px 34px rgba(190,150,35,.16),inset 0 1px 0 rgba(255,250,205,.75)}
-.matchup-card--victory:after{background:radial-gradient(ellipse at 50% 100%,rgba(255,218,92,.18),transparent 66%);opacity:1}
-.matchup-card--witching:after{background:radial-gradient(ellipse at 50% 100%,rgba(112,72,151,.16),transparent 66%);opacity:1}
 
 /* Mobile scoreboard refinement */
 @media(max-width:700px){
