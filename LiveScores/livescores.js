@@ -2200,7 +2200,7 @@
             state.gameCache.clear();
             renderMatchups(matchups, week);
             weekContext.textContent = week === state.currentWeek ? "Current week · live scoring · adaptive auto-refresh" : "2026 season · " + weekLabel(week);
-            setStatus(week === state.currentWeek ? "Live · Sleeper connected" : "Historical week", week === state.currentWeek ? "live" : "");
+            setStatus(week === state.currentWeek ? "Live · Sleeper connected" : (week > state.currentWeek ? "Future week" : "Historical week"), week === state.currentWeek ? "live" : "");
             loadSupplemental(week).catch(function (e) { console.warn("FS5 supplemental Sleeper feeds unavailable", e); });
         } catch (error) {
             console.error("FS5 Sleeper matchup request failed", error);
