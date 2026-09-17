@@ -1936,7 +1936,6 @@
         var modal = $("player-modal"); if (!modal) return;
         state.openPlayerId = String(id);
         var p = playerMeta(id); var body = $("player-modal-body");
-        var stats = state.stats && state.stats[String(id)] || {};
         body.replaceChildren();
         var detail = document.createElement('div'); detail.className = 'player-detail';
         var pGame = playerGameInfo(id);
@@ -1948,21 +1947,6 @@
         body.appendChild(meta);
         body.appendChild(loadPlayerNews(id));
         body.appendChild(loadPlayerSeasonStats(id));
-        var statEntries = Object.entries(stats || {}).filter(function (entry) {
-            return entry[1] != null && entry[1] !== '' && Number(entry[1]) !== 0 && entry[0] !== 'pts_ppr' && entry[0] !== 'pts_half_ppr' && entry[0] !== 'pts_std';
-        });
-        if (statEntries.length) {
-            var statsHeading = document.createElement('h4'); statsHeading.textContent = 'Weekly Stats'; body.appendChild(statsHeading);
-            var statsGrid = document.createElement('div'); statsGrid.className = 'player-stats-grid';
-            var labels = { pass_att:'Pass Attempts', pass_cmp:'Completions', pass_yd:'Pass Yards', pass_td:'Pass TDs', pass_int:'Interceptions', rush_att:'Rush Attempts', rush_yd:'Rush Yards', rush_td:'Rush TDs', rec:'Receptions', rec_yd:'Receiving Yards', rec_td:'Receiving TDs', rec_tgt:'Targets', fum:'Fumbles', fum_lost:'Fumbles Lost', two_pt:'2-Point Conversions', bonus_100_rush_yd:'100+ Rush Bonus', bonus_100_rec_yd:'100+ Rec Bonus', bonus_300_pass_yd:'300+ Pass Bonus' };
-            statEntries.sort(function(a,b){ return (labels[a[0]] || a[0]).localeCompare(labels[b[0]] || b[0]); }).forEach(function(entry) {
-                var cell = document.createElement('div'); cell.className = 'player-stat-cell';
-                var label = document.createElement('span'); label.textContent = labels[entry[0]] || entry[0].replace(/_/g, ' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-                var value = document.createElement('strong'); value.textContent = Number.isFinite(Number(entry[1])) ? String(Number(entry[1])) : String(entry[1]);
-                cell.appendChild(label); cell.appendChild(value); statsGrid.appendChild(cell);
-            });
-            body.appendChild(statsGrid);
-        }
         modal.hidden = false; document.body.classList.add("modal-open"); $("player-modal-close").focus();
     }
 
