@@ -309,6 +309,21 @@
         return new Intl.DateTimeFormat("en-US", { weekday:"short", month:"short", day:"numeric", year:"numeric" }).format(dt);
     }
 
+    function viewerKickoffText(start) {
+        if (!Number.isFinite(start)) return "";
+        // Let the browser choose both the viewer's locale and time zone. ESPN
+        // supplies an absolute kickoff timestamp, so this remains accurate for
+        // every viewer without treating a date-only schedule value as midnight.
+        return new Intl.DateTimeFormat(undefined, {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            timeZoneName: "short"
+        }).format(new Date(start));
+    }
+
     function playerGameInfo(id) {
         var p = playerMeta(id) || {};
         var game = scheduleGameForTeam(p.team, state.selectedWeek);
@@ -325,7 +340,7 @@
         // The player line intentionally mirrors Sleeper's useful game context:
         // LIVE  -> current quarter/clock + live score
         // FINAL -> final score only
-        // UPCOMING -> real Eastern kickoff + opponent
+        // UPCOMING -> real kickoff in the viewer's local time zone + opponent
         // Never parse Sleeper's date-only field as a timestamp.
         var stateText = status === "complete" ? "FINAL" : status === "in_game" ? "LIVE" : "UPCOMING";
         var stateClass = status === "complete" ? "final" : status === "in_game" ? "live" : "upcoming";
@@ -347,12 +362,12 @@
             // Keep the line useful instead of falling back to an incorrect kickoff.
             var liveClock = [game.period ? "Q" + game.period : "", game.clock || ""].filter(Boolean).join(" ");
             detailText = liveClock || "Game in progress";
-        } else if (status === "pre_game") {
-            var easternOptionsDate = { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" };
-            var easternOptionsTime = { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", hour12: true };
-            var dateText = game.eastern_date || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsDate).format(new Date(start)) : "Date TBD");
-            var timeText = game.eastern_time || (Number.isFinite(start) ? new Intl.DateTimeFormat("en-US", easternOptionsTime).format(new Date(start)) + " ET" : "Time TBD");
-            detailText = [dateText, timeText, location].filter(Boolean).join(" · ");
+        } else {
+            // A missing/unknown status is still treated as upcoming: the ESPN
+            // kickoff is more useful than an empty player line while schedules
+            // are being published.
+            var kickoffText = viewerKickoffText(start);
+            detailText = [kickoffText || "Kickoff time TBD", location].filter(Boolean).join(" · ");
         }
 
         return {
