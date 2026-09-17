@@ -7,6 +7,7 @@
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
     var PROJECTION_CACHE_MS = 5 * 60 * 1000;
     var NOTIFICATION_PREFERENCE_KEY = "fs5_live_notifications_enabled";
+    var HISTORICAL_OWNER_IDS = { bailey: 6, brycen: 1, chris: 5, cody: 11, david: 3, ethan: 9, jordan: 4, keith: 8, matthew: 10, max: 12, mike: 7, will: 2 };
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
@@ -43,6 +44,7 @@
         gameCache: new Map(),
         projectionCache: new Map(),
         playerSeasonStatsCache: new Map(),
+        rivalryHistoryCache: new Map(),
         lastAutoRefreshAt: 0,
         isLoading: false
     };
@@ -1431,6 +1433,105 @@
         card.appendChild(recap);
     }
 
+    function historicalOwnerId(info) {
+        if (!info) return null;
+        var user = info.user || {};
+        var candidates = [user.display_name, user.username, user.metadata && user.metadata.owner_name, info.teamName];
+        for (var i = 0; i < candidates.length; i++) {
+            var value = String(candidates[i] || '').toLowerCase().replace(/[^a-z]+/g, ' ').trim();
+            if (!value) continue;
+            var words = value.split(/\s+/);
+            for (var j = 0; j < words.length; j++) {
+                if (HISTORICAL_OWNER_IDS[words[j]]) return HISTORICAL_OWNER_IDS[words[j]];
+            }
+        }
+        return null;
+    }
+
+    function fetchRivalryHistory(primaryId, secondaryId) {
+        var cacheKey = String(primaryId) + ':' + String(secondaryId);
+        if (state.rivalryHistoryCache.has(cacheKey)) return Promise.resolve(state.rivalryHistoryCache.get(cacheKey));
+        if (!window.fs5Supabase || typeof window.fs5Supabase.getClient !== 'function') return Promise.reject(new Error('Historical rivalry data is unavailable.'));
+        return window.fs5Supabase.getClient().rpc('site_h2h_page', { p_primary_owner_id: primaryId, p_secondary_owner_id: secondaryId }).then(function (result) {
+            if (result.error) throw result.error;
+            var data = Array.isArray(result.data) ? result.data[0] : result.data;
+            if (data) state.rivalryHistoryCache.set(cacheKey, data);
+            return data;
+        });
+    }
+
+    function appendRivalryHistory(card, teams) {
+        var aInfo = state.rosterMap.get(String(teams[0].roster_id));
+        var bInfo = state.rosterMap.get(String(teams[1].roster_id));
+        var section = document.createElement('section');
+        section.className = 'rivalry-history';
+        section.innerHTML = '<div class="rivalry-history__head"><strong>🤝 RIVALRY HISTORY</strong><span>All-time FS5 head-to-head</span></div><p class="rivalry-history__status">Loading rivalry record…</p>';
+        card.appendChild(section);
+        var primaryId = historicalOwnerId(aInfo), secondaryId = historicalOwnerId(bInfo);
+        if (!primaryId || !secondaryId || primaryId === secondaryId) {
+            section.querySelector('.rivalry-history__status').textContent = 'Historical rivalry data is not available for this matchup.';
+            return;
+        }
+        fetchRivalryHistory(primaryId, secondaryId).then(function (data) {
+            if (!section.isConnected || !data) throw new Error('No historical rivalry data returned.');
+            var primary = data.primary_owner || {}, secondary = data.secondary_owner || {};
+            var games = Array.isArray(data.game_log) ? data.game_log : [];
+            var ties = games.filter(function (game) { return game.primary_result === 'TIE' || Number(game.primary_score) === Number(game.secondary_score); }).length;
+            var recent = games[0];
+            var recentText = recent ? 'Last meeting: ' + esc(recent.year) + ' W' + esc(recent.week_number) + ' · ' + formatScore(recent.primary_score) + '–' + formatScore(recent.secondary_score) : 'No completed meetings yet';
+            section.innerHTML = '<div class="rivalry-history__head"><strong>🤝 RIVALRY HISTORY</strong><span>All-time FS5 head-to-head</span></div>' +
+                '<div class="rivalry-history__record"><div><span>' + esc(aInfo ? aInfo.teamName : teamLabel(teams[0])) + '</span><b>' + Number(primary.wins || 0) + '</b></div><i>–</i><div><span>' + esc(bInfo ? bInfo.teamName : teamLabel(teams[1])) + '</span><b>' + Number(secondary.wins || 0) + '</b></div></div>' +
+                '<div class="rivalry-history__meta"><span>' + games.length + (games.length === 1 ? ' meeting' : ' meetings') + (ties ? ' · ' + ties + (ties === 1 ? ' tie' : ' ties') : '') + '</span><span>' + recentText + '</span></div><a href="/h2h/">View full head-to-head →</a>';
+        }).catch(function () {
+            if (section.isConnected) section.querySelector('.rivalry-history__status').textContent = 'Rivalry history is temporarily unavailable.';
+        });
+    }
+
+    function playoffTeamCount() {
+        var settings = state.league && state.league.settings || {};
+        var count = Number(settings.playoff_teams);
+        return Number.isFinite(count) && count > 0 ? Math.floor(count) : 6;
+    }
+
+    function projectedPlayoffStandings(teams, winnerRosterId) {
+        var rows = [];
+        state.rosterMap.forEach(function (info, rosterId) {
+            rows.push({ rosterId: String(rosterId), team: info.teamName, wins: Number(info.wins || 0), losses: Number(info.losses || 0), ties: Number(info.ties || 0), points: Number(info.pf || 0) });
+        });
+        var byRoster = new Map(rows.map(function (row) { return [row.rosterId, row]; }));
+        var groups = new Map();
+        state.matchups.forEach(function (matchup) { var key = matchupKey(matchup); if (!groups.has(key)) groups.set(key, []); groups.get(key).push(matchup); });
+        groups.forEach(function (pair) {
+            if (pair.length < 2) return;
+            var a = pair[0], b = pair[1], aRow = byRoster.get(String(a.roster_id)), bRow = byRoster.get(String(b.roster_id));
+            if (!aRow || !bRow) return;
+            aRow.points += teamProjectedFinish(a); bRow.points += teamProjectedFinish(b);
+            var winner = String(a.roster_id) === String(winnerRosterId) || String(b.roster_id) === String(winnerRosterId) ? String(winnerRosterId) : (matchupProbability(a, b).a >= matchupProbability(a, b).b ? String(a.roster_id) : String(b.roster_id));
+            if (winner === String(a.roster_id)) { aRow.wins++; bRow.losses++; }
+            else { bRow.wins++; aRow.losses++; }
+        });
+        return rows.sort(function (a, b) { return (b.wins + b.ties * .5) - (a.wins + a.ties * .5) || b.points - a.points || a.team.localeCompare(b.team); });
+    }
+
+    function appendPlayoffImpact(card, teams, week) {
+        // Historical weekly records are not retained in the live feed. Keep the
+        // projection honest by showing it only for the current or future slate.
+        if (week < state.currentWeek || state.rosterMap.size < 2) return;
+        var playoffTeams = playoffTeamCount();
+        var scenarios = teams.map(function (team) {
+            var table = projectedPlayoffStandings(teams, team.roster_id);
+            var rank = table.findIndex(function (row) { return row.rosterId === String(team.roster_id); }) + 1;
+            var row = table[rank - 1] || { wins: 0, losses: 0, ties: 0 };
+            return { team: teamLabel(team), rank: rank, record: row.wins + '–' + row.losses + (row.ties ? '–' + row.ties : ''), inPlayoffs: rank > 0 && rank <= playoffTeams };
+        });
+        var section = document.createElement('section');
+        section.className = 'playoff-impact';
+        section.innerHTML = '<div class="playoff-impact__head"><strong>🏟️ PLAYOFF RACE IMPACT</strong><span>Projected ' + playoffTeams + '-team field</span></div><div class="playoff-impact__scenarios">' + scenarios.map(function (scenario) {
+            return '<div><span>If ' + esc(scenario.team) + ' wins</span><strong>No. ' + scenario.rank + ' seed</strong><small>' + esc(scenario.record) + ' · ' + (scenario.inPlayoffs ? 'playoff position' : Math.max(1, scenario.rank - playoffTeams) + ' spot' + (scenario.rank - playoffTeams === 1 ? '' : 's') + ' out') + '</small></div>';
+        }).join('') + '</div><p>Uses current records and projected outcomes across this week’s slate. Tiebreaking is estimated by points for.</p>';
+        card.appendChild(section);
+    }
+
     function benchPlayerIds(matchup) {
         var roster = (state.rosterMap.get(String(matchup.roster_id)) || {}).roster || {};
         var starters = new Set(getTeamPlayerIds(matchup));
@@ -1989,6 +2090,8 @@
             pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + modalTrackClass + '"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><span class="modal-prob-pulse" aria-hidden="true"></span><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"><span class="modal-prob-badge">' + Math.max(matchupPred.a, matchupPred.b).toFixed(0) + '%</span></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
             body.appendChild(pred);
         }
+        appendRivalryHistory(body, teams);
+        appendPlayoffImpact(body, teams, week);
         var columns = document.createElement("div"); columns.className = "modal-lineups";
         [teams[0], teams[1]].forEach(function (team) {
             var info = state.rosterMap.get(String(team.roster_id));
@@ -2319,7 +2422,7 @@
     async function initialize() {
         setStatus("Connecting to Sleeper...");
         try {
-            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; })]);
+            var results = await Promise.all([api("/state/nfl"), api("/league/" + LEAGUE_ID + "/rosters"), api("/league/" + LEAGUE_ID + "/users"), api("/schedule/nfl/regular/2026").catch(function () { return []; }), api("/league/" + LEAGUE_ID).catch(function () { return {}; })]);
             var nflState = results[0] || {};
             // Always open on the current Sleeper/NFL fantasy week. Prefer
             // Sleeper display_week, then week; never hard-code Week 1.
@@ -2331,8 +2434,8 @@
             state.rosters = Array.isArray(results[1]) ? results[1] : [];
             state.users = Array.isArray(results[2]) ? results[2] : [];
             state.schedule = Array.isArray(results[3]) ? results[3] : [];
+            state.league = results[4] || {};
             buildRosterMap(); populateWeeks();
-            api("/league/" + LEAGUE_ID).then(function (league) { state.league = league || {}; }).catch(function () { state.league = {}; });
             await loadPublicGotwMarkets();
             await loadWeek(state.currentWeek);
         } catch (error) {
