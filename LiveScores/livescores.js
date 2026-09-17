@@ -1287,9 +1287,10 @@
     function cardVibe(teams) {
         var p=matchupProbability(teams[0],teams[1]), max=Math.max(p.a,p.b), min=Math.min(p.a,p.b);
         if(teamIsFinished(teams[0]) && teamIsFinished(teams[1])) return ' matchup-card--final';
+        if(!matchupHasActiveGame(teams[0],teams[1])) return '';
         var timeLeft=matchupPlayingTimePct(teams[0],teams[1]);
         if(timeLeft!=null && timeLeft<10 && (p.a<70 || p.b<70))return ' matchup-card--witching';
-        if(min>=45&&max<=55)return ' matchup-card--nail';
+        if(timeLeft!=null && timeLeft<50 && min>=40&&max<=60)return ' matchup-card--nail';
         if(Math.abs(Number(teams[0].points||0)-Number(teams[1].points||0))<=5)return ' matchup-card--close';
         return '';
     }
@@ -1324,8 +1325,51 @@
         return values.reduce(function (a, b) { return a + b; }, 0) / values.length;
     }
 
+    function matchupHasActiveGame(a, b) {
+        return getTeamPlayerIds(a).concat(getTeamPlayerIds(b)).some(function (id) {
+            var meta = playerMeta(id) || {};
+            return gameStatus(scheduleGameForTeam(meta.team, state.selectedWeek)) === 'in_game';
+        });
+    }
+
+    function teamRecordPct(matchup) {
+        var info = state.rosterMap.get(String(matchup.roster_id));
+        if (!info) return null;
+        var games = Number(info.wins || 0) + Number(info.losses || 0) + Number(info.ties || 0);
+        return games > 0 ? (Number(info.wins || 0) + Number(info.ties || 0) * 0.5) / games : null;
+    }
+
+    function isWorseRecord(matchup, opponent) {
+        var record = teamRecordPct(matchup);
+        var opponentRecord = teamRecordPct(opponent);
+        return record != null && opponentRecord != null && record < opponentRecord;
+    }
+
+    function matchupPlayerGames(a, b) {
+        var seen = new Set();
+        return getTeamPlayerIds(a).concat(getTeamPlayerIds(b)).map(function (id) {
+            var meta = playerMeta(id) || {};
+            return scheduleGameForTeam(meta.team, state.selectedWeek);
+        }).filter(function (game) {
+            if (!game) return false;
+            var key = String(game.id || game.game_id || (game.away || '') + '-' + (game.home || ''));
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }
+
+    function isMondayGame(game) {
+        var start = gameStartMs(game);
+        if (!Number.isFinite(start)) return false;
+        return new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', weekday: 'short' }).format(new Date(start)) === 'Mon';
+    }
+
     function matchupAlert(a, b) {
         if (teamIsFinished(a) && teamIsFinished(b)) return null;
+        // Live-score ribbons are reserved for matchups with an NFL game on the
+        // field. Pregame and completed matchups retain their normal score state.
+        if (!matchupHasActiveGame(a, b)) return null;
         var pred = matchupProbability(a, b);
         var key = matchupKey(a) || (String(a.roster_id) + '-' + String(b.roster_id));
         var previous = state.previousProbabilities[key];
@@ -1338,11 +1382,11 @@
             alert = { type: 'witching', text: '🕯️ THE WITCHING HOUR' };
         } else if (previous && Math.abs(pred.a - previous) >= 12 && ((previous < 50 && pred.a >= 50) || (previous >= 50 && pred.a < 50))) {
             alert = { type: 'lead', text: '⚡ LEAD CHANGE' };
-        } else if (pred.a >= 65 && previous != null && previous < 50) {
+        } else if (timeLeft != null && timeLeft < 50 && isWorseRecord(a, b) && pred.a > 60) {
             alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[0] };
-        } else if (pred.b >= 65 && previous != null && previous > 50) {
+        } else if (timeLeft != null && timeLeft < 50 && isWorseRecord(b, a) && pred.b > 60) {
             alert = { type: 'upset', text: '🚨 UPSET ALERT · ' + labels[1] };
-        } else if (Math.min(pred.a, pred.b) >= 45 && Math.max(pred.a, pred.b) <= 55) {
+        } else if (timeLeft != null && timeLeft < 50 && Math.min(pred.a, pred.b) >= 40 && Math.max(pred.a, pred.b) <= 60) {
             alert = { type: 'nail', text: '😬 NAIL BITER' };
         }
         state.previousProbabilities[key] = pred.a;
@@ -1351,16 +1395,28 @@
 
     function mondayNightSweat(a, b) {
         if (teamIsFinished(a) || teamIsFinished(b)) return null;
-        var pa = matchupProbability(a,b);
+        var games = matchupPlayerGames(a, b);
+        var mondayGames = games.filter(isMondayGame);
+        if (!mondayGames.length) return null;
+        if (!mondayGames.some(function (game) { return gameStatus(game) !== 'complete'; })) return null;
+
+        // Do not call a Monday sweat while this matchup still has Thursday or
+        // Sunday games unresolved. It becomes relevant only after those games
+        // are complete and the Monday player(s) can decide the outcome.
+        var nonMondayGames = games.filter(function (game) { return !isMondayGame(game); });
+        if (!nonMondayGames.length || !nonMondayGames.every(function (game) { return gameStatus(game) === 'complete'; })) return null;
+
+        var firstMondayKickoff = Math.min.apply(null, mondayGames.map(gameStartMs));
+        if (!Number.isFinite(firstMondayKickoff) || Date.now() < firstMondayKickoff - (20 * 60 * 60 * 1000)) return null;
+
+        var pa = matchupProbability(a, b);
         var max = Math.max(pa.a, pa.b), min = Math.min(pa.a, pa.b);
-        if (min >= 25 && max <= 75 && (projectedRemaining((state.rosterMap.get(String(a.roster_id)) || {}).roster) > 0 || projectedRemaining((state.rosterMap.get(String(b.roster_id)) || {}).roster) > 0)) return '🌙 MONDAY NIGHT SWEAT';
+        if (min >= 25 && max <= 75) return '🌙 MONDAY NIGHT SWEAT';
         return null;
     }
 
     function appendMatchupAlert(card, alert, finished) {
-        if (finished) {
-            var final = document.createElement('div'); final.className = 'matchup-alert matchup-alert--final'; final.textContent = '🏁 FINAL'; card.appendChild(final); return;
-        }
+        if (finished) return;
         if (!alert) return;
         var el = document.createElement('div'); el.className = 'matchup-alert matchup-alert--' + alert.type; el.textContent = alert.text; card.appendChild(el);
         setTimeout(function () { if (el.parentNode) { el.classList.add('is-fading'); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350); } }, 10000);
@@ -1447,10 +1503,10 @@
         box.innerHTML='<details><summary>📖 FS5 LIVE SCORES GUIDE</summary><div class="live-guide__grid">'+
             '<div><strong>🏆 Victory Imminent</strong><p>One team has a win probability above 90%. The matchup is heavily tilted toward a likely winner.</p></div>'+
             '<div><strong>🕯️ The Witching Hour</strong><p>Less than 10% of the matchup\'s total playing time remains <em>and</em> at least one team has a win probability below 70%. The game is entering its late, dangerous stretch.</p></div>'+
-            '<div><strong>😬 Nail Biter</strong><p>Both teams are between 45% and 55% win probability. The matchup is essentially a coin flip.</p></div>'+
+            '<div><strong>😬 Nail Biter</strong><p>Less than 50% of combined player time remains and both teams are between 40% and 60% win probability. The Witching Hour takes priority.</p></div>'+
             '<div><strong>⚡ Lead Change</strong><p>The win probability has swung sharply enough to indicate that control of the matchup changed hands.</p></div>'+
-            '<div><strong>🚨 Upset Alert</strong><p>A team that was previously behind in probability has moved into a strong position.</p></div>'+
-            '<div><strong>🌙 Monday Night Sweat</strong><p>A matchup still has meaningful production tied to a Monday Night Football player, keeping the outcome alive late.</p></div>'+
+            '<div><strong>🚨 Upset Alert</strong><p>A team with the worse record has more than 60% win probability after less than half of the matchup\'s player time remains.</p></div>'+
+            '<div><strong>🌙 Monday Night Sweat</strong><p>A reasonably close matchup still has Monday Night Football player(s) who can decide it, after its Thursday and Sunday games are complete.</p></div>'+
             '<div><strong>👑 🔥 💀 ❄️ Player badges</strong><p>👑 matchup MVP · 🔥 above projection/hot · 💀 major projection miss · ❄️ final game with 0 points · 🏈🔥 touchdown activity.</p></div>'+
             '</div></details>';
     }
