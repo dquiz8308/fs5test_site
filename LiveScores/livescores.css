@@ -15,6 +15,16 @@
 .matchup-hint{padding:9px 14px;text-align:center;font-size:.68rem;font-weight:800;color:#71808d;background:#fbfcfd;border-top:1px solid #edf1f4}
 .predictor-note{font-size:.68rem;color:#607484;font-weight:800;white-space:nowrap}
 .prob-sub{margin-top:7px;text-align:center;font-size:.64rem;color:#71808d}
+.prob-track,.modal-prob-track{isolation:isolate}
+.prob-pulse,.modal-prob-pulse{display:none;position:absolute;top:0;z-index:1;width:28%;height:100%;border-radius:inherit;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);pointer-events:none}
+.prob-track--live .prob-pulse,.modal-prob-track--live .modal-prob-pulse{display:block;animation:fs5-probability-pulse 2.8s ease-in-out infinite}
+.prob-track--live.prob-track--a-favored .prob-pulse,.modal-prob-track--live.modal-prob-track--a-favored .modal-prob-pulse{animation-name:fs5-probability-pulse-right}
+.prob-badge,.modal-prob-badge{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;min-width:34px;height:20px;padding:0 5px;border:2px solid #fff;border-radius:999px;background:#0c2f4d;color:#fff;font-size:.58rem;font-weight:950;line-height:1;letter-spacing:.01em;box-shadow:0 2px 8px rgba(0,0,0,.28);white-space:nowrap}
+.modal-prob-badge{min-width:40px;height:24px;font-size:.66rem}
+.prob-thumb,.modal-prob-thumb{z-index:2}
+@keyframes fs5-probability-pulse{from{right:-30%;opacity:0}20%,70%{opacity:1}to{right:102%;opacity:0}}
+@keyframes fs5-probability-pulse-right{from{left:-30%;opacity:0}20%,70%{opacity:1}to{left:102%;opacity:0}}
+@media(prefers-reduced-motion:reduce){.prob-track--live .prob-pulse,.modal-prob-track--live .modal-prob-pulse{animation:none;opacity:.35;left:36%}.prob-track--live.prob-track--b-favored .prob-pulse,.modal-prob-track--live.modal-prob-track--b-favored .modal-prob-pulse{left:auto;right:36%}}
 .fs5-modal[hidden]{display:none}
 .fs5-modal{position:fixed;inset:0;z-index:2000}
 .fs5-modal__backdrop{position:absolute;inset:0;background:rgba(0,25,45,.78);backdrop-filter:blur(2px)}

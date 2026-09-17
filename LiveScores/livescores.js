@@ -658,10 +658,13 @@
         var pred = matchupProbability(teams[0], teams[1]);
         var aInfo = state.rosterMap.get(String(teams[0].roster_id));
         var bInfo = state.rosterMap.get(String(teams[1].roster_id));
+        var hasLiveGame = matchupHasActiveGame(teams[0], teams[1]);
+        var favoredSide = pred.a >= pred.b ? "a" : "b";
+        var trackClass = "prob-track prob-track--" + favoredSide + "-favored" + (hasLiveGame ? " prob-track--live" : "");
         var section = document.createElement("div");
         section.className = "predictor";
         section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div><span class="predictor-note">Live projection: ' + formatScore(pred.meanA) + ' – ' + formatScore(pred.meanB) + '</span></div>' +
-            '<div class="prob-wrap"><div class="prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + pred.a.toFixed(0) + '%</b><span>WIN PROBABILITY</span><b>' + pred.b.toFixed(0) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="prob-track"><div class="prob-fill" style="width:' + pred.a.toFixed(2) + '%"></div><div class="prob-thumb" style="left:' + pred.a.toFixed(2) + '%"></div></div><div class="prob-sub">Remaining projection: ' + formatScore(pred.remainingA) + ' vs ' + formatScore(pred.remainingB) + '</div></div>';
+            '<div class="prob-wrap"><div class="prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + pred.a.toFixed(0) + '%</b><span>WIN PROBABILITY</span><b>' + pred.b.toFixed(0) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + trackClass + '"><div class="prob-fill" style="width:' + pred.a.toFixed(2) + '%"></div><span class="prob-pulse" aria-hidden="true"></span><div class="prob-thumb" style="left:' + pred.a.toFixed(2) + '%"><span class="prob-badge">' + Math.max(pred.a, pred.b).toFixed(0) + '%</span></div></div><div class="prob-sub">Remaining projection: ' + formatScore(pred.remainingA) + ' vs ' + formatScore(pred.remainingB) + '</div></div>';
         card.appendChild(section);
     }
 
@@ -1979,8 +1982,11 @@
             appendPostgameRecap(body, teams);
         } else {
             var matchupPred = matchupProbability(teams[0], teams[1]);
+            var modalHasLiveGame = matchupHasActiveGame(teams[0], teams[1]);
+            var modalFavoredSide = matchupPred.a >= matchupPred.b ? "a" : "b";
+            var modalTrackClass = "modal-prob-track modal-prob-track--" + modalFavoredSide + "-favored" + (modalHasLiveGame ? " modal-prob-track--live" : "");
             var pred = document.createElement("div"); pred.className = "modal-predictor";
-            pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="modal-prob-track"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
+            pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + modalTrackClass + '"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><span class="modal-prob-pulse" aria-hidden="true"></span><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"><span class="modal-prob-badge">' + Math.max(matchupPred.a, matchupPred.b).toFixed(0) + '%</span></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
             body.appendChild(pred);
         }
         var columns = document.createElement("div"); columns.className = "modal-lineups";
