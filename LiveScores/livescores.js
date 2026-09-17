@@ -1334,6 +1334,21 @@
         card.appendChild(el);
     }
 
+    function appendPostgameRecap(card, teams) {
+        var a = Number(teams[0].points || 0), b = Number(teams[1].points || 0);
+        var margin = Math.abs(a - b);
+        var result = a === b ? 'Tie game' : teamLabel(a > b ? teams[0] : teams[1]);
+        var recap = document.createElement('section');
+        recap.className = 'postgame-recap';
+        recap.innerHTML = '<span class="postgame-recap__title">🏁 FINAL RECAP</span>' +
+            '<div class="postgame-recap__stats">' +
+                '<div><span>WINNER</span><strong>' + esc(result) + '</strong></div>' +
+                '<div><span>MARGIN</span><strong>' + formatScore(margin) + ' pts</strong></div>' +
+                '<div><span>COMBINED</span><strong>' + formatScore(a + b) + ' pts</strong></div>' +
+            '</div>';
+        card.appendChild(recap);
+    }
+
     function cardVibe(teams) {
         var p=matchupProbability(teams[0],teams[1]), max=Math.max(p.a,p.b), min=Math.min(p.a,p.b);
         if(teamIsFinished(teams[0]) && teamIsFinished(teams[1])) return ' matchup-card--final';
@@ -1683,7 +1698,8 @@
             var head = document.createElement("div");
             head.className = "matchup-card__head";
             var matchupFinished = teamIsFinished(teams[0]) && teamIsFinished(teams[1]);
-            var matchupState = matchupFinished || week < state.currentWeek ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
+            var isFinalMatchup = matchupFinished || week < state.currentWeek;
+            var matchupState = isFinalMatchup ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
             var gotwNumber = Number(gotwMarket && gotwMarket.gotwNumber);
             var matchupTitle = gotwMarket && matchupState !== 'FINAL' ? 'Game of the Week ' + (Number.isFinite(gotwNumber) ? gotwNumber : '') : 'Matchup ' + entry[0];
             card.setAttribute("aria-label", "Open " + matchupTitle.trim());
@@ -1709,14 +1725,20 @@
                 team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
-            appendPredictor(card, teams);
-            var oddsReason = oddsChangeReason(teams[0], teams[1]);
-            if (oddsReason) { var reason = document.createElement("div"); reason.className = "odds-change-reason"; reason.textContent = oddsReason; card.appendChild(reason); }
-            if (matchupHasMondayTakeover(teams)) { var monday = document.createElement("div"); monday.className = "monday-takeover"; monday.innerHTML = "<span>🌙</span><div><strong>MONDAY NIGHT TAKEOVER</strong><small>The final chapter of this matchup is waiting for Monday Night Football.</small></div></div>"; card.appendChild(monday); }
-            appendMatchupSuperlatives(card, teams);
-            appendProjectedFinish(card, teams);
-            appendPointsBank(card, teams);
-            var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash); applyTrashTalkExpiry(trash);
+            if (isFinalMatchup) {
+                appendPostgameRecap(card, teams);
+                appendMatchupSuperlatives(card, teams);
+                var finalTrash = document.createElement("div"); finalTrash.className="trash-talk"; finalTrash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(finalTrash);
+            } else {
+                appendPredictor(card, teams);
+                var oddsReason = oddsChangeReason(teams[0], teams[1]);
+                if (oddsReason) { var reason = document.createElement("div"); reason.className = "odds-change-reason"; reason.textContent = oddsReason; card.appendChild(reason); }
+                if (matchupHasMondayTakeover(teams)) { var monday = document.createElement("div"); monday.className = "monday-takeover"; monday.innerHTML = "<span>🌙</span><div><strong>MONDAY NIGHT TAKEOVER</strong><small>The final chapter of this matchup is waiting for Monday Night Football.</small></div></div>"; card.appendChild(monday); }
+                appendMatchupSuperlatives(card, teams);
+                appendProjectedFinish(card, teams);
+                appendPointsBank(card, teams);
+                var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash); applyTrashTalkExpiry(trash);
+            }
             var alert = matchupAlert(teams[0], teams[1]);
             if (!alert) { var sweat = mondayNightSweat(teams[0], teams[1]); if (sweat) alert = { type: 'sweat', text: sweat }; }
             appendMatchupAlert(card, alert, teamIsFinished(teams[0]) && teamIsFinished(teams[1]));
@@ -1770,10 +1792,15 @@
         var aInfo = state.rosterMap.get(String(teams[0].roster_id)); var bInfo = state.rosterMap.get(String(teams[1].roster_id));
         title.innerHTML = '<span>Matchup ' + esc(matchupId) + ' · Week ' + week + '</span><strong>' + formatScore(teams[0].points) + ' — ' + formatScore(teams[1].points) + '</strong>';
         body.appendChild(title);
-        var matchupPred = matchupProbability(teams[0], teams[1]);
-        var pred = document.createElement("div"); pred.className = "modal-predictor";
-        pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="modal-prob-track"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
-        body.appendChild(pred);
+        var isFinalMatchup = (teamIsFinished(teams[0]) && teamIsFinished(teams[1])) || week < state.currentWeek;
+        if (isFinalMatchup) {
+            appendPostgameRecap(body, teams);
+        } else {
+            var matchupPred = matchupProbability(teams[0], teams[1]);
+            var pred = document.createElement("div"); pred.className = "modal-predictor";
+            pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="modal-prob-track"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
+            body.appendChild(pred);
+        }
         var columns = document.createElement("div"); columns.className = "modal-lineups";
         [teams[0], teams[1]].forEach(function (team) {
             var info = state.rosterMap.get(String(team.roster_id));
