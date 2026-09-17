@@ -8,6 +8,10 @@
     var PROJECTION_CACHE_MS = 5 * 60 * 1000;
     var NOTIFICATION_PREFERENCE_KEY = "fs5_live_notifications_enabled";
     var HISTORICAL_OWNER_IDS = { bailey: 6, brycen: 1, chris: 5, cody: 11, david: 3, ethan: 9, jordan: 4, keith: 8, matthew: 10, max: 12, mike: 7, will: 2 };
+    // The Head-to-Head archive uses FS5 owner IDs, while Live Scores receives
+    // persistent Sleeper user IDs. Prefer this exact bridge over display names,
+    // which are often unrelated to the manager's historical profile.
+    var SLEEPER_TO_HISTORICAL_OWNER_IDS = { "873396844556914688": 5, "995754366676115456": 1, "995758683596402688": 11, "995760405496623104": 12, "995774054126727168": 6, "995776035922739200": 4, "997351128473841664": 2, "1386037394611929088": 3, "1397338882659340288": 7 };
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
@@ -1445,6 +1449,7 @@
     function historicalOwnerId(info) {
         if (!info) return null;
         var user = info.user || {};
+        if (user.user_id != null && SLEEPER_TO_HISTORICAL_OWNER_IDS[String(user.user_id)]) return SLEEPER_TO_HISTORICAL_OWNER_IDS[String(user.user_id)];
         var candidates = [user.display_name, user.username, user.metadata && user.metadata.owner_name, info.teamName];
         for (var i = 0; i < candidates.length; i++) {
             var value = String(candidates[i] || '').toLowerCase().replace(/[^a-z]+/g, ' ').trim();
@@ -2096,7 +2101,7 @@
             var modalFavoredSide = matchupPred.a >= matchupPred.b ? "a" : "b";
             var modalTrackClass = "modal-prob-track modal-prob-track--" + modalFavoredSide + "-favored" + (modalHasLiveGame ? " modal-prob-track--live" : "");
             var pred = document.createElement("div"); pred.className = "modal-predictor";
-            pred.innerHTML = '<div class="modal-predictor__head"><strong>Enhanced Live Predictor</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + modalTrackClass + '"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><span class="modal-prob-pulse" aria-hidden="true"></span><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"><span class="modal-prob-badge">' + Math.max(matchupPred.a, matchupPred.b).toFixed(0) + '%</span></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
+            pred.innerHTML = '<div class="modal-predictor__head"><strong>FS5 Live Prediction Model</strong><span>FS5 model</span></div><div class="modal-prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + matchupPred.a.toFixed(1) + '%</b><b>' + matchupPred.b.toFixed(1) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + modalTrackClass + '"><div class="modal-prob-fill" style="width:' + matchupPred.a.toFixed(2) + '%"></div><span class="modal-prob-pulse" aria-hidden="true"></span><div class="modal-prob-thumb" style="left:' + matchupPred.a.toFixed(2) + '%"><span class="modal-prob-badge">' + Math.max(matchupPred.a, matchupPred.b).toFixed(0) + '%</span></div></div><div class="modal-prob-meta">Projected final: <strong>' + formatScore(matchupPred.meanA) + ' – ' + formatScore(matchupPred.meanB) + '</strong> · Remaining: ' + formatScore(matchupPred.remainingA) + ' – ' + formatScore(matchupPred.remainingB) + '</div>';
             body.appendChild(pred);
         }
         appendRivalryHistory(body, teams);
