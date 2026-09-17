@@ -1590,17 +1590,26 @@
         }
     }
 
+    function gotwTeamKey(value) {
+        // Sportsbook and Sleeper can represent punctuation differently (such
+        // as straight versus curly apostrophes). Match the actual team name,
+        // not its punctuation or capitalization.
+        return String(value || "").trim().toLowerCase().normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, "");
+    }
+
     function isGotwMatchup(teams, week) {
         if (!Array.isArray(teams) || teams.length < 2) return null;
         var teamNames = teams.map(function(m) {
             var info = state.rosterMap.get(String(m.roster_id));
-            return String(info && info.teamName || "").trim().toLowerCase();
+            return gotwTeamKey(info && info.teamName);
         });
         return state.gotwMarkets.find(function(market) {
             var marketWeek = Number(market && (market.weekNumber ?? market.week));
             if (Number.isFinite(marketWeek) && marketWeek !== Number(week)) return false;
             var names = [market && market.owner1, market && market.owner2].map(function(side) {
-                return String(side && (side.teamName || side.ownerName) || "").trim().toLowerCase();
+                return gotwTeamKey(side && (side.teamName || side.ownerName));
             });
             return names.length === 2 && names.indexOf(teamNames[0]) !== -1 && names.indexOf(teamNames[1]) !== -1;
         }) || null;
