@@ -2,6 +2,10 @@
 // Player-name lookups are handled specially: Sleeper's full NFL player catalog is
 // now ~14MB, so we filter it server-side and return only the requested IDs.
 
+let playerCatalogCache = null;
+let playerCatalogFetchedAt = 0;
+const PLAYER_CATALOG_CACHE_MS = 24 * 60 * 60 * 1000;
+
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
   const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'news' ? 'news' : 'app')));
@@ -65,6 +69,58 @@ exports.handler = async function (event) {
   }
   return json(502, { error: lastError, path, source });
 };
+
+async function getRequestedPlayers(idsParam) {
+  const ids = Array.from(new Set(String(idsParam || '')
+    .split(',')
+    .map(id => id.trim())
+    .filter(id => /^[A-Za-z0-9_-]+$/.test(id))))
+    .slice(0, 400);
+
+  if (!ids.length) return json(400, { error: 'At least one valid player ID is required.' });
+
+  let catalog = playerCatalogCache;
+  if (!catalog || Date.now() - playerCatalogFetchedAt > PLAYER_CATALOG_CACHE_MS) {
+    let lastError = 'Unable to load the Sleeper player catalog.';
+    for (const host of ['https://api.sleeper.app', 'https://api.sleeper.com']) {
+      try {
+        const response = await fetch(host + '/v1/players/nfl', {
+          headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' }
+        });
+        if (!response.ok) {
+          lastError = `Sleeper player catalog returned ${response.status}.`;
+          continue;
+        }
+        const data = await response.json();
+        if (!data || typeof data !== 'object' || Array.isArray(data)) {
+          lastError = 'Sleeper player catalog returned an invalid response.';
+          continue;
+        }
+        catalog = data;
+        playerCatalogCache = data;
+        playerCatalogFetchedAt = Date.now();
+        break;
+      } catch (err) {
+        lastError = err && err.message ? err.message : lastError;
+      }
+    }
+    if (!catalog) return json(502, { error: lastError });
+  }
+
+  const players = {};
+  for (const id of ids) {
+    if (catalog[id]) players[id] = catalog[id];
+  }
+
+  return {
+    statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400'
+    },
+    body: JSON.stringify(players)
+  };
+}
 
 
 async function getNflScoreboard(season, week) {
@@ -293,4 +349,15 @@ function decodeXml(value) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;|&apos;/g, "'");
+}
+
+function json(statusCode, body) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store, max-age=0'
+    },
+    body: JSON.stringify(body)
+  };
 }
