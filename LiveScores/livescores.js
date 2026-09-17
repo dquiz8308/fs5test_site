@@ -1836,8 +1836,9 @@
         notifyIceWatchPlayers(watch, frozen);
         if(!watch.length && !frozen.length){ box.hidden=true; box.innerHTML=''; return; }
         box.hidden=false;
-        function chips(items){return items.map(function(x){return '<span class="ice-player">❄️ <strong>'+esc(x.name)+'</strong><small>'+esc(x.team)+'</small></span>';}).join('');}
-        box.innerHTML=(watch.length?'<section class="ice-panel ice-panel--watch"><div><b>🧊 ICE WATCH</b><span>Zero points entering the 4th quarter</span></div><div class="ice-players">'+chips(watch)+'</div></section>':'')+(frozen.length?'<section class="ice-panel ice-panel--baby"><div class="ice-snow">❄︎ ✦ ❄︎ ✧ ❄︎ ✦ ❄︎</div><div><b>❄️ ICE ICE BABY</b><span>Final · starting lineup goose eggs</span></div><div class="ice-players">'+chips(frozen)+'</div></section>':'');
+        function chips(items){return items.map(function(x){return '<span class="ice-player">❄️ <span class="ice-player__label"><strong>'+esc(x.name)+'</strong><small>&nbsp;'+esc(x.team)+'</small></span></span>';}).join('');}
+        var fallingSnow = '<div class="ice-snow" aria-hidden="true"><span>❄</span><span>❅</span><span>❄</span><span>❆</span><span>❅</span><span>❄</span><span>❆</span><span>❄</span><span>❅</span></div>';
+        box.innerHTML=(watch.length?'<section class="ice-panel ice-panel--watch"><div><b>🧊 ICE WATCH</b><span>Zero points entering the 4th quarter</span></div><div class="ice-players">'+chips(watch)+'</div></section>':'')+(frozen.length?'<section class="ice-panel ice-panel--baby">'+fallingSnow+'<div><b>❄️ ICE ICE BABY</b><span>Final · starting lineup goose eggs</span></div><div class="ice-players">'+chips(frozen)+'</div></section>':'');
     }
 
     function notifyIceWatchPlayers(watch, frozen) {
