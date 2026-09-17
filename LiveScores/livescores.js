@@ -1175,6 +1175,39 @@
         box.innerHTML='<div class="leaderboard-title">🏆 LIVE LEAGUE LEADERBOARD</div><div class="leaderboard-columns"><div class="leaderboard-column"><div class="leaderboard-column-title">🏆 TOP 3 TEAMS</div>'+teamHtml+'</div><div class="leaderboard-column leaderboard-column--players"><div class="leaderboard-column-title">🔥 TOP 3 SCORING PLAYERS</div>'+playerHtml+'</div></div>';
     }
 
+    function upcomingMatchupStat(a, b, prediction) {
+        var projectedTotal = Number(prediction.meanA || 0) + Number(prediction.meanB || 0);
+        var projectedMargin = Math.abs(Number(prediction.meanA || 0) - Number(prediction.meanB || 0));
+        var favored = prediction.a >= prediction.b ? a : b;
+        var favoredProbability = Math.max(prediction.a, prediction.b);
+        var starters = getTeamPlayerIds(a).concat(getTeamPlayerIds(b));
+        var topPlayer = null;
+        starters.forEach(function (id) {
+            var projection = getProjection(id);
+            if (!topPlayer || projection > topPlayer.projection) {
+                topPlayer = { id: id, projection: projection };
+            }
+        });
+
+        // Cycle the preview focus by matchup ID so neighboring cards surface
+        // different useful data instead of repeating a generic zero-score joke.
+        var id = matchupKey(a);
+        var numericId = Number(id);
+        var focus = Number.isFinite(numericId) ? Math.abs(numericId) % 4 :
+            Math.abs(String(id).split('').reduce(function (sum, char) { return sum + char.charCodeAt(0); }, 0)) % 4;
+
+        if (focus === 0 && topPlayer && topPlayer.projection > 0) {
+            return '⚡ PLAYER TO WATCH · ' + esc(playerName(topPlayer.id)) + ' projects for ' + formatScore(topPlayer.projection) + ' points.';
+        }
+        if (focus === 1) {
+            return '📊 PROJECTED TOTAL · ' + formatScore(projectedTotal) + ' combined points.';
+        }
+        if (focus === 2) {
+            return '🎯 MODEL EDGE · ' + esc(teamLabel(favored)) + ' at ' + favoredProbability.toFixed(0) + '% win probability.';
+        }
+        return '📏 PROJECTED MARGIN · ' + esc(teamLabel(favored)) + ' by ' + formatScore(projectedMargin) + ' points.';
+    }
+
     function trashTalk(a,b) {
         var pa=Number(a.points||0), pb=Number(b.points||0), diff=Math.abs(pa-pb);
         var pred=matchupProbability(a,b), max=Math.max(pred.a,pred.b), min=Math.min(pred.a,pred.b);
@@ -1186,6 +1219,8 @@
         var options=[];
         var finished=false;
         try { finished=teamIsFinished(a) && teamIsFinished(b); } catch(e) { finished=(remA===0 && remB===0); }
+
+        if (!finished && !matchupHasStarted(a, b)) return upcomingMatchupStat(a, b, pred);
 
         /*
          * FINAL MATCHUPS: use a dedicated postgame bank. This prevents the
