@@ -731,7 +731,7 @@
 
         var label = document.createElement("div");
         label.className = "playing-time-label";
-        label.innerHTML = "<span>Available Playing Time</span><strong>" + pct + "%</strong>";
+        label.innerHTML = "<span>Available Playing Time <strong>" + pct + "%</strong></span>";
 
         var track = document.createElement("div");
         track.className = "playing-time-track";
