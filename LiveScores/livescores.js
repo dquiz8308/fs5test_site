@@ -71,6 +71,49 @@
         });
     }
 
+    function mapEspnScoreboard(data, week) {
+        return (data && Array.isArray(data.events) ? data.events : []).map(function (event) {
+            var competition = event.competitions && event.competitions[0] || {};
+            var competitors = competition.competitors || [];
+            var home = competitors.find(function (team) { return team.homeAway === "home"; }) || {};
+            var away = competitors.find(function (team) { return team.homeAway === "away"; }) || {};
+            var status = competition.status || event.status || {};
+            var type = status.type || {};
+            var teamCode = function (entry) {
+                return entry.team && (entry.team.abbreviation || entry.team.shortDisplayName || entry.team.displayName) || "";
+            };
+            return {
+                id: event.id,
+                week: Number(week),
+                start_time: event.date,
+                home: teamCode(home),
+                away: teamCode(away),
+                home_score: home.score != null ? Number(home.score) : null,
+                away_score: away.score != null ? Number(away.score) : null,
+                status: type.completed ? "complete" : (type.state === "in" ? "in_game" : "pre_game"),
+                period: Number(status.period || 0),
+                clock: status.displayClock || ""
+            };
+        }).filter(function (game) { return game.home && game.away; });
+    }
+
+    function directScoreboardApi(week) {
+        // ESPN permits this cross-origin request. It is only a fallback for a
+        // temporary Netlify-function failure, so the normal server-side path
+        // remains the primary source.
+        var url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week=" +
+            encodeURIComponent(week) + "&seasontype=2&season=2026&limit=1000";
+        return fetch(url, { cache: "no-store", headers: { "Accept": "application/json" } }).then(function (response) {
+            if (!response.ok) throw new Error("ESPN scoreboard returned " + response.status);
+            return response.json();
+        }).then(function (data) {
+            var games = mapEspnScoreboard(data, week);
+            if (!games.length) throw new Error("ESPN scoreboard returned no games");
+            console.info("FS5 NFL scoreboard connected directly to ESPN", { games: games.length });
+            return games;
+        });
+    }
+
     function optionalApi(paths) {
         var i = 0;
         function next() {
@@ -1802,7 +1845,13 @@
         grid.setAttribute("aria-busy", "true");
         weekContext.textContent = "Loading Week " + week + "...";
         try {
-            state.nflGames = await scoreboardApi(week).catch(function(){ return state.nflGames || []; });
+            state.nflGames = await scoreboardApi(week).catch(function (error) {
+                console.warn("FS5 Netlify scoreboard failed; trying ESPN directly", error);
+                return directScoreboardApi(week).catch(function (fallbackError) {
+                    console.warn("FS5 direct ESPN scoreboard failed", fallbackError);
+                    return state.nflGames || [];
+                });
+            });
             var matchups = await api("/league/" + LEAGUE_ID + "/matchups/" + week);
             state.selectedWeek = week; weekSelect.value = String(week);
             renderMatchups(matchups, week);
