@@ -11,7 +11,7 @@
     // The Head-to-Head archive uses FS5 owner IDs, while Live Scores receives
     // persistent Sleeper user IDs. Prefer this exact bridge over display names,
     // which are often unrelated to the manager's historical profile.
-    var SLEEPER_TO_HISTORICAL_OWNER_IDS = { "873396844556914688": 5, "995754366676115456": 1, "995758683596402688": 11, "995760405496623104": 12, "995774054126727168": 6, "995776035922739200": 4, "997351128473841664": 2, "1386037394611929088": 3, "1397338882659340288": 7 };
+    var SLEEPER_TO_HISTORICAL_OWNER_IDS = { "873396844556914688": 5, "995754366676115456": 1, "995758683596402688": 11, "995760405496623104": 12, "995774054126727168": 2, "995776035922739200": 4, "997351128473841664": 6, "1386037394611929088": 3, "1397338882659340288": 7 };
     var state = {
         currentWeek: 1,
         selectedWeek: 1,
