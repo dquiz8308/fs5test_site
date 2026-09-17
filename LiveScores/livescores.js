@@ -246,7 +246,19 @@
         return img;
     }
 
+    function defenseTeamLogoCode(team) {
+        var code = String(team || "").trim().toLowerCase();
+        var aliases = { jac: "jax", was: "wsh", lvr: "lv", oak: "lv", sd: "lac", stl: "lar" };
+        return aliases[code] || code;
+    }
+
     function playerImageUrl(playerId) {
+        var player = playerMeta(playerId);
+        // Sleeper represents D/STs as team entries. They have no player
+        // headshot, so show the NFL club mark instead of the generic fallback.
+        if (String(player.position || "").toUpperCase() === "DEF" && player.team) {
+            return "https://a.espncdn.com/i/teamlogos/nfl/500/" + encodeURIComponent(defenseTeamLogoCode(player.team)) + ".png";
+        }
         return "https://sleepercdn.com/content/nfl/players/thumb/" + encodeURIComponent(playerId) + ".jpg";
     }
 
