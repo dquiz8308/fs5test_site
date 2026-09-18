@@ -921,11 +921,22 @@
         return Math.max(0, n - b);
     }
 
+    function playerTouchdownTotal(id) {
+        var stats = state.stats && state.stats[String(id)] || {};
+        var keys = ["rec_td", "rush_td", "pass_td", "def_td", "fum_td", "st_td", "kr_td", "pr_td"];
+        return keys.reduce(function (sum, key) { return sum + statNumber(stats, [key]); }, 0);
+    }
+
     function appendEvent(message, icon, notify, notificationKey) {
         if (!message) return;
-        state.eventHistory.unshift({ message: message, icon: icon || "", at: Date.now() });
+        var eventKey = notificationKey ? String(notificationKey) : "";
+        // Rendering can occur twice when the matchup and player-stat requests
+        // resolve close together. Keep a scored event once in the shared feed,
+        // while a later touchdown receives a new cumulative-TD key.
+        if (eventKey && state.eventHistory.some(function (event) { return event.eventKey === eventKey; })) return;
+        state.eventHistory.unshift({ message: message, icon: icon || "", at: Date.now(), eventKey: eventKey });
         state.eventHistory = state.eventHistory.slice(0, 12);
-        if (notify) sendLiveNotification("FS5 Live Scores", message, notificationKey || message);
+        if (notify) sendLiveNotification("FS5 Live Scores", message, eventKey || message);
     }
 
     function analyzeLiveEvents(matchups, week) {
@@ -939,7 +950,10 @@
                 appendEvent(teamLabel(m) + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼");
             }
             liveStarters.forEach(function (id) {
-                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) { seen.add(id); appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥", true, "touchdown-" + id); }
+                if (playerTouchdownDelta(id) > 0 && !seen.has(id)) {
+                    seen.add(id);
+                    appendEvent(playerName(id) + " touchdown · " + teamLabel(m), "🏈🔥", true, "touchdown-" + id + "-" + playerTouchdownTotal(id));
+                }
             });
         });
         state.eventHistory = state.eventHistory.filter(function(e){ return !e.at || Date.now()-e.at < 5*60*1000; });
