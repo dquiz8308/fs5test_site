@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var achievementTierLegend = document.getElementById('achievement-tier-legend');
     var requestSequence = 0;
     var currentOwnerData = null;
+    var careerTouchdownTotals = null;
+    var careerTouchdownTotalsPromise = null;
     var currentSeasonRows = [];
     var seasonHistoryExpanded = false;
 
@@ -129,6 +131,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             currentOwnerData = data;
             renderOwnerPage(data);
+            loadCareerTouchdownTotals().then(function (totals) {
+                if (requestId !== requestSequence || currentOwnerData !== data) return;
+                renderOwnerAchievements(data, totals[ownerMetricKey(data.owner && data.owner.owner_name)]);
+            }).catch(function (error) {
+                console.warn('Owner career touchdown totals could not be loaded.', error);
+            });
             hideStatus();
         } catch (error) {
             if (requestId !== requestSequence) {
@@ -174,6 +182,33 @@ document.addEventListener('DOMContentLoaded', function() {
         return response.data || null;
     }
 
+    function ownerMetricKey(ownerName) {
+        return String(ownerName || '').trim().toLowerCase();
+    }
+
+    async function loadCareerTouchdownTotals() {
+        if (careerTouchdownTotals) return careerTouchdownTotals;
+        if (careerTouchdownTotalsPromise) return careerTouchdownTotalsPromise;
+
+        careerTouchdownTotalsPromise = window.fs5Supabase.getClient().rpc('site_all_time_records', {
+            p_record_category: 'owner-tds',
+            p_active_only: false,
+            p_scope: 'combined',
+            p_limit: 100
+        }).then(function (response) {
+            if (response.error) throw response.error;
+            careerTouchdownTotals = {};
+            (Array.isArray(response.data) ? response.data : []).forEach(function (row) {
+                careerTouchdownTotals[ownerMetricKey(row.owner_name)] = numberOrZero(row.metric_value);
+            });
+            return careerTouchdownTotals;
+        }).finally(function () {
+            careerTouchdownTotalsPromise = null;
+        });
+
+        return careerTouchdownTotalsPromise;
+    }
+
     function renderOwnerPage(data) {
         renderOwnerHeader(data.owner);
         renderOverall(data.overall);
@@ -187,9 +222,10 @@ document.addEventListener('DOMContentLoaded', function() {
         renderH2H(data.h2h);
     }
 
-    function achievementTrophy(tier) {
+    function achievementTrophy(tier, type) {
         var style = achievementTierStyle(tier);
-        return '<img class="achievement-crest__trophy" src="artwork/achievements/trophy-' + style + '.png" alt="" aria-hidden="true" loading="lazy">';
+        var trophyName = type === 'last-place' ? 'wall-of-shame-' + style : 'trophy-' + style;
+        return '<img class="achievement-crest__trophy" src="artwork/achievements/' + trophyName + '.png" alt="" aria-hidden="true" loading="lazy">';
     }
 
     function metricValue(metric) {
@@ -197,21 +233,29 @@ document.addEventListener('DOMContentLoaded', function() {
         return numberOrZero(metric);
     }
 
-    function renderOwnerAchievements(data) {
+    function renderOwnerAchievements(data, totalTouchdowns) {
         if (!achievementCase || !achievementGrid || !achievementCount) return;
+        var overall = data.overall || {};
         var summary = data.season_summary || {};
         var streaks = data.streaks || {};
         var postseason = data.postseason || {};
+        var careerWins = numberOrZero(overall.wins);
         var championships = numberOrZero(summary.championships);
         var tenWinSeasons = numberOrZero(summary.ten_win_seasons);
+        var lastPlaceFinishes = numberOrZero(summary.last_place_finishes);
         var longestWin = numberOrZero((streaks.longest_win || {}).length);
         var playoffAppearances = metricValue(postseason.playoff_appearances);
         var achievements = [
+            { type: 'wins', title: 'Win Machine', detail: 'Stack career wins', value: careerWins, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 25 }, { name: 'Silver Crest', target: 50 }, { name: 'Gold Crest', target: 100 }, { name: 'Legacy Crest', target: 150 }] },
             { type: 'champion', title: 'FS5 Legend', detail: 'Win an FS5 championship', value: championships, unit: 'title', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 2 }, { name: 'Gold Crest', target: 3 }, { name: 'Legacy Crest', target: 5 }] },
             { type: 'dynasty', title: 'Double-Digit Dynasty', detail: 'Complete a 10-win season', value: tenWinSeasons, unit: '10-win season', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 3 }, { name: 'Gold Crest', target: 5 }, { name: 'Legacy Crest', target: 8 }] },
             { type: 'streak', title: 'Hot Streak', detail: 'Build a winning streak', value: longestWin, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 5 }, { name: 'Silver Crest', target: 7 }, { name: 'Gold Crest', target: 10 }, { name: 'Legacy Crest', target: 13 }] },
-            { type: 'playoff', title: 'January Regular', detail: 'Make the FS5 playoffs', value: playoffAppearances, unit: 'playoff appearance', tiers: [{ name: 'Bronze Crest', target: 3 }, { name: 'Silver Crest', target: 5 }, { name: 'Gold Crest', target: 8 }, { name: 'Legacy Crest', target: 12 }] }
+            { type: 'playoff', title: 'January Regular', detail: 'Make the FS5 playoffs', value: playoffAppearances, unit: 'playoff appearance', tiers: [{ name: 'Bronze Crest', target: 3 }, { name: 'Silver Crest', target: 5 }, { name: 'Gold Crest', target: 8 }, { name: 'Legacy Crest', target: 12 }] },
+            { type: 'last-place', title: 'Wall of Shame', detail: 'Finish in last place', value: lastPlaceFinishes, unit: 'last-place finish', tiers: [{ name: 'Bronze Blunder', target: 1 }, { name: 'Silver Stink', target: 2 }, { name: 'Gold Garbage', target: 3 }, { name: 'Legacy Curse', target: 5 }] }
         ];
+        if (totalTouchdowns !== null && totalTouchdowns !== undefined && Number.isFinite(Number(totalTouchdowns))) {
+            achievements.splice(1, 0, { type: 'touchdowns', title: 'Touchdown Hoarder', detail: 'Pile up tracked fantasy touchdowns', value: numberOrZero(totalTouchdowns), unit: 'touchdown', tiers: [{ name: 'Bronze Crest', target: 100 }, { name: 'Silver Crest', target: 200 }, { name: 'Gold Crest', target: 300 }, { name: 'Legacy Crest', target: 500 }] });
+        }
         var earned = achievements.filter(function (achievement) { return achievement.value >= achievement.tiers[0].target; }).length;
         achievementCase.hidden = false;
         achievementCount.textContent = earned + ' unlocked';
@@ -230,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
             card.setAttribute('aria-expanded', 'false');
             card.setAttribute('aria-controls', 'achievement-tier-detail');
             card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Select to see the next tier.');
-            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy(tier) + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
+            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy(tier, achievement.type) + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
             card.addEventListener('click', function () {
                 selectAchievement(card, achievement, tier);
             });
