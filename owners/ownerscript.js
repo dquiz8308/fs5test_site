@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var recordResults = document.querySelector('.team-game-records__results');
     var h2hGrid = document.getElementById('h2h-summary-grid');
     var h2hEmpty = document.getElementById('h2h-summary-empty');
+    var achievementCase = document.getElementById('achievement-case');
+    var achievementGrid = document.getElementById('achievement-case-grid');
+    var achievementCount = document.getElementById('achievement-case-count');
     var requestSequence = 0;
     var currentOwnerData = null;
     var currentSeasonRows = [];
@@ -174,11 +177,56 @@ document.addEventListener('DOMContentLoaded', function() {
         renderOverall(data.overall);
         renderSeasonSummary(data.season_summary);
         renderStreaks(data.streaks);
+        renderOwnerAchievements(data);
         renderPoints(data.points);
         renderPostseason(data.postseason);
         renderAllYears(data.seasons);
         renderSelectedRecordList();
         renderH2H(data.h2h);
+    }
+
+    function achievementIcon(type) {
+        var icons = {
+            champion: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 5h14v5c0 5-2.8 8.5-7 10-4.2-1.5-7-5-7-10V5Z"/><path d="M9 8H5c0 3.2 1.6 5.4 4.8 6.1M23 8h4c0 3.2-1.6 5.4-4.8 6.1M16 20v5M11 28h10"/></svg>',
+            dynasty: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="m5 23 7-8 5 4 10-11"/><path d="M22 8h5v5M5 27h22"/></svg>',
+            streak: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22c3-9 6-9 9 0 2-13 6-13 9 0 1-5 3-7 4-8"/><path d="M6 27h20"/></svg>',
+            playoff: '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 26 8v7c0 6-3.3 10.2-10 13-6.7-2.8-10-7-10-13V8l10-4Z"/><path d="m11 16 3 3 7-7"/></svg>'
+        };
+        return icons[type] || icons.playoff;
+    }
+
+    function metricValue(metric) {
+        if (metric && typeof metric === 'object' && metric.value !== undefined) return numberOrZero(metric.value);
+        return numberOrZero(metric);
+    }
+
+    function renderOwnerAchievements(data) {
+        if (!achievementCase || !achievementGrid || !achievementCount) return;
+        var summary = data.season_summary || {};
+        var streaks = data.streaks || {};
+        var postseason = data.postseason || {};
+        var championships = numberOrZero(summary.championships);
+        var tenWinSeasons = numberOrZero(summary.ten_win_seasons);
+        var longestWin = numberOrZero((streaks.longest_win || {}).length);
+        var playoffAppearances = metricValue(postseason.playoff_appearances);
+        var achievements = [
+            { type: 'champion', title: 'FS5 Legend', detail: 'Win an FS5 championship', value: championships, target: 1, progress: championships + ' title' + (championships === 1 ? '' : 's') },
+            { type: 'dynasty', title: 'Double-Digit Dynasty', detail: 'Complete a 10-win season', value: tenWinSeasons, target: 1, progress: tenWinSeasons + ' season' + (tenWinSeasons === 1 ? '' : 's') },
+            { type: 'streak', title: 'Hot Streak', detail: 'Win five games in a row', value: longestWin, target: 5, progress: longestWin + ' / 5 wins' },
+            { type: 'playoff', title: 'January Regular', detail: 'Make three playoff appearances', value: playoffAppearances, target: 3, progress: playoffAppearances + ' / 3 appearances' }
+        ];
+        var earned = achievements.filter(function (achievement) { return achievement.value >= achievement.target; }).length;
+        achievementCase.hidden = false;
+        achievementCount.textContent = earned + ' unlocked';
+        achievementGrid.textContent = '';
+        achievements.forEach(function (achievement) {
+            var card = document.createElement('article');
+            var unlocked = achievement.value >= achievement.target;
+            card.className = 'achievement-crest achievement-crest--' + achievement.type + (unlocked ? ' is-unlocked' : ' is-locked');
+            card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'locked') + '. ' + achievement.detail + '. ' + achievement.progress + '.');
+            card.innerHTML = '<div class="achievement-crest__medallion">' + achievementIcon(achievement.type) + '<span class="achievement-crest__seal">FS5</span></div><div class="achievement-crest__copy"><span class="achievement-crest__state">' + (unlocked ? 'UNLOCKED' : 'IN PROGRESS') + '</span><h3>' + achievement.title + '</h3><p>' + achievement.detail + '</p><strong>' + achievement.progress + '</strong></div>';
+            achievementGrid.appendChild(card);
+        });
     }
 
     function renderOwnerHeader(owner) {
@@ -521,6 +569,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         resetSeasonHistory();
+        if (achievementCase) achievementCase.hidden = true;
+        if (achievementGrid) achievementGrid.textContent = '';
+        if (achievementCount) achievementCount.textContent = '0 unlocked';
         recordTableBody.textContent = '';
         resetH2H();
     }
