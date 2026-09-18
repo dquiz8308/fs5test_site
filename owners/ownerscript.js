@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var achievementCase = document.getElementById('achievement-case');
     var achievementGrid = document.getElementById('achievement-case-grid');
     var achievementCount = document.getElementById('achievement-case-count');
+    var achievementTierDetail = document.getElementById('achievement-tier-detail');
     var requestSequence = 0;
     var currentOwnerData = null;
     var currentSeasonRows = [];
@@ -210,23 +211,77 @@ document.addEventListener('DOMContentLoaded', function() {
         var longestWin = numberOrZero((streaks.longest_win || {}).length);
         var playoffAppearances = metricValue(postseason.playoff_appearances);
         var achievements = [
-            { type: 'champion', title: 'FS5 Legend', detail: 'Win an FS5 championship', value: championships, target: 1, progress: championships + ' title' + (championships === 1 ? '' : 's') },
-            { type: 'dynasty', title: 'Double-Digit Dynasty', detail: 'Complete a 10-win season', value: tenWinSeasons, target: 1, progress: tenWinSeasons + ' season' + (tenWinSeasons === 1 ? '' : 's') },
-            { type: 'streak', title: 'Hot Streak', detail: 'Win five games in a row', value: longestWin, target: 5, progress: longestWin + ' / 5 wins' },
-            { type: 'playoff', title: 'January Regular', detail: 'Make three playoff appearances', value: playoffAppearances, target: 3, progress: playoffAppearances + ' / 3 appearances' }
+            { type: 'champion', title: 'FS5 Legend', detail: 'Win an FS5 championship', value: championships, unit: 'title', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 2 }, { name: 'Gold Crest', target: 3 }, { name: 'Legacy Crest', target: 5 }] },
+            { type: 'dynasty', title: 'Double-Digit Dynasty', detail: 'Complete a 10-win season', value: tenWinSeasons, unit: '10-win season', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 3 }, { name: 'Gold Crest', target: 5 }, { name: 'Legacy Crest', target: 8 }] },
+            { type: 'streak', title: 'Hot Streak', detail: 'Build a winning streak', value: longestWin, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 5 }, { name: 'Silver Crest', target: 7 }, { name: 'Gold Crest', target: 10 }, { name: 'Legacy Crest', target: 13 }] },
+            { type: 'playoff', title: 'January Regular', detail: 'Make the FS5 playoffs', value: playoffAppearances, unit: 'playoff appearance', tiers: [{ name: 'Bronze Crest', target: 3 }, { name: 'Silver Crest', target: 5 }, { name: 'Gold Crest', target: 8 }, { name: 'Legacy Crest', target: 12 }] }
         ];
-        var earned = achievements.filter(function (achievement) { return achievement.value >= achievement.target; }).length;
+        var earned = achievements.filter(function (achievement) { return achievement.value >= achievement.tiers[0].target; }).length;
         achievementCase.hidden = false;
         achievementCount.textContent = earned + ' unlocked';
         achievementGrid.textContent = '';
+        if (achievementTierDetail) {
+            achievementTierDetail.hidden = true;
+            achievementTierDetail.textContent = '';
+        }
         achievements.forEach(function (achievement) {
-            var card = document.createElement('article');
-            var unlocked = achievement.value >= achievement.target;
+            var card = document.createElement('button');
+            var unlocked = achievement.value >= achievement.tiers[0].target;
+            var tier = getAchievementTier(achievement);
             card.className = 'achievement-crest achievement-crest--' + achievement.type + (unlocked ? ' is-unlocked' : ' is-locked');
-            card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'locked') + '. ' + achievement.detail + '. ' + achievement.progress + '.');
-            card.innerHTML = '<div class="achievement-crest__medallion">' + achievementIcon(achievement.type) + '<span class="achievement-crest__seal">FS5</span></div><div class="achievement-crest__copy"><span class="achievement-crest__state">' + (unlocked ? 'UNLOCKED' : 'IN PROGRESS') + '</span><h3>' + achievement.title + '</h3><p>' + achievement.detail + '</p><strong>' + achievement.progress + '</strong></div>';
+            card.type = 'button';
+            card.setAttribute('aria-expanded', 'false');
+            card.setAttribute('aria-controls', 'achievement-tier-detail');
+            card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Select to see the next tier.');
+            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementIcon(achievement.type) + '<span class="achievement-crest__seal">FS5</span></span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
+            card.addEventListener('click', function () {
+                selectAchievement(card, achievement, tier);
+            });
             achievementGrid.appendChild(card);
         });
+    }
+
+    function getAchievementTier(achievement) {
+        var current = null;
+        var next = null;
+        achievement.tiers.forEach(function (tier) {
+            if (achievement.value >= tier.target) {
+                current = tier;
+            } else if (!next) {
+                next = tier;
+            }
+        });
+        return { current: current, next: next };
+    }
+
+    function formatAchievementUnit(value, unit) {
+        if (value === 1) return unit;
+        if (unit === '10-win season') return '10-win seasons';
+        return unit + 's';
+    }
+
+    function formatAchievementProgress(achievement) {
+        return achievement.value + ' ' + formatAchievementUnit(achievement.value, achievement.unit);
+    }
+
+    function selectAchievement(card, achievement, tier) {
+        if (!achievementTierDetail) return;
+        Array.prototype.forEach.call(achievementGrid.querySelectorAll('.achievement-crest'), function (crest) {
+            crest.classList.remove('is-selected');
+            crest.setAttribute('aria-expanded', 'false');
+        });
+        card.classList.add('is-selected');
+        card.setAttribute('aria-expanded', 'true');
+
+        var nextMessage = tier.next
+            ? (tier.next.target - achievement.value) + ' more ' + formatAchievementUnit(tier.next.target - achievement.value, achievement.unit) + ' to unlock ' + tier.next.name + ' at ' + tier.next.target + '.'
+            : 'Every available tier is unlocked.';
+        var currentMessage = tier.current
+            ? 'Current tier: ' + tier.current.name + '.'
+            : 'Current tier: Not yet unlocked.';
+
+        achievementTierDetail.innerHTML = '<span class="achievement-tier-detail__eyebrow">' + achievement.title + ' TIERS</span><strong>' + currentMessage + '</strong><p>' + nextMessage + '</p>';
+        achievementTierDetail.hidden = false;
     }
 
     function renderOwnerHeader(owner) {
@@ -572,6 +627,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievementCase) achievementCase.hidden = true;
         if (achievementGrid) achievementGrid.textContent = '';
         if (achievementCount) achievementCount.textContent = '0 unlocked';
+        if (achievementTierDetail) {
+            achievementTierDetail.hidden = true;
+            achievementTierDetail.textContent = '';
+        }
         recordTableBody.textContent = '';
         resetH2H();
     }
