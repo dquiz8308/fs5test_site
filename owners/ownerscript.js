@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
             card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Open achievement history and tier guide.');
             card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy(tier, achievement.type) + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
             card.addEventListener('click', function () {
-                openAchievementHistory(achievement, tier, achievements);
+                openAchievementHistory(achievement, tier);
             });
             achievementGrid.appendChild(card);
         });
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return achievement.value + ' ' + formatAchievementUnit(achievement.value, achievement.unit);
     }
 
-    function openAchievementHistory(achievement, tier, achievements) {
+    function openAchievementHistory(achievement, tier) {
         if (!achievementHistoryModal || !achievementHistoryContent) return;
         var nextMessage = tier.next
             ? (tier.next.target - achievement.value) + ' more ' + formatAchievementUnit(tier.next.target - achievement.value, achievement.unit) + ' to unlock ' + tier.next.name + ' at ' + tier.next.target + '.'
@@ -330,16 +330,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var currentMessage = tier.current
             ? 'Current tier: ' + tier.current.name + '.'
             : 'Current tier: Not yet unlocked.';
-        var tierGuideRows = achievements.map(function (guideAchievement) {
-            var guideTiers = guideAchievement.tiers.map(function (tierItem) {
-                var tierStyle = tierItem.name.split(' ')[0].toLowerCase();
-                var state = guideAchievement.value >= tierItem.target ? ' is-earned' : '';
-                return '<span class="achievement-tier-guide__tier achievement-tier-guide__tier--' + tierStyle + state + '"><b>' + tierItem.name + '</b><small>' + tierItem.target + ' ' + formatAchievementUnit(tierItem.target, guideAchievement.unit) + '</small></span>';
-            }).join('');
-            return '<div class="achievement-tier-guide__row' + (guideAchievement.type === achievement.type ? ' is-selected' : '') + '"><strong>' + guideAchievement.title + '</strong><div class="achievement-tier-guide__tiers">' + guideTiers + '</div></div>';
+        var selectedTiers = achievement.tiers.map(function (tierItem) {
+            var tierStyle = tierItem.name.split(' ')[0].toLowerCase();
+            var state = achievement.value >= tierItem.target ? ' is-earned' : '';
+            return '<span class="achievement-tier-guide__tier achievement-tier-guide__tier--' + tierStyle + state + '"><b>' + tierItem.name + '</b><small>' + tierItem.target + ' ' + formatAchievementUnit(tierItem.target, achievement.unit) + '</small></span>';
         }).join('');
 
-        achievementHistoryContent.innerHTML = '<div class="achievement-history__hero achievement-history--' + achievement.type + '"><span class="achievement-history__trophy">' + achievementTrophy(tier, achievement.type) + '</span><div><p class="achievement-history__eyebrow">ACHIEVEMENT HISTORY</p><h2 id="achievement-history-title">' + achievement.title + '</h2><p>' + achievement.detail + '</p></div></div><section class="achievement-history__summary" aria-label="Current achievement history"><span>CAREER TOTAL</span><strong>' + formatAchievementProgress(achievement) + '</strong><p>' + currentMessage + ' ' + nextMessage + '</p></section><section class="achievement-history__legend" aria-labelledby="achievement-history-legend-title"><div class="achievement-history__legend-header"><h3 id="achievement-history-legend-title">Complete tier guide</h3><p>All achievement requirements.</p></div><div class="achievement-tier-guide__rows">' + tierGuideRows + '</div></section>';
+        achievementHistoryContent.innerHTML = '<div class="achievement-history__hero achievement-history--' + achievement.type + '"><span class="achievement-history__trophy">' + achievementTrophy(tier, achievement.type) + '</span><div><p class="achievement-history__eyebrow">ACHIEVEMENT HISTORY</p><h2 id="achievement-history-title">' + achievement.title + '</h2><p>' + achievement.detail + '</p></div></div><section class="achievement-history__summary" aria-label="Current achievement history"><span>CAREER TOTAL</span><strong>' + formatAchievementProgress(achievement) + '</strong><p>' + currentMessage + ' ' + nextMessage + '</p></section><section class="achievement-history__legend" aria-labelledby="achievement-history-legend-title"><div class="achievement-history__legend-header"><h3 id="achievement-history-legend-title">Tier guide</h3><p>Every crest has four levels.</p></div><div class="achievement-tier-guide__tiers achievement-history__selected-tiers">' + selectedTiers + '</div></section>';
         achievementHistoryModal.showModal();
     }
 
