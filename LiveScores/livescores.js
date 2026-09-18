@@ -2,7 +2,10 @@
     "use strict";
 
     var LEAGUE_ID = "1387297022695993344";
-    var REFRESH_MS = 10000;
+    // Matchup totals arrive from Sleeper separately from the player-stat feed.
+    // Poll more closely during a live NFL game so the card score catches up
+    // promptly, while inactive weeks retain the lighter idle cadence below.
+    var REFRESH_MS = 5000;
     var IDLE_REFRESH_MS = 30000;
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
     var PROJECTION_CACHE_MS = 5 * 60 * 1000;
