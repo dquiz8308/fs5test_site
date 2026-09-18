@@ -3095,3 +3095,62 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .owner-locker__shelf-items::after { right: 1px; bottom: 0; left: 1px; height: 10px; }
     .locker-object img { transform: translateY(3px); }
 }
+
+/* Use one centered visual stage in every keepsake detail modal. */
+.locker-item-modal {
+    width: min(calc(100% - 32px), 640px);
+    margin: auto;
+}
+
+.locker-item-detail {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 14px;
+    text-align: center;
+}
+
+.locker-item-detail__visual {
+    display: grid;
+    width: 100%;
+    min-height: 220px;
+    place-items: center;
+}
+
+.locker-item-detail__art {
+    display: block;
+    width: min(100%, 500px);
+    min-height: 0;
+    height: 220px;
+    max-height: none;
+    object-fit: contain;
+}
+
+.locker-item-detail__object {
+    display: grid;
+    width: 180px;
+    height: 180px;
+    margin: 0;
+    place-items: center;
+    transform: none;
+}
+
+.locker-item-detail__object img {
+    width: 176px;
+    height: 176px;
+    transform: none;
+}
+
+.locker-item-detail__copy {
+    width: min(100%, 500px);
+}
+
+.locker-item-detail__result {
+    text-align: center;
+}
+
+@media (max-width: 765px) {
+    .locker-item-detail__visual { min-height: 165px; }
+    .locker-item-detail__art { height: 165px; }
+    .locker-item-detail__object { width: 142px; height: 142px; }
+    .locker-item-detail__object img { width: 140px; height: 140px; }
+}

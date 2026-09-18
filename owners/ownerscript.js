@@ -462,12 +462,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var item = document.createElement('article');
         item.className = 'locker-item-detail locker-item-detail--' + profile.type;
+        var visual = document.createElement('div');
+        visual.className = 'locker-item-detail__visual';
         if (award.art) {
             var image = document.createElement('img');
             image.className = 'locker-item-detail__art';
             image.src = award.art;
             image.alt = profile.label + ' from the ' + award.bowl;
-            item.appendChild(image);
+            visual.appendChild(image);
         } else {
             var fallbackObject = document.createElement('span');
             fallbackObject.className = 'locker-item-detail__object locker-collectible__object locker-object locker-object--' + profile.type;
@@ -480,8 +482,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 fallbackObject.appendChild(document.createElement('span'));
             }
-            item.appendChild(fallbackObject);
+            visual.appendChild(fallbackObject);
         }
+        item.appendChild(visual);
 
         var copy = document.createElement('div');
         copy.className = 'locker-item-detail__copy';
