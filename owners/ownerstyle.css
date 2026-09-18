@@ -2787,6 +2787,27 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
 
 .locker-item-detail__object { justify-self: center; align-self: center; transform: scale(1.45); transform-origin: center; }
 
+/* Generated 3D bowl collectibles replace the CSS stand-ins on the locker shelves. */
+.locker-object img {
+    position: relative;
+    z-index: 1;
+    width: 126px;
+    height: 126px;
+    object-fit: contain;
+    mix-blend-mode: normal;
+    filter: drop-shadow(0 8px 6px rgba(0,0,0,.62));
+}
+
+.locker-object--bronze-chair img {
+    width: 118px;
+    height: 126px;
+    object-position: center bottom;
+}
+
+@media (max-width: 765px) {
+    .locker-object img { width: 96px; height: 96px; }
+}
+
 /* Fixed four-shelf locker: steel outer frame, wood interior, and deliberate open space. */
 .owner-locker__cabinet {
     min-height: 790px;

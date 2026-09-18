@@ -361,27 +361,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function lockerItemProfile(bowlName, roundName) {
         var bowl = String(bowlName || '').toLowerCase();
         var round = String(roundName || '').toLowerCase();
-        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bronze-chair-object-512.png' };
-        if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi' };
-        if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls' };
-        if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco' };
-        if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath' };
-        if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes' };
-        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Barbell', type: 'bulge-barbell' };
-        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Football', type: 'lynch-football' };
-        if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice' };
-        if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge' };
-        if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial' };
-        if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel' };
-        if (bowl.indexOf('shut the') !== -1) return { label: 'Rivalry Bullhorn', type: 'bullhorn' };
+        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/objects/bronze-chair.png' };
+        if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi', asset: 'artwork/locker/objects/pierogi.png' };
+        if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls', asset: 'artwork/locker/objects/pizza-rolls.png' };
+        if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco', asset: 'artwork/locker/objects/disco.png' };
+        if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath', asset: 'artwork/locker/objects/bloodbath.png' };
+        if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes', asset: 'artwork/locker/objects/city-of-homes.png' };
+        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Barbell', type: 'bulge-barbell', asset: 'artwork/locker/objects/bulge-barbell.png' };
+        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Football', type: 'lynch-football', asset: 'artwork/locker/objects/lynch-football.png' };
+        if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice', asset: 'artwork/locker/objects/random-dice.png' };
+        if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge', asset: 'artwork/locker/objects/edge.png' };
+        if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial', asset: 'artwork/locker/objects/memorial.png' };
+        if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel', asset: 'artwork/locker/objects/studio-reel.png' };
+        if (bowl.indexOf('shut the') !== -1) return { label: 'Rivalry Bullhorn', type: 'bullhorn', asset: 'artwork/locker/objects/bullhorn.png' };
         if (bowl.indexOf('last place') !== -1) return { label: 'Basement Trophy', type: 'basement-trophy' };
-        if (bowl.indexOf('ninth place') !== -1) return { label: 'Ninth Place Medal', type: 'ninth-medal' };
+        if (bowl.indexOf('ninth place') !== -1) return { label: 'Ninth Place Medal', type: 'ninth-medal', asset: 'artwork/locker/objects/ninth-medal.png' };
         if (bowl.indexOf('fifth place') !== -1) return { label: 'Fifth Place Pennant', type: 'fifth-pennant' };
         if (bowl.indexOf('consolation') !== -1) return { label: 'Consolation Cup', type: 'consolation-cup' };
-        if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football' };
+        if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football', asset: 'artwork/locker/objects/championship-football.png' };
         if (bowl === 'semifinal' || round === 'semifinal') return { label: 'Semifinal Playbook', type: 'playbook' };
-        if (bowl === 'first round' || round === 'first round') return { label: 'First Round Game Ball', type: 'game-ball' };
-        if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bronze-chair-object-512.png' };
+        if (bowl === 'first round' || round === 'first round') return { label: 'First Round Game Ball', type: 'game-ball', asset: 'artwork/locker/objects/game-ball.png' };
+        if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/objects/bronze-chair.png' };
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
