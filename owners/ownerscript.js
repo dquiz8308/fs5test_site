@@ -358,21 +358,30 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievementHistoryModal && achievementHistoryModal.open) achievementHistoryModal.close();
     }
 
-    function lockerItemProfile(bowlName) {
+    function lockerItemProfile(bowlName, roundName) {
         var bowl = String(bowlName || '').toLowerCase();
+        var round = String(roundName || '').toLowerCase();
         if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bronze-chair-object-512.png' };
         if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi' };
         if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls' };
         if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco' };
         if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath' };
         if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes' };
-        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Battle Relic', type: 'battle' };
-        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Trophy', type: 'super-trophy' };
+        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Barbell', type: 'bulge-barbell' };
+        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Football', type: 'lynch-football' };
         if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice' };
         if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge' };
         if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial' };
         if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel' };
         if (bowl.indexOf('shut the') !== -1) return { label: 'Rivalry Bullhorn', type: 'bullhorn' };
+        if (bowl.indexOf('last place') !== -1) return { label: 'Basement Trophy', type: 'basement-trophy' };
+        if (bowl.indexOf('ninth place') !== -1) return { label: 'Ninth Place Medal', type: 'ninth-medal' };
+        if (bowl.indexOf('fifth place') !== -1) return { label: 'Fifth Place Pennant', type: 'fifth-pennant' };
+        if (bowl.indexOf('consolation') !== -1) return { label: 'Consolation Cup', type: 'consolation-cup' };
+        if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football' };
+        if (bowl === 'semifinal' || round === 'semifinal') return { label: 'Semifinal Playbook', type: 'playbook' };
+        if (bowl === 'first round' || round === 'first round') return { label: 'First Round Game Ball', type: 'game-ball' };
+        if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bronze-chair-object-512.png' };
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
@@ -397,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shelfItems.className = 'owner-locker__shelf-items';
 
             awards.slice(index, index + 5).forEach(function (award) {
-                var profile = lockerItemProfile(award.bowl);
+                var profile = lockerItemProfile(award.bowl, award.round);
                 var item = document.createElement('button');
                 item.className = 'locker-collectible locker-collectible--' + profile.type;
                 item.type = 'button';
@@ -446,11 +455,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         var item = document.createElement('article');
         item.className = 'locker-item-detail locker-item-detail--' + profile.type;
-        var image = document.createElement('img');
-        image.className = 'locker-item-detail__art';
-        image.src = award.art;
-        image.alt = profile.label + ' from the ' + award.bowl;
-        item.appendChild(image);
+        if (award.art) {
+            var image = document.createElement('img');
+            image.className = 'locker-item-detail__art';
+            image.src = award.art;
+            image.alt = profile.label + ' from the ' + award.bowl;
+            item.appendChild(image);
+        } else {
+            var fallbackObject = document.createElement('span');
+            fallbackObject.className = 'locker-item-detail__object locker-collectible__object locker-object locker-object--' + profile.type;
+            fallbackObject.setAttribute('aria-hidden', 'true');
+            if (profile.asset) {
+                var fallbackImage = document.createElement('img');
+                fallbackImage.src = profile.asset;
+                fallbackImage.alt = '';
+                fallbackObject.appendChild(fallbackImage);
+            } else {
+                fallbackObject.appendChild(document.createElement('span'));
+            }
+            item.appendChild(fallbackObject);
+        }
 
         var copy = document.createElement('div');
         copy.className = 'locker-item-detail__copy';

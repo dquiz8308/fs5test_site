@@ -2747,3 +2747,42 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .owner-locker__shelf-items { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-height: 126px; }
     .locker-collectible { grid-template-rows: 96px auto auto; min-height: 122px; }
 }
+
+/* Named Vault games get their own shelf object instead of a generic award. */
+.locker-object--bulge-barbell > span { width: 102px; height: 20px; border-color: #d5e0e7; border-radius: 8px; background: linear-gradient(#607582, #17262f 45% 56%, #687f8a); transform: rotate(-8deg); }
+.locker-object--bulge-barbell > span::before { top: -21px; left: -16px; width: 25px; height: 56px; border: 5px solid #8a969b; border-radius: 8px; background: #263740; box-shadow: 111px 0 0 -5px #263740, 111px 0 0 0 #8a969b; }
+.locker-object--bulge-barbell > span::after { display: none; }
+
+.locker-object--lynch-football > span,
+.locker-object--championship-football > span,
+.locker-object--game-ball > span { width: 95px; height: 57px; border-radius: 52% 52% 52% 52%; transform: rotate(-18deg); }
+.locker-object--lynch-football > span { border-color: #d8dfe2; background: linear-gradient(130deg, #b53f30 0 43%, #f5f5f0 44% 53%, #b53f30 54%); }
+.locker-object--lynch-football > span::before,
+.locker-object--championship-football > span::before,
+.locker-object--game-ball > span::before { top: 22px; left: 29px; width: 36px; height: 7px; border: 0; border-radius: 2px; background: repeating-linear-gradient(90deg, #fff 0 4px, transparent 4px 8px); }
+.locker-object--lynch-football > span::after,
+.locker-object--championship-football > span::after,
+.locker-object--game-ball > span::after { display: none; }
+.locker-object--championship-football > span { border-color: #f7dc6d; background: linear-gradient(135deg, #947006, #f3cf47 47%, #805e00 48%); box-shadow: inset 0 0 0 5px rgba(255,248,194,.26), 0 0 18px rgba(244,201,63,.38); }
+.locker-object--game-ball > span { border-color: #dda16c; background: linear-gradient(135deg, #793716, #c86a2e 48%, #643015 49%); }
+
+.locker-object--playbook > span { width: 76px; height: 92px; border-color: #ebd49b; border-radius: 5px; background: repeating-linear-gradient(0deg, #f2e4bc 0 13px, #c38d52 13px 15px); transform: rotate(5deg); }
+.locker-object--playbook > span::before { top: 19px; left: 17px; width: 38px; height: 38px; border: 3px solid #b04c2e; border-radius: 50%; }
+.locker-object--playbook > span::after { display: none; }
+
+.locker-object--consolation-cup > span { width: 65px; height: 75px; border-color: #a9c1ca; border-radius: 9px 9px 33px 33px; background: linear-gradient(110deg, #506e79, #bcd6dc 48%, #55717a); }
+.locker-object--consolation-cup > span::before { top: 4px; left: -23px; width: 104px; height: 38px; border: 5px solid #a9c1ca; border-top: 0; border-radius: 0 0 50% 50%; }
+.locker-object--consolation-cup > span::after { right: -17px; bottom: -14px; left: -17px; background: #41575f; }
+
+.locker-object--fifth-pennant > span { width: 76px; height: 92px; border-color: #d9b656; border-radius: 2px; background: linear-gradient(135deg, #1d4d79 0 49%, #d7b155 50%); clip-path: polygon(0 0,100% 0,100% 78%,50% 100%,0 78%); }
+.locker-object--fifth-pennant > span::before,.locker-object--fifth-pennant > span::after { display: none; }
+
+.locker-object--ninth-medal > span { width: 72px; height: 72px; border: 8px double #d4b15f; border-radius: 50%; background: radial-gradient(circle, #fff5bf 0 30%, #9a7422 31% 34%, #d7ae52 35%); }
+.locker-object--ninth-medal > span::before { top: -44px; left: 20px; width: 27px; height: 45px; border: 0; border-radius: 3px; background: repeating-linear-gradient(90deg, #5e94be 0 8px, #f6f0d0 8px 15px, #c65348 15px 23px); }
+.locker-object--ninth-medal > span::after { display: none; }
+
+.locker-object--basement-trophy > span { width: 74px; height: 47px; border-color: #789174; border-radius: 7px 7px 30px 30px; background: linear-gradient(#7d956c 0 44%, #3f543b 45%); }
+.locker-object--basement-trophy > span::before { top: -29px; left: 20px; width: 27px; height: 34px; border: 5px solid #789174; border-bottom: 0; border-radius: 50% 50% 0 0; }
+.locker-object--basement-trophy > span::after { right: -16px; bottom: -16px; left: -16px; background: #354a34; }
+
+.locker-item-detail__object { justify-self: center; align-self: center; transform: scale(1.45); transform-origin: center; }
