@@ -1418,13 +1418,6 @@
         }, 10000);
     }
 
-    function appendProjectedFinish(card, teams) {
-        var vals=teams.map(function(m){return {team:teamLabel(m),finish:teamProjectedFinish(m),current:Number(m.points||0),remaining:projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster)}});
-        var el=document.createElement('div'); el.className='projected-finish';
-        el.innerHTML=vals.map(function(v){return '<div><span>🎯 '+esc(v.team)+'</span><strong>'+formatScore(v.finish)+'</strong><small>Projected final · '+formatScore(v.remaining)+' left</small></div>';}).join('');
-        card.appendChild(el);
-    }
-
     function appendPointsBank(card, teams) {
         var el=document.createElement('div'); el.className='points-bank';
         el.innerHTML=teams.map(function(m){var cur=Number(m.points||0), rem=projectedRemaining((state.rosterMap.get(String(m.roster_id))||{}).roster), total=Math.max(0,cur+rem), pct=total?Math.max(0,Math.min(100,cur/total*100)):0;return '<div class="points-bank__team"><div><span>💰 '+esc(teamLabel(m))+'</span><strong>'+formatScore(cur)+' banked</strong></div><div class="points-bank__track"><i style="width:'+pct.toFixed(1)+'%"></i></div><small>'+formatScore(rem)+' projected remaining</small></div>';}).join('');
@@ -2013,7 +2006,6 @@
                 if (oddsReason) { var reason = document.createElement("div"); reason.className = "odds-change-reason"; reason.textContent = oddsReason; card.appendChild(reason); }
                 if (matchupHasMondayTakeover(teams)) { var monday = document.createElement("div"); monday.className = "monday-takeover"; monday.innerHTML = "<span>🌙</span><div><strong>MONDAY NIGHT TAKEOVER</strong><small>The final chapter of this matchup is waiting for Monday Night Football.</small></div></div>"; card.appendChild(monday); }
                 appendMatchupSuperlatives(card, teams);
-                appendProjectedFinish(card, teams);
                 appendPointsBank(card, teams);
                 var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash); applyTrashTalkExpiry(trash);
             }
