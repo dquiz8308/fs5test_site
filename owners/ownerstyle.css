@@ -2888,3 +2888,110 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .owner-locker__shelf-items { min-height: 105px; }
     .locker-collectible { grid-template-rows: 90px auto auto; min-height: 112px; }
 }
+
+/* Display the bowl keepsakes as a collection on open locker shelves, not as labeled cards. */
+.owner-locker__cabinet {
+    overflow: hidden;
+    min-height: 736px;
+    padding: 22px 46px 28px;
+    border: 12px solid #39444a;
+    border-radius: 5px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.08), transparent 3% 97%, rgba(0,0,0,.52)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 2px, transparent 2px 22px),
+        linear-gradient(90deg, #2d2825, #605650 9%, #403934 49%, #5c524d 91%, #292522);
+    box-shadow: inset 0 0 0 3px #151b1e, inset 0 0 48px rgba(0,0,0,.68), 0 14px 24px rgba(0,0,0,.32);
+}
+
+.owner-locker__cabinet::before,
+.owner-locker__cabinet::after {
+    z-index: 2;
+    width: 20px;
+    background: repeating-linear-gradient(180deg, #59636a 0 8px, #242d31 8px 16px);
+}
+
+.owner-locker__cabinet::before { left: 0; }
+.owner-locker__cabinet::after { right: 0; }
+
+.owner-locker__shelves {
+    position: relative;
+    z-index: 1;
+    min-height: 686px;
+    grid-template-rows: repeat(4, minmax(148px, 1fr));
+}
+
+.owner-locker__shelf {
+    display: flex;
+    min-height: 0;
+    padding: 8px 28px 20px;
+    border-bottom: 15px solid #221d1b;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.10), transparent 34%),
+        repeating-linear-gradient(90deg, rgba(0,0,0,.09) 0 2px, transparent 2px 21px),
+        linear-gradient(90deg, rgba(0,0,0,.22), transparent 10% 90%, rgba(0,0,0,.22));
+    box-shadow: inset 0 -4px 0 #8a6b4f, inset 0 -8px 0 #443124, 0 7px 9px rgba(0,0,0,.44);
+}
+
+.owner-locker__shelf::after {
+    right: 7%;
+    bottom: -23px;
+    left: 7%;
+    height: 10px;
+    background: rgba(0,0,0,.64);
+}
+
+.owner-locker__shelf-items {
+    display: flex;
+    width: 100%;
+    min-height: 126px;
+    align-items: end;
+    justify-content: space-evenly;
+    gap: clamp(12px, 3vw, 42px);
+}
+
+.locker-collectible {
+    display: grid;
+    width: 142px;
+    min-width: 0;
+    min-height: 132px;
+    grid-template-rows: 132px;
+    align-items: end;
+    justify-items: center;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.locker-collectible__object {
+    width: 142px;
+    height: 132px;
+}
+
+.locker-object img {
+    width: 136px;
+    height: 132px;
+    filter: drop-shadow(0 9px 6px rgba(0,0,0,.66));
+}
+
+.locker-collectible:nth-child(2n) { transform: rotate(1.5deg); }
+.locker-collectible:nth-child(3n) { transform: rotate(-1deg); }
+.locker-collectible:hover,
+.locker-collectible:focus-visible { transform: translateY(-8px) scale(1.055); }
+
+.locker-collectible:focus-visible {
+    outline: 2px solid #d9b75c;
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+
+@media (max-width: 765px) {
+    .owner-locker__cabinet { min-height: 572px; padding: 16px 18px 22px; border-width: 8px; }
+    .owner-locker__cabinet::before,
+    .owner-locker__cabinet::after { width: 11px; }
+    .owner-locker__shelves { min-height: 526px; grid-template-rows: repeat(4, minmax(112px, 1fr)); }
+    .owner-locker__shelf { padding: 5px 8px 15px; border-bottom-width: 11px; }
+    .owner-locker__shelf-items { min-height: 94px; gap: 2px; }
+    .locker-collectible { flex: 1 1 0; width: auto; min-height: 94px; grid-template-rows: 94px; }
+    .locker-collectible__object { width: 100%; height: 94px; }
+    .locker-object img { width: min(82px, calc(100% + 5px)); height: 94px; }
+}

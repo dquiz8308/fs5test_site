@@ -429,16 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 item.appendChild(object);
 
-                var label = document.createElement('span');
-                label.className = 'locker-collectible__label';
-                label.textContent = profile.label;
-                item.appendChild(label);
-
-                var year = document.createElement('span');
-                year.className = 'locker-collectible__year';
-                year.textContent = award.season;
-                item.appendChild(year);
-
                 item.addEventListener('click', function () {
                     openLockerItemModal(award, profile);
                 });
