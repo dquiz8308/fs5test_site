@@ -24,6 +24,7 @@
     var highlightedRosterId = null;
     var playbackTimer = null;
     var REGULAR_SEASON_WEEKS = 14;
+    var TRANSITION_MS = 1320;
     var colors = ['#ff7357', '#53d4e8', '#ffd15c', '#a98cff', '#6fe0a8', '#ff91b0', '#66a9ff', '#f4a55e', '#5be1c5', '#d989f1', '#b7cf76', '#f06f91'];
 
     function showFailure(message) {
@@ -81,7 +82,7 @@
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
         window.requestAnimationFrame(function () {
-            path.style.transition = 'stroke-dashoffset 820ms cubic-bezier(.22,.8,.25,1)';
+            path.style.transition = 'stroke-dashoffset ' + TRANSITION_MS + 'ms cubic-bezier(.16,1,.3,1)';
             path.style.strokeDashoffset = '0';
         });
     }
@@ -92,10 +93,13 @@
         paths.setAttribute('viewBox', '0 0 1000 1000');
         timeline.teams.forEach(function (team, index) {
             var path = document.createElementNS(namespace, 'path');
-            var commands = [];
-            for (var frameIndex = 0; frameIndex <= activeIndex; frameIndex += 1) {
+            var firstLocation = point(0, rankFor(timeline.frames[0], team.roster_id));
+            var commands = ['M' + (firstLocation.x * 10) + ' ' + (firstLocation.y * 10)];
+            for (var frameIndex = 1; frameIndex <= activeIndex; frameIndex += 1) {
+                var previousLocation = point(frameIndex - 1, rankFor(timeline.frames[frameIndex - 1], team.roster_id));
                 var location = point(frameIndex, rankFor(timeline.frames[frameIndex], team.roster_id));
-                commands.push((frameIndex === 0 ? 'M' : 'L') + (location.x * 10) + ' ' + (location.y * 10));
+                var horizontalHandle = (location.x - previousLocation.x) * 0.44;
+                commands.push('C' + ((previousLocation.x + horizontalHandle) * 10) + ' ' + (previousLocation.y * 10) + ' ' + ((location.x - horizontalHandle) * 10) + ' ' + (location.y * 10) + ' ' + (location.x * 10) + ' ' + (location.y * 10));
             }
             path.setAttribute('d', commands.join(' '));
             path.setAttribute('stroke', colors[index % colors.length]);
@@ -121,8 +125,9 @@
         updateFrame();
     }
 
-    function renderMarkers() {
+    function renderMarkers(shouldAnimate) {
         var frame = timeline.frames[activeIndex];
+        var previousFrame = timeline.frames[Math.max(0, activeIndex - 1)];
         markers.textContent = '';
         frame.standings.forEach(function (standing) {
             var team = teamForRoster(standing.roster_id);
@@ -139,6 +144,13 @@
             marker.appendChild(avatar(team));
             marker.addEventListener('click', function () { toggleHighlightedTeam(team.roster_id); });
             markers.appendChild(marker);
+            if (shouldAnimate && activeIndex > 0 && marker.animate && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+                var previousLocation = point(activeIndex - 1, rankFor(previousFrame, team.roster_id));
+                marker.animate([
+                    { left: previousLocation.x + '%', top: previousLocation.y + '%', transform: 'translate(-50%,-50%) scale(.92)' },
+                    { left: location.x + '%', top: location.y + '%', transform: 'translate(-50%,-50%) scale(1)' }
+                ], { duration: TRANSITION_MS, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' });
+            }
         });
     }
 
@@ -174,7 +186,7 @@
         output.textContent = timeline.frames[activeIndex].label;
         renderWeekLabels();
         renderPaths(Boolean(shouldAnimate));
-        renderMarkers();
+        renderMarkers(Boolean(shouldAnimate));
         renderTeamList();
     }
 
@@ -190,7 +202,7 @@
             if (activeIndex >= timeline.frames.length - 1) { setPlaying(false); return; }
             activeIndex += 1;
             updateFrame(true);
-        }, 980);
+        }, TRANSITION_MS + 180);
     }
 
     function configureTimeline() {
