@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var longestWin = numberOrZero((streaks.longest_win || {}).length);
         var playoffAppearances = metricValue(postseason.playoff_appearances);
         var achievements = [
-            { type: 'wins', title: 'Win Machine', detail: 'Stack career wins', value: careerWins, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 25 }, { name: 'Silver Crest', target: 50 }, { name: 'Gold Crest', target: 100 }, { name: 'Legacy Crest', target: 200 }] },
+            { type: 'wins', title: 'Win Machine', detail: 'Stack career wins', value: careerWins, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 50 }, { name: 'Silver Crest', target: 100 }, { name: 'Gold Crest', target: 150 }, { name: 'Legacy Crest', target: 200 }] },
             { type: 'champion', title: 'FS5 Legend', detail: 'Win an FS5 championship', value: championships, unit: 'title', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 2 }, { name: 'Gold Crest', target: 3 }, { name: 'Legacy Crest', target: 5 }] },
             { type: 'dynasty', title: 'Double-Digit Dynasty', detail: 'Complete a 10-win season', value: tenWinSeasons, unit: '10-win season', tiers: [{ name: 'Bronze Crest', target: 1 }, { name: 'Silver Crest', target: 3 }, { name: 'Gold Crest', target: 5 }, { name: 'Legacy Crest', target: 8 }] },
             { type: 'streak', title: 'Hot Streak', detail: 'Build a winning streak', value: longestWin, unit: 'win', tiers: [{ name: 'Bronze Crest', target: 5 }, { name: 'Silver Crest', target: 7 }, { name: 'Gold Crest', target: 10 }, { name: 'Legacy Crest', target: 13 }] },
