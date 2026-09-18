@@ -1269,14 +1269,6 @@
         box.hidden=false; box.innerHTML='<span>👀 FS5 WATCHING</span><strong>'+c.active+' active player'+(c.active===1?'':'s')+'</strong><small>of '+c.total+' starters currently in NFL games</small>';
     }
 
-    function renderWhatJustHappened() {
-        var box=$('what-just-happened'); if(!box)return;
-        var items=state.eventHistory.slice(0,3);
-        if(!items.length){box.hidden=true;return;}
-        box.hidden=false;
-        box.innerHTML='<strong>WHAT JUST HAPPENED</strong>'+items.map(function(e){return '<span>'+esc(e.icon)+' '+esc(e.message)+'</span>';}).join('');
-    }
-
     function renderLeagueLeaderboard() {
         var box=$('league-leaderboard'); if(!box)return;
         var teamRows=[];
@@ -1960,7 +1952,6 @@
         renderIceWatch();
         analyzeLiveEvents(state.matchups, week);
         renderLiveTicker();
-        renderWhatJustHappened();
         renderBroadcastHeader();
         renderWatching();
         renderLeagueLeaderboard();
