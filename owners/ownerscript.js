@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
     var achievementHistoryModal = document.getElementById('achievement-history-modal');
     var achievementHistoryContent = document.getElementById('achievement-history-content');
     var achievementHistoryClose = document.getElementById('achievement-history-close');
+    var ownerLocker = document.getElementById('owner-locker');
+    var ownerLockerShelves = document.getElementById('owner-locker-shelves');
+    var ownerLockerCount = document.getElementById('owner-locker-count');
+    var ownerLockerEmpty = document.getElementById('owner-locker-empty');
+    var lockerItemModal = document.getElementById('locker-item-modal');
+    var lockerItemModalContent = document.getElementById('locker-item-modal-content');
+    var lockerItemModalClose = document.getElementById('locker-item-modal-close');
     var requestSequence = 0;
     var currentOwnerData = null;
     var allTimeOwnerTotals = {};
@@ -96,6 +103,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (achievementHistoryModal) {
         achievementHistoryModal.addEventListener('click', function (event) {
             if (event.target === achievementHistoryModal) closeAchievementHistory();
+        });
+    }
+    if (lockerItemModalClose) lockerItemModalClose.addEventListener('click', closeLockerItemModal);
+    if (lockerItemModal) {
+        lockerItemModal.addEventListener('click', function (event) {
+            if (event.target === lockerItemModal) closeLockerItemModal();
         });
     }
     if (seasonHistoryMedia.addEventListener) {
@@ -237,6 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAllYears(data.seasons);
         renderSelectedRecordList();
         renderH2H(data.h2h);
+        renderOwnerLocker(data.owner);
     }
 
     function achievementTrophy(tier, type) {
@@ -342,6 +356,109 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function closeAchievementHistory() {
         if (achievementHistoryModal && achievementHistoryModal.open) achievementHistoryModal.close();
+    }
+
+    function lockerItemProfile(bowlName) {
+        var bowl = String(bowlName || '').toLowerCase();
+        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair' };
+        if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi' };
+        if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls' };
+        if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco' };
+        if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath' };
+        if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes' };
+        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Battle Relic', type: 'battle' };
+        return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
+    }
+
+    function renderOwnerLocker(owner) {
+        if (!ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
+        var ownerName = owner && owner.owner_name;
+        var awards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
+            .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName); });
+
+        ownerLocker.hidden = false;
+        ownerLockerShelves.textContent = '';
+        ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
+        ownerLockerEmpty.hidden = awards.length > 0;
+
+        for (var index = 0; index < awards.length; index += 4) {
+            var shelf = document.createElement('section');
+            shelf.className = 'owner-locker__shelf';
+            shelf.setAttribute('aria-label', 'Locker shelf ' + (Math.floor(index / 4) + 1));
+            var shelfItems = document.createElement('div');
+            shelfItems.className = 'owner-locker__shelf-items';
+
+            awards.slice(index, index + 4).forEach(function (award) {
+                var profile = lockerItemProfile(award.bowl);
+                var item = document.createElement('button');
+                item.className = 'locker-collectible locker-collectible--' + profile.type;
+                item.type = 'button';
+                item.setAttribute('aria-haspopup', 'dialog');
+                item.setAttribute('aria-controls', 'locker-item-modal');
+                item.setAttribute('aria-label', profile.label + ', won in ' + award.season + '. Open game details.');
+
+                var image = document.createElement('img');
+                image.className = 'locker-collectible__art';
+                image.src = award.art;
+                image.alt = '';
+                image.loading = 'lazy';
+                item.appendChild(image);
+
+                var label = document.createElement('span');
+                label.className = 'locker-collectible__label';
+                label.textContent = profile.label;
+                item.appendChild(label);
+
+                var year = document.createElement('span');
+                year.className = 'locker-collectible__year';
+                year.textContent = award.season;
+                item.appendChild(year);
+
+                item.addEventListener('click', function () {
+                    openLockerItemModal(award, profile);
+                });
+                shelfItems.appendChild(item);
+            });
+
+            shelf.appendChild(shelfItems);
+            ownerLockerShelves.appendChild(shelf);
+        }
+    }
+
+    function openLockerItemModal(award, profile) {
+        if (!lockerItemModal || !lockerItemModalContent) return;
+        lockerItemModalContent.textContent = '';
+
+        var item = document.createElement('article');
+        item.className = 'locker-item-detail locker-item-detail--' + profile.type;
+        var image = document.createElement('img');
+        image.className = 'locker-item-detail__art';
+        image.src = award.art;
+        image.alt = profile.label + ' from the ' + award.bowl;
+        item.appendChild(image);
+
+        var copy = document.createElement('div');
+        copy.className = 'locker-item-detail__copy';
+        var eyebrow = document.createElement('p');
+        eyebrow.className = 'locker-item-detail__eyebrow';
+        eyebrow.textContent = award.season + ' · ' + award.round;
+        var title = document.createElement('h2');
+        title.id = 'locker-item-modal-title';
+        title.textContent = profile.label;
+        var bowl = document.createElement('p');
+        bowl.className = 'locker-item-detail__bowl';
+        bowl.textContent = award.bowl;
+        var result = document.createElement('p');
+        result.className = 'locker-item-detail__result';
+        result.textContent = award.team + ' won ' + formatDecimal(award.score, 2) + '–' + formatDecimal(award.opponentScore, 2) + ' over ' + award.opponent + '.';
+        copy.append(eyebrow, title, bowl, result);
+        item.appendChild(copy);
+        lockerItemModalContent.appendChild(item);
+        lockerItemModal.showModal();
+    }
+
+    function closeLockerItemModal() {
+        if (lockerItemModal && lockerItemModal.open) lockerItemModal.close();
     }
 
     function renderOwnerHeader(owner) {
@@ -689,6 +806,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievementCount) achievementCount.textContent = '0 unlocked';
         if (achievementHistoryContent) achievementHistoryContent.textContent = '';
         closeAchievementHistory();
+        if (ownerLocker) ownerLocker.hidden = true;
+        if (ownerLockerShelves) ownerLockerShelves.textContent = '';
+        if (ownerLockerCount) ownerLockerCount.textContent = '0 keepsakes';
+        if (ownerLockerEmpty) ownerLockerEmpty.hidden = true;
+        if (lockerItemModalContent) lockerItemModalContent.textContent = '';
+        closeLockerItemModal();
         recordTableBody.textContent = '';
         resetH2H();
     }

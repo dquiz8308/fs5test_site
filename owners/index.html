@@ -479,6 +479,28 @@
     </div>
 </section>
 
+<section id="owner-locker" class="owner-locker" aria-labelledby="owner-locker-title" hidden>
+    <div class="owner-locker__header">
+        <div>
+            <p class="owner-locker__kicker">FS5 VAULT COLLECTION</p>
+            <h2 id="owner-locker-title">Signature Locker</h2>
+            <p>Bowls won, turned into shelf collectibles.</p>
+        </div>
+        <p id="owner-locker-count" class="owner-locker__count">0 keepsakes</p>
+    </div>
+    <div class="owner-locker__cabinet">
+        <div id="owner-locker-shelves" class="owner-locker__shelves"></div>
+    </div>
+    <p id="owner-locker-empty" class="owner-locker__empty" hidden>No photographed bowl-game keepsakes are available for this owner yet.</p>
+</section>
+
+<dialog id="locker-item-modal" class="locker-item-modal" aria-labelledby="locker-item-modal-title">
+    <div class="locker-item-modal__panel">
+        <button id="locker-item-modal-close" class="locker-item-modal__close" type="button" aria-label="Close keepsake details">×</button>
+        <div id="locker-item-modal-content"></div>
+    </div>
+</dialog>
+
 
 
 
@@ -490,7 +512,8 @@
             <p><span data-footer-permanent>FastStrongFive</span><span data-footer-status aria-live="polite">Founded 2012</span></p>
         </div>
     </footer>
-    <script src="ownerscript.js?v=owners-blank-state-20260806"></script>
+    <script src="locker-awards.js"></script>
+    <script src="ownerscript.js?v=owners-locker-20260918"></script>
     <script src="../footer-status.js"></script>
     <script src="../mobile-menu.js"></script>
 </body>
