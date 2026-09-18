@@ -366,9 +366,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls', asset: 'artwork/locker/objects/pizza-rolls.png' };
         if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco', asset: 'artwork/locker/objects/disco.png' };
         if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath', asset: 'artwork/locker/objects/bloodbath.png' };
-        if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes', asset: 'artwork/locker/objects/city-of-homes.png' };
+        if (bowl.indexOf('city of homes') !== -1) return { label: 'Welcome to Newnan Sign', type: 'city-of-homes', asset: 'artwork/locker/objects/newnan-city-of-homes-sign.png' };
         if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Barbell', type: 'bulge-barbell', asset: 'artwork/locker/objects/bulge-barbell.png' };
-        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Football', type: 'lynch-football', asset: 'artwork/locker/objects/lynch-football.png' };
+        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Rusted Stadium Sign', type: 'lynch-football', asset: 'artwork/locker/objects/lynch-rusted-sign.png' };
         if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice', asset: 'artwork/locker/objects/random-dice.png' };
         if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge', asset: 'artwork/locker/objects/edge.png' };
         if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial', asset: 'artwork/locker/objects/memorial.png' };
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bowl.indexOf('consolation') !== -1) return { label: 'Consolation Cup', type: 'consolation-cup' };
         if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football', asset: 'artwork/locker/objects/championship-football.png' };
         if (bowl === 'semifinal' || round === 'semifinal') return { label: 'Semifinal Playbook', type: 'playbook' };
-        if (bowl === 'first round' || round === 'first round') return { label: 'First Round Game Ball', type: 'game-ball', asset: 'artwork/locker/objects/game-ball.png' };
+        if (bowl === 'first round' || round === 'first round') return null;
         if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/objects/bronze-chair.png' };
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
@@ -389,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
         var ownerName = owner && owner.owner_name;
         var awards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
-            .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName); });
+            .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName) && award.bowl !== 'First Round'; });
 
         ownerLocker.hidden = false;
         ownerLockerShelves.textContent = '';
@@ -407,6 +407,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             awards.slice(index, index + 5).forEach(function (award) {
                 var profile = lockerItemProfile(award.bowl, award.round);
+                if (!profile) return;
                 var item = document.createElement('button');
                 item.className = 'locker-collectible locker-collectible--' + profile.type;
                 item.type = 'button';
