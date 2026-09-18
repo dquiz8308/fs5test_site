@@ -186,17 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
         renderH2H(data.h2h);
     }
 
-    function achievementTrophy() {
-        return '<svg class="achievement-trophy" viewBox="0 0 64 64" focusable="false" aria-hidden="true">' +
-            '<path class="achievement-trophy__handle" d="M17 12H8v8c0 8 4 12 12 13M47 12h9v8c0 8-4 12-12 13"/>' +
-            '<path class="achievement-trophy__cup" d="M15 8h34v12c0 11-6.8 18.2-17 22C21.8 38.2 15 31 15 20V8Z"/>' +
-            '<path class="achievement-trophy__shield" d="M22 13h20v10c0 7-4.1 11.8-10 14.6C26.1 34.8 22 30 22 23V13Z"/>' +
-            '<path class="achievement-trophy__football" d="M32 15.5c2.9 2.8 4.6 5.1 5.2 7.1-1.5.8-3.2 1.3-5.2 1.3s-3.7-.5-5.2-1.3c.6-2 2.3-4.3 5.2-7.1Z"/>' +
-            '<path class="achievement-trophy__laces" d="M29.2 19.2h5.6M30.2 17.8v2.8m3.6-2.8v2.8"/>' +
-            '<text class="achievement-trophy__wordmark" x="32" y="32.5" text-anchor="middle">FS5</text>' +
-            '<path class="achievement-trophy__stem" d="M32 42v8M22 55h20"/>' +
-            '<path class="achievement-trophy__base" d="M25 50h14l4 5H21l4-5Z"/>' +
-            '</svg>';
+    function achievementTrophy(tier) {
+        var style = achievementTierStyle(tier);
+        return '<img class="achievement-crest__trophy" src="artwork/achievements/trophy-' + style + '.png" alt="" aria-hidden="true" loading="lazy">';
     }
 
     function metricValue(metric) {
@@ -236,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
             card.setAttribute('aria-expanded', 'false');
             card.setAttribute('aria-controls', 'achievement-tier-detail');
             card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Select to see the next tier.');
-            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy() + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
+            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy(tier) + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
             card.addEventListener('click', function () {
                 selectAchievement(card, achievement, tier);
             });
