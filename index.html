@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FastStrongFive Fantasy Football</title>
-    <link rel="stylesheet" href="styles.css?v=power-lines-20260918">
+    <link rel="stylesheet" href="styles.css?v=power-lines-flow-20260918">
     <link rel="stylesheet" href="common.css">
 </head>
 <body>
@@ -161,7 +161,10 @@
                 <div class="power-lines__header">
                     <div>
                         <p class="power-lines__kicker">FS5 STANDINGS STORY</p>
-                        <h2 id="power-lines-title">Power Lines</h2>
+                        <div class="power-lines__title-row">
+                            <h2 id="power-lines-title">Power Lines</h2>
+                            <svg class="power-lines__pulse" viewBox="0 0 144 28" aria-label="Live standings pulse" role="img"><path d="M2 14h20l7-10 12 20 10-14 10 4h17l8-8 13 16 10-8h31"/></svg>
+                        </div>
                         <p>From draft order to the weekly race for the playoffs.</p>
                     </div>
                     <p class="power-lines__status" data-power-lines-status aria-live="polite">Loading the season race…</p>
@@ -196,7 +199,7 @@
     <script src="supabase-config.js"></script>
     <script src="footer-status.js"></script>
     <script src="homepage.js"></script>
-    <script src="home-power-lines.js?v=20260918"></script>
+    <script src="home-power-lines.js?v=flow-20260918"></script>
     <script src="mobile-menu.js"></script>
 </body>
 </html>

@@ -23,6 +23,7 @@
     var activeIndex = 0;
     var highlightedRosterId = null;
     var playbackTimer = null;
+    var REGULAR_SEASON_WEEKS = 14;
     var colors = ['#ff7357', '#53d4e8', '#ffd15c', '#a98cff', '#6fe0a8', '#ff91b0', '#66a9ff', '#f4a55e', '#5be1c5', '#d989f1', '#b7cf76', '#f06f91'];
 
     function showFailure(message) {
@@ -49,7 +50,7 @@
 
     function point(index, rank) {
         return {
-            x: timeline.frames.length === 1 ? 50 : (index / (timeline.frames.length - 1)) * 100,
+            x: (index / REGULAR_SEASON_WEEKS) * 100,
             y: ((rank - 0.5) / timeline.teams.length) * 100
         };
     }
@@ -65,15 +66,27 @@
 
     function renderWeekLabels() {
         weekLabels.textContent = '';
-        timeline.frames.forEach(function (frame, index) {
+        for (var index = 0; index <= REGULAR_SEASON_WEEKS; index += 1) {
             var label = document.createElement('span');
-            label.textContent = frame.label;
+            label.textContent = index === 0 ? 'PRE' : 'W' + index;
             if (index === activeIndex) label.className = 'is-active';
             weekLabels.appendChild(label);
+        }
+    }
+
+    function revealPath(path) {
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var length = path.getTotalLength();
+        if (!Number.isFinite(length) || length <= 0) return;
+        path.style.strokeDasharray = String(length);
+        path.style.strokeDashoffset = String(length);
+        window.requestAnimationFrame(function () {
+            path.style.transition = 'stroke-dashoffset 820ms cubic-bezier(.22,.8,.25,1)';
+            path.style.strokeDashoffset = '0';
         });
     }
 
-    function renderPaths() {
+    function renderPaths(shouldAnimate) {
         var namespace = 'http://www.w3.org/2000/svg';
         paths.replaceChildren();
         paths.setAttribute('viewBox', '0 0 1000 1000');
@@ -90,6 +103,7 @@
             path.classList.add('power-lines__path');
             if (highlightedRosterId && Number(team.roster_id) !== Number(highlightedRosterId)) path.classList.add('is-muted');
             paths.appendChild(path);
+            if (shouldAnimate && activeIndex > 0) revealPath(path);
         });
     }
 
@@ -153,13 +167,13 @@
         });
     }
 
-    function updateFrame() {
+    function updateFrame(shouldAnimate) {
         if (!timeline) return;
         activeIndex = Math.max(0, Math.min(timeline.frames.length - 1, activeIndex));
         range.value = String(activeIndex);
         output.textContent = timeline.frames[activeIndex].label;
         renderWeekLabels();
-        renderPaths();
+        renderPaths(Boolean(shouldAnimate));
         renderMarkers();
         renderTeamList();
     }
@@ -175,8 +189,8 @@
         playbackTimer = window.setInterval(function () {
             if (activeIndex >= timeline.frames.length - 1) { setPlaying(false); return; }
             activeIndex += 1;
-            updateFrame();
-        }, 1100);
+            updateFrame(true);
+        }, 980);
     }
 
     function configureTimeline() {
@@ -185,7 +199,7 @@
         range.value = String(activeIndex);
         range.disabled = finalFrame === 0;
         board.style.setProperty('--power-team-count', String(timeline.teams.length));
-        board.style.setProperty('--power-frame-count', String(timeline.frames.length));
+        board.style.setProperty('--power-frame-count', String(REGULAR_SEASON_WEEKS + 1));
         playoffLine.style.setProperty('--power-playoff-rank', String(Math.min(timeline.playoff_teams, timeline.teams.length)));
         playoffLine.querySelector('span').textContent = timeline.playoff_teams + ' TEAM PLAYOFF LINE';
         renderRankLabels();
