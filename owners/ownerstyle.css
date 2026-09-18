@@ -21,6 +21,11 @@ body {
     border-width: 14px;
 }
 
+.owner-locker {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 780px;
+}
+
 .owner-locker__cabinet::before {
     background-size: 390px auto;
     opacity: .08;

@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var allTimeOwnerTotalsPromises = {};
     var currentSeasonRows = [];
     var seasonHistoryExpanded = false;
+    var lockerRenderToken = 0;
 
     var scoreRecordCategories = [
         'high-scores',
@@ -250,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderAllYears(data.seasons);
         renderSelectedRecordList();
         renderH2H(data.h2h);
-        renderOwnerLocker(data.owner);
+        scheduleOwnerLocker(data.owner);
     }
 
     function achievementTrophy(tier, type) {
@@ -423,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     objectImage.src = profile.asset;
                     objectImage.alt = '';
                     objectImage.loading = 'lazy';
+                    objectImage.decoding = 'async';
                     object.appendChild(objectImage);
                 } else {
                     object.appendChild(document.createElement('span'));
@@ -437,6 +439,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             shelf.appendChild(shelfItems);
             ownerLockerShelves.appendChild(shelf);
+        }
+    }
+
+    function scheduleOwnerLocker(owner) {
+        var renderToken = ++lockerRenderToken;
+        var renderWhenIdle = function () {
+            if (renderToken !== lockerRenderToken) return;
+            renderOwnerLocker(owner);
+        };
+
+        if ('requestIdleCallback' in window) {
+            window.requestIdleCallback(renderWhenIdle, { timeout: 700 });
+        } else {
+            window.setTimeout(renderWhenIdle, 0);
         }
     }
 
@@ -836,6 +852,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievementCount) achievementCount.textContent = '0 unlocked';
         if (achievementHistoryContent) achievementHistoryContent.textContent = '';
         closeAchievementHistory();
+        lockerRenderToken++;
         if (ownerLocker) ownerLocker.hidden = true;
         if (ownerLockerShelves) ownerLockerShelves.textContent = '';
         if (ownerLockerCount) ownerLockerCount.textContent = '0 keepsakes';
