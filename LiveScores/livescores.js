@@ -950,7 +950,7 @@
             var key = String(m.roster_id), now = Number(m.points || 0), previous = state.previousScores[key];
             if (liveStarters.length && previous != null && Math.abs(now - Number(previous)) >= 0.001) {
                 var delta = now - Number(previous);
-                appendEvent(teamLabel(m) + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼");
+                appendEvent(teamLabel(m) + " " + (delta > 0 ? "gained " : "lost ") + Math.abs(delta).toFixed(2) + " points", delta > 0 ? "▲" : "▼", false, "score-" + key + "-" + now.toFixed(2));
             }
             liveStarters.forEach(function (id) {
                 if (playerTouchdownDelta(id) > 0 && !seen.has(id)) {
