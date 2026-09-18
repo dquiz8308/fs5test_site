@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var achievementGrid = document.getElementById('achievement-case-grid');
     var achievementCount = document.getElementById('achievement-case-count');
     var achievementTierDetail = document.getElementById('achievement-tier-detail');
+    var achievementTierLegend = document.getElementById('achievement-tier-legend');
     var requestSequence = 0;
     var currentOwnerData = null;
     var currentSeasonRows = [];
@@ -219,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
             achievementTierDetail.hidden = true;
             achievementTierDetail.textContent = '';
         }
+        renderAchievementTierLegend(achievements);
         achievements.forEach(function (achievement) {
             var card = document.createElement('button');
             var unlocked = achievement.value >= achievement.tiers[0].target;
@@ -233,6 +235,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 selectAchievement(card, achievement, tier);
             });
             achievementGrid.appendChild(card);
+        });
+    }
+
+    function renderAchievementTierLegend(achievements) {
+        if (!achievementTierLegend) return;
+        achievementTierLegend.textContent = '';
+        achievements.forEach(function (achievement) {
+            var row = document.createElement('div');
+            row.className = 'achievement-tier-guide__row';
+            var label = document.createElement('strong');
+            label.textContent = achievement.title;
+            row.appendChild(label);
+
+            var tiers = document.createElement('div');
+            tiers.className = 'achievement-tier-guide__tiers';
+            achievement.tiers.forEach(function (tier) {
+                var tierItem = document.createElement('span');
+                tierItem.className = 'achievement-tier-guide__tier achievement-tier-guide__tier--' + tier.name.split(' ')[0].toLowerCase();
+                tierItem.innerHTML = '<b>' + tier.name.replace(' Crest', '') + '</b><small>' + tier.target + ' ' + formatAchievementUnit(tier.target, achievement.unit) + '</small>';
+                tiers.appendChild(tierItem);
+            });
+            row.appendChild(tiers);
+            achievementTierLegend.appendChild(row);
         });
     }
 
@@ -630,6 +655,7 @@ document.addEventListener('DOMContentLoaded', function() {
             achievementTierDetail.hidden = true;
             achievementTierDetail.textContent = '';
         }
+        if (achievementTierLegend) achievementTierLegend.textContent = '';
         recordTableBody.textContent = '';
         resetH2H();
     }
