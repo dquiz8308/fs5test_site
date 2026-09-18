@@ -748,14 +748,16 @@
         if (espn) {
             var merged = Object.assign({}, espn);
             if (sleeper) {
-                // Sleeper status is used when it explicitly says complete/in_game/
-                // pre_game. This prevents an unavailable/stale ESPN status from making
-                // an already-finished fantasy matchup appear LIVE.
-                var ss = String(sleeper.status || '').toLowerCase();
-                if (ss) merged.sleeper_status = ss;
-                if (ss === 'complete' || ss === 'completed' || ss === 'final') merged.status = 'complete';
-                else if (ss === 'in_game' || ss === 'in_progress' || ss === 'live') merged.status = 'in_game';
-                else if (ss === 'pre_game' || ss === 'scheduled' || ss === 'pregame' || ss === 'pre') merged.status = 'pre_game';
+                // A schedule record can remain `pre_game` after kickoff. Never let
+                // that stale state suppress an ESPN in-progress game: every live
+                // surface (Watching, feed, ribbons and auto-refresh) relies on this
+                // normalized status. A confirmed final still takes precedence.
+                var sleeperState = gameStatus(sleeper);
+                var espnState = gameStatus(espn);
+                if (sleeper.status) merged.sleeper_status = String(sleeper.status).toLowerCase();
+                if (sleeperState === 'complete' || espnState === 'complete') merged.status = 'complete';
+                else if (sleeperState === 'in_game' || espnState === 'in_game') merged.status = 'in_game';
+                else if (sleeperState === 'pre_game' || espnState === 'pre_game') merged.status = 'pre_game';
                 if (!merged.home) merged.home = sleeper.home;
                 if (!merged.away) merged.away = sleeper.away;
             }
@@ -955,7 +957,7 @@
             getTeamPlayerIds(m).forEach(function (id) {
                 total++;
                 var meta = playerMeta(id), game = scheduleGameForTeam(meta.team);
-                if (game && String(game.status || '').toLowerCase() === 'in_game') count++;
+                if (gameStatus(game) === 'in_game') count++;
             });
         });
         return { active: count, total: total };
@@ -1583,7 +1585,12 @@
     function renderLiveTicker() {
         var ticker = $("live-event-ticker"); if (!ticker) return;
         var events = state.eventHistory.filter(function(e){ return !e.at || Date.now()-e.at < 5*60*1000; }).slice(0,5);
-        if (!events.length) { ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span><div class="live-ticker__viewport"><div class="live-ticker__track"><span class="live-ticker__empty">Waiting for current-game scoring activity…</span></div></div>'; return; }
+        if (!events.length) {
+            var active = currentPlayingCount();
+            var message = active.active ? active.active + ' FS5 starter' + (active.active === 1 ? ' is' : 's are') + ' active in current NFL games.' : 'Waiting for current-game scoring activity…';
+            ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span><div class="live-ticker__viewport"><div class="live-ticker__track"><span class="live-ticker__empty">' + esc(message) + '</span></div></div>';
+            return;
+        }
         ticker.innerHTML = '<span class="live-ticker__label">LIVE FEED</span><div class="live-ticker__viewport"><div class="live-ticker__track">' + events.map(function (e) { return '<span class="live-ticker__item"><b>' + esc(e.icon) + '</b> ' + esc(e.message) + '</span>'; }).join('') + '</div></div>';
     }
 
