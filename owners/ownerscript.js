@@ -360,13 +360,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function lockerItemProfile(bowlName) {
         var bowl = String(bowlName || '').toLowerCase();
-        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair' };
+        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bronze-chair-object-512.png' };
         if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi' };
         if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls' };
         if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco' };
         if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath' };
         if (bowl.indexOf('city of homes') !== -1) return { label: 'City of Homes Keepsake', type: 'city-of-homes' };
         if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Battle Relic', type: 'battle' };
+        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Lynch Trophy', type: 'super-trophy' };
+        if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice' };
+        if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge' };
+        if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial' };
+        if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel' };
+        if (bowl.indexOf('shut the') !== -1) return { label: 'Rivalry Bullhorn', type: 'bullhorn' };
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
@@ -381,14 +387,16 @@ document.addEventListener('DOMContentLoaded', function() {
         ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
         ownerLockerEmpty.hidden = awards.length > 0;
 
-        for (var index = 0; index < awards.length; index += 4) {
+        var shelfCount = Math.max(2, Math.ceil(awards.length / 5));
+        for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {
+            var index = shelfIndex * 5;
             var shelf = document.createElement('section');
             shelf.className = 'owner-locker__shelf';
-            shelf.setAttribute('aria-label', 'Locker shelf ' + (Math.floor(index / 4) + 1));
+            shelf.setAttribute('aria-label', 'Locker shelf ' + (shelfIndex + 1));
             var shelfItems = document.createElement('div');
             shelfItems.className = 'owner-locker__shelf-items';
 
-            awards.slice(index, index + 4).forEach(function (award) {
+            awards.slice(index, index + 5).forEach(function (award) {
                 var profile = lockerItemProfile(award.bowl);
                 var item = document.createElement('button');
                 item.className = 'locker-collectible locker-collectible--' + profile.type;
@@ -397,12 +405,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 item.setAttribute('aria-controls', 'locker-item-modal');
                 item.setAttribute('aria-label', profile.label + ', won in ' + award.season + '. Open game details.');
 
-                var image = document.createElement('img');
-                image.className = 'locker-collectible__art';
-                image.src = award.art;
-                image.alt = '';
-                image.loading = 'lazy';
-                item.appendChild(image);
+                var object = document.createElement('span');
+                object.className = 'locker-collectible__object locker-object locker-object--' + profile.type;
+                object.setAttribute('aria-hidden', 'true');
+                if (profile.asset) {
+                    var objectImage = document.createElement('img');
+                    objectImage.src = profile.asset;
+                    objectImage.alt = '';
+                    objectImage.loading = 'lazy';
+                    object.appendChild(objectImage);
+                } else {
+                    object.appendChild(document.createElement('span'));
+                }
+                item.appendChild(object);
 
                 var label = document.createElement('span');
                 label.className = 'locker-collectible__label';

@@ -14,6 +14,190 @@ body {
 
 }
 
+/* Owner locker: freestanding keepsakes rather than framed bowl artwork. */
+.owner-locker__cabinet {
+    min-height: 282px;
+    padding: 32px 42px 26px;
+    border-width: 14px;
+}
+
+.owner-locker__cabinet::before {
+    background-size: 390px auto;
+    opacity: .08;
+}
+
+.owner-locker__shelves {
+    gap: 26px;
+}
+
+.owner-locker__shelf {
+    min-height: 184px;
+    padding: 12px 24px 24px;
+    border-bottom-width: 15px;
+    background: linear-gradient(180deg, rgba(255,220,148,.13), transparent 26%), linear-gradient(90deg, rgba(0,0,0,.25), transparent 10% 90%, rgba(0,0,0,.25));
+}
+
+.owner-locker__shelf-items {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: end;
+    gap: 24px;
+    min-height: 164px;
+}
+
+.locker-collectible {
+    grid-template-rows: 126px auto auto;
+    align-self: end;
+    min-height: 162px;
+}
+
+.locker-collectible__object {
+    position: relative;
+    display: grid;
+    width: min(100%, 126px);
+    height: 126px;
+    margin: 0 auto;
+    place-items: end center;
+}
+
+.locker-collectible__object::after {
+    position: absolute;
+    right: 8%;
+    bottom: 2px;
+    left: 8%;
+    height: 11px;
+    content: "";
+    border-radius: 50%;
+    background: rgba(0,0,0,.5);
+    filter: blur(5px);
+}
+
+.locker-object > span {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 72px;
+    height: 86px;
+    border: 3px solid #e3b968;
+    border-radius: 12px 12px 20px 20px;
+    background: linear-gradient(120deg, #3d2d1d, #b88639 43%, #4c2d14 44% 60%, #c99842 61%);
+    box-shadow: inset 0 0 0 4px rgba(255,236,179,.22), 0 8px 9px rgba(0,0,0,.38);
+}
+
+.locker-object > span::before,
+.locker-object > span::after {
+    position: absolute;
+    content: "";
+}
+
+.locker-object > span::before {
+    top: -18px;
+    left: 20px;
+    width: 27px;
+    height: 20px;
+    border: 5px solid #e3b968;
+    border-bottom: 0;
+    border-radius: 50% 50% 0 0;
+}
+
+.locker-object > span::after {
+    right: -15px;
+    bottom: -13px;
+    left: -15px;
+    height: 14px;
+    border: 3px solid #d3a24b;
+    border-radius: 5px;
+    background: linear-gradient(#81511e, #3d2310);
+}
+
+.locker-object--bronze-chair img {
+    position: relative;
+    z-index: 1;
+    width: 112px;
+    height: 126px;
+    object-fit: cover;
+    object-position: center 48%;
+    mix-blend-mode: screen;
+    filter: drop-shadow(0 7px 6px rgba(0,0,0,.62));
+}
+
+.locker-object--pierogi > span {
+    width: 88px;
+    height: 55px;
+    border: 5px solid #e8c77d;
+    border-radius: 95px 95px 18px 18px;
+    background: repeating-linear-gradient(135deg, #bd7a2e 0 5px, #e9b655 5px 10px);
+    transform: rotate(-6deg);
+}
+
+.locker-object--pierogi > span::before { top: 19px; left: 14px; width: 52px; height: 7px; border: 0; border-radius: 50%; background: rgba(93,48,12,.42); }
+.locker-object--pierogi > span::after { display: none; }
+
+.locker-object--pizza-rolls > span {
+    width: 94px;
+    height: 44px;
+    border-color: #d7dce1;
+    border-radius: 9px;
+    background: radial-gradient(circle at 24% 45%, #cf562e 0 11px, transparent 12px), radial-gradient(circle at 55% 62%, #d9812f 0 12px, transparent 13px), radial-gradient(circle at 78% 34%, #a63c22 0 10px, transparent 11px), linear-gradient(#f1f4f3, #87939a);
+}
+.locker-object--pizza-rolls > span::before { top: -11px; left: 5px; width: 78px; height: 12px; border: 2px solid #d7dce1; border-radius: 7px; background: #65747b; }
+.locker-object--pizza-rolls > span::after { display: none; }
+
+.locker-object--disco > span {
+    width: 82px;
+    height: 82px;
+    border-color: #f1bff6;
+    border-radius: 50%;
+    background: conic-gradient(#ff91e8, #82e4ff, #f9ec85, #ad8aff, #ff91e8);
+    box-shadow: inset 0 0 0 8px rgba(255,255,255,.32), 0 0 20px rgba(242,110,240,.65);
+}
+.locker-object--disco > span::before { top: 7px; left: 33px; width: 12px; height: 12px; border: 0; border-radius: 50%; background: #fff; box-shadow: -24px 13px 0 rgba(255,255,255,.8), 22px 19px 0 rgba(255,255,255,.8), 2px 45px 0 rgba(255,255,255,.8); }
+.locker-object--disco > span::after { display: none; }
+
+.locker-object--bloodbath > span { width: 59px; height: 72px; border-color: #e78983; border-radius: 8px 8px 29px 29px; background: linear-gradient(#9f1016 0 40%, #54100e 41%); }
+.locker-object--bloodbath > span::before { top: -15px; left: 8px; width: 37px; height: 17px; border: 4px solid #e78983; border-bottom: 0; border-radius: 50% 50% 0 0; }
+.locker-object--bloodbath > span::after { right: 15px; bottom: -24px; left: 15px; height: 21px; border: 4px solid #b9433c; border-top: 0; border-radius: 0 0 50% 50%; background: transparent; }
+
+.locker-object--city-of-homes > span { width: 86px; height: 86px; border-color: #c4e9f5; border-radius: 50%; background: linear-gradient(#78b9d5 0 61%, #f1fbff 62%); box-shadow: inset -16px -12px 0 rgba(255,255,255,.25), 0 0 16px rgba(135,220,255,.35); }
+.locker-object--city-of-homes > span::before { top: 38px; left: 18px; width: 48px; height: 26px; border: 0; border-bottom: 9px solid #47677c; background: linear-gradient(90deg, #fff 0 13%, transparent 13% 20%, #fff 20% 39%, transparent 39% 47%, #fff 47% 70%, transparent 70% 76%, #fff 76%); }
+.locker-object--city-of-homes > span::after { right: 16px; bottom: -17px; left: 16px; height: 13px; border-color: #b9d3dd; background: #426376; }
+
+.locker-object--battle > span { width: 92px; height: 61px; border-color: #cf7662; border-radius: 52px 52px 16px 16px; background: linear-gradient(120deg, #9a2c23, #e17c54 52%, #702019 53%); transform: skewX(-7deg); }
+.locker-object--battle > span::before { top: 36px; left: 57px; width: 44px; height: 27px; border: 5px solid #d5d7d5; border-left: 0; border-radius: 0 22px 22px 0; }
+.locker-object--battle > span::after { display: none; }
+
+.locker-object--super-trophy > span { width: 57px; height: 92px; border-color: #f7dc6d; border-radius: 50% 50% 14px 14px; background: radial-gradient(ellipse at 50% 33%, #fff5b0 0 10%, transparent 11%), linear-gradient(110deg, #966e08, #f4c642 47%, #9d7105 48%); }
+.locker-object--super-trophy > span::before { top: 12px; left: 12px; width: 28px; height: 51px; border: 3px solid #704b00; border-radius: 50%; }
+.locker-object--super-trophy > span::after { right: -15px; bottom: -12px; left: -15px; background: #6e4b08; }
+
+.locker-object--random-dice > span { width: 70px; height: 70px; border-color: #dbe7f2; border-radius: 9px; background: radial-gradient(circle at 23% 24%, #fff 0 6px, transparent 7px), radial-gradient(circle at 75% 74%, #fff 0 6px, transparent 7px), radial-gradient(circle at 50% 50%, #fff 0 6px, transparent 7px), linear-gradient(135deg, #1973bb, #072e61); transform: rotate(-8deg); }
+.locker-object--random-dice > span::before,.locker-object--random-dice > span::after { display: none; }
+
+.locker-object--edge > span { width: 82px; height: 54px; border-color: #aaf1ff; border-radius: 70% 22% 70% 22%; background: linear-gradient(135deg, rgba(76,196,231,.9), rgba(13,71,111,.62)); transform: rotate(-18deg); box-shadow: inset 0 0 0 5px rgba(235,255,255,.3), 0 0 18px rgba(88,216,255,.4); }
+.locker-object--edge > span::before,.locker-object--edge > span::after { display: none; }
+
+.locker-object--memorial > span { width: 72px; height: 88px; border-color: #d5bd78; border-radius: 3px; background: radial-gradient(ellipse at center 43%, #f6e6ae 0 16px, #6f5b2c 17px 20px, transparent 21px), linear-gradient(135deg, #222, #72613d); }
+.locker-object--memorial > span::before { top: 8px; left: 8px; width: 50px; height: 65px; border: 2px solid #f4d989; border-radius: 1px; }
+.locker-object--memorial > span::after { display: none; }
+
+.locker-object--studio-reel > span { width: 87px; height: 87px; border-color: #c3ccd3; border-radius: 50%; background: radial-gradient(circle, #4b5963 0 10px, transparent 11px), radial-gradient(circle at 50% 21%, #132027 0 13px, transparent 14px), radial-gradient(circle at 79% 50%, #132027 0 13px, transparent 14px), radial-gradient(circle at 50% 79%, #132027 0 13px, transparent 14px), radial-gradient(circle at 21% 50%, #132027 0 13px, transparent 14px), linear-gradient(#9daab1, #46545d); }
+.locker-object--studio-reel > span::before,.locker-object--studio-reel > span::after { display: none; }
+
+.locker-object--bullhorn > span { width: 92px; height: 42px; border-color: #efc57b; border-radius: 9px 46px 46px 9px; background: linear-gradient(90deg, #8d4d17 0 32%, #f0c772 33% 76%, #ba762c 77%); transform: rotate(-10deg); }
+.locker-object--bullhorn > span::before { top: 6px; left: 70px; width: 31px; height: 29px; border: 4px solid #efc57b; border-radius: 0 50% 50% 0; background: #8d4d17; }
+.locker-object--bullhorn > span::after { display: none; }
+
+@media (max-width: 765px) {
+    .owner-locker__cabinet { min-height: 228px; padding: 24px 13px 19px; border-width: 9px; }
+    .owner-locker__cabinet::before { background-size: 250px auto; }
+    .owner-locker__shelves { gap: 18px; }
+    .owner-locker__shelf { min-height: 143px; padding: 8px 8px 18px; border-bottom-width: 12px; }
+    .owner-locker__shelf-items { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-height: 126px; }
+    .locker-collectible { grid-template-rows: 96px auto auto; min-height: 122px; }
+    .locker-collectible__object { width: 92px; height: 96px; transform: scale(.76); transform-origin: bottom center; }
+    .locker-collectible__label { margin-top: -4px; font-size: .5rem; }
+    .locker-collectible__year { font-size: .47rem; }
+}
+
 /* FS5 Achievement Case */
 .achievement-case{width:min(100% - 40px,1180px);margin:0 auto 22px;padding:16px 18px 17px;box-sizing:border-box;overflow:hidden;border:1px solid #c6d5e0;border-radius:16px;background:radial-gradient(circle at 88% 0%,rgba(220,177,66,.18),transparent 32%),linear-gradient(135deg,#f8fbfd,#edf4f8);box-shadow:0 8px 22px rgba(9,40,65,.09)}.achievement-case__header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:13px}.achievement-case__kicker{margin:0 0 3px;color:#678090;font-size:.62rem;font-weight:900;letter-spacing:.13em}.achievement-case h2{margin:0;color:#102f4d;font-size:1.05rem}.achievement-case__count{margin:2px 0 0;padding:6px 9px;border:1px solid #d6b45c;border-radius:999px;background:#fff8df;color:#896600;font-size:.64rem;font-weight:900;white-space:nowrap}.achievement-case__grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.achievement-crest{position:relative;display:flex;align-items:center;gap:10px;min-width:0;padding:10px;border:1px solid #d8e1e7;border-radius:12px;background:rgba(255,255,255,.78);transition:transform .2s ease,box-shadow .2s ease}.achievement-crest.is-unlocked{box-shadow:0 5px 14px rgba(21,53,76,.08)}.achievement-crest.is-unlocked:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(21,53,76,.14)}.achievement-crest.is-locked{filter:saturate(.45);opacity:.72}.achievement-crest__medallion{position:relative;display:grid;flex:0 0 48px;width:48px;height:48px;place-items:center;overflow:hidden;border:3px solid #b98320;border-radius:50%;background:radial-gradient(circle at 33% 28%,#fff7b4,#d5a13e 52%,#74500f);box-shadow:inset 0 0 0 3px rgba(255,255,255,.36),0 3px 7px rgba(73,45,5,.2)}.achievement-crest__medallion svg{position:relative;z-index:1;width:29px;height:29px;fill:none;stroke:#fffdf0;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px rgba(67,40,0,.45))}.achievement-crest__seal{position:absolute;right:-6px;bottom:-5px;z-index:2;padding:2px 3px;border:1px solid rgba(255,255,255,.8);border-radius:4px;background:#123b5d;color:#fff;font-size:.4rem;font-weight:1000;letter-spacing:.04em}.achievement-crest--dynasty .achievement-crest__medallion{border-color:#98a5b0;background:radial-gradient(circle at 33% 28%,#fff,#c9d0d5 52%,#60717d)}.achievement-crest--streak .achievement-crest__medallion{border-color:#bd6324;background:radial-gradient(circle at 33% 28%,#ffe98e,#e18131 52%,#84341b)}.achievement-crest--playoff .achievement-crest__medallion{border-color:#4e82ac;background:radial-gradient(circle at 33% 28%,#c8efff,#519bc9 52%,#1c527e)}.achievement-crest__copy{min-width:0}.achievement-crest__state{display:block;margin-bottom:2px;color:#a37515;font-size:.54rem;font-weight:1000;letter-spacing:.1em}.achievement-crest.is-locked .achievement-crest__state{color:#71818b}.achievement-crest h3{margin:0;color:#142f46;font-size:.76rem;line-height:1.2}.achievement-crest p{margin:3px 0;color:#5f7280;font-size:.6rem;line-height:1.3}.achievement-crest strong{display:block;color:#07569a;font-size:.63rem}.achievement-case__note{margin:12px 0 0;color:#657b8a;font-size:.61rem}@media(max-width:980px){.achievement-case__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:765px){.achievement-case{width:min(100% - 24px,680px);padding:14px}.achievement-case__header{align-items:center}.achievement-case h2{font-size:1rem}.achievement-case__grid{grid-template-columns:1fr;gap:8px}.achievement-crest{padding:9px}.achievement-crest__medallion{flex-basis:45px;width:45px;height:45px}.achievement-case__note{line-height:1.4}}
 .achievement-crest{width:100%;font:inherit;text-align:left;cursor:pointer}.achievement-crest:focus-visible{outline:3px solid #2387d8;outline-offset:2px}.achievement-crest.is-selected{border-color:#bd8b29;background:#fffaf0;box-shadow:0 0 0 2px rgba(196,148,50,.18),0 8px 18px rgba(21,53,76,.14)}.achievement-crest__brand{position:absolute;right:-4px;bottom:-5px;z-index:2;width:22px;height:22px;object-fit:cover;border:1px solid rgba(255,255,255,.92);border-radius:50%;mix-blend-mode:multiply}.achievement-crest.achievement-tier--bronze .achievement-crest__medallion{border-color:#b26b35;background:radial-gradient(circle at 33% 28%,#ffe1ad,#c57b43 52%,#744020)}.achievement-crest.achievement-tier--silver .achievement-crest__medallion{border-color:#aeb9c1;background:radial-gradient(circle at 33% 28%,#fff,#d7dfe4 47%,#74838e)}.achievement-crest.achievement-tier--gold .achievement-crest__medallion{border-color:#cf9a20;background:radial-gradient(circle at 33% 28%,#fff6a5,#e4b239 50%,#8b5e08)}.achievement-crest.achievement-tier--legacy .achievement-crest__medallion{border-color:#527ba2;background:radial-gradient(circle at 33% 28%,#e4f7ff,#8ab2ca 48%,#234e73)}.achievement-crest.achievement-tier--silver .achievement-crest__state{color:#657783}.achievement-crest.achievement-tier--gold .achievement-crest__state{color:#a4750d}.achievement-crest.achievement-tier--legacy .achievement-crest__state{color:#32628c}.achievement-crest__title,.achievement-crest__detail,.achievement-crest__progress{display:block}.achievement-crest__title{color:#142f46;font-size:.76rem;font-weight:700;line-height:1.2}.achievement-crest__detail{margin:3px 0;color:#5f7280;font-size:.6rem;line-height:1.3}.achievement-crest__progress{color:#07569a;font-size:.63rem;font-weight:700}.achievement-tier-detail{display:grid;gap:3px;margin-top:12px;padding:10px 12px;border:1px solid #d7bd76;border-radius:10px;background:linear-gradient(90deg,#fff9e8,#f6fbff);color:#173b57}.achievement-tier-detail__eyebrow{color:#8a6617;font-size:.56rem;font-weight:1000;letter-spacing:.12em}.achievement-tier-detail strong{font-size:.76rem}.achievement-tier-detail p{margin:0;color:#526d7f;font-size:.68rem;line-height:1.35}
@@ -2546,4 +2730,20 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .owner-profile-layout .summary-stat:last-child {
         grid-column: auto;
     }
+}
+
+/* Keep locker layout after legacy owner styles so the shelves remain tall. */
+.owner-locker__cabinet { min-height: 282px; padding: 32px 42px 26px; border-width: 14px; }
+.owner-locker__cabinet::before { background-size: 390px auto; opacity: .08; }
+.owner-locker__shelves { gap: 26px; }
+.owner-locker__shelf { min-height: 184px; padding: 12px 24px 24px; border-bottom-width: 15px; background: linear-gradient(180deg, rgba(255,220,148,.13), transparent 26%), linear-gradient(90deg, rgba(0,0,0,.25), transparent 10% 90%, rgba(0,0,0,.25)); }
+.owner-locker__shelf-items { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; min-height: 164px; }
+.locker-collectible { grid-template-rows: 126px auto auto; min-height: 162px; }
+@media (max-width: 765px) {
+    .owner-locker__cabinet { min-height: 228px; padding: 24px 13px 19px; border-width: 9px; }
+    .owner-locker__cabinet::before { background-size: 250px auto; }
+    .owner-locker__shelves { gap: 18px; }
+    .owner-locker__shelf { min-height: 143px; padding: 8px 8px 18px; border-bottom-width: 12px; }
+    .owner-locker__shelf-items { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; min-height: 126px; }
+    .locker-collectible { grid-template-rows: 96px auto auto; min-height: 122px; }
 }
