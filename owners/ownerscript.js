@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
         ownerLockerEmpty.hidden = awards.length > 0;
 
-        var shelfCount = Math.max(2, Math.ceil(awards.length / 5));
+        var shelfCount = Math.max(4, Math.ceil(awards.length / 5));
         for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {
             var index = shelfIndex * 5;
             var shelf = document.createElement('section');
