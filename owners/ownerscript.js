@@ -228,12 +228,12 @@ document.addEventListener('DOMContentLoaded', function() {
             var card = document.createElement('button');
             var unlocked = achievement.value >= achievement.tiers[0].target;
             var tier = getAchievementTier(achievement);
-            card.className = 'achievement-crest achievement-crest--' + achievement.type + (unlocked ? ' is-unlocked' : ' is-locked');
+            card.className = 'achievement-crest achievement-crest--' + achievement.type + ' achievement-tier--' + achievementTierStyle(tier) + (unlocked ? ' is-unlocked' : ' is-locked');
             card.type = 'button';
             card.setAttribute('aria-expanded', 'false');
             card.setAttribute('aria-controls', 'achievement-tier-detail');
             card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Select to see the next tier.');
-            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementIcon(achievement.type) + '<span class="achievement-crest__seal">FS5</span></span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
+            card.innerHTML = '<span class="achievement-crest__medallion">' + achievementIcon(achievement.type) + '<img class="achievement-crest__brand" src="../vault/brackets/artwork/2025/FS5_Logo_1-No background.png.jpg" alt="" aria-hidden="true"></span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
             card.addEventListener('click', function () {
                 selectAchievement(card, achievement, tier);
             });
@@ -252,6 +252,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         return { current: current, next: next };
+    }
+
+    function achievementTierStyle(tier) {
+        return tier.current ? tier.current.name.split(' ')[0].toLowerCase() : 'bronze';
     }
 
     function formatAchievementUnit(value, unit) {
