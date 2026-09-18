@@ -25,6 +25,7 @@
     var playbackTimer = null;
     var REGULAR_SEASON_WEEKS = 14;
     var TRANSITION_MS = 1320;
+    var MOTION_EASING = 'cubic-bezier(.55,.055,.675,.19)';
     var colors = ['#ff7357', '#53d4e8', '#ffd15c', '#a98cff', '#6fe0a8', '#ff91b0', '#66a9ff', '#f4a55e', '#5be1c5', '#d989f1', '#b7cf76', '#f06f91'];
 
     function showFailure(message) {
@@ -82,7 +83,7 @@
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
         window.requestAnimationFrame(function () {
-            path.style.transition = 'stroke-dashoffset ' + TRANSITION_MS + 'ms cubic-bezier(.16,1,.3,1)';
+            path.style.transition = 'stroke-dashoffset ' + TRANSITION_MS + 'ms ' + MOTION_EASING;
             path.style.strokeDashoffset = '0';
         });
     }
@@ -149,7 +150,7 @@
                 marker.animate([
                     { left: previousLocation.x + '%', top: previousLocation.y + '%', transform: 'translate(-50%,-50%) scale(.92)' },
                     { left: location.x + '%', top: location.y + '%', transform: 'translate(-50%,-50%) scale(1)' }
-                ], { duration: TRANSITION_MS, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'both' });
+                ], { duration: TRANSITION_MS, easing: MOTION_EASING, fill: 'both' });
             }
         });
     }
