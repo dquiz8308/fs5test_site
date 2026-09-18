@@ -183,16 +183,15 @@
         <p id="achievement-case-count" class="achievement-case__count">0 unlocked</p>
     </div>
     <div id="achievement-case-grid" class="achievement-case__grid"></div>
-    <div id="achievement-tier-detail" class="achievement-tier-detail" aria-live="polite" hidden></div>
-    <section class="achievement-tier-guide" aria-labelledby="achievement-tier-guide-title">
-        <div class="achievement-tier-guide__header">
-            <h3 id="achievement-tier-guide-title">Tier Guide</h3>
-            <p>Every crest has four levels.</p>
-        </div>
-        <div id="achievement-tier-legend" class="achievement-tier-guide__rows"></div>
-    </section>
     <p class="achievement-case__note">Career achievements are earned from verified league history.</p>
 </section>
+
+<dialog id="achievement-history-modal" class="achievement-history-modal" aria-labelledby="achievement-history-title">
+    <div class="achievement-history-modal__panel">
+        <button id="achievement-history-close" class="achievement-history-modal__close" type="button" aria-label="Close achievement history">×</button>
+        <div id="achievement-history-content"></div>
+    </div>
+</dialog>
 
 
 <div class="row2 owner-performance-grid">

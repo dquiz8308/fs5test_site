@@ -22,8 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var achievementCase = document.getElementById('achievement-case');
     var achievementGrid = document.getElementById('achievement-case-grid');
     var achievementCount = document.getElementById('achievement-case-count');
-    var achievementTierDetail = document.getElementById('achievement-tier-detail');
-    var achievementTierLegend = document.getElementById('achievement-tier-legend');
+    var achievementHistoryModal = document.getElementById('achievement-history-modal');
+    var achievementHistoryContent = document.getElementById('achievement-history-content');
+    var achievementHistoryClose = document.getElementById('achievement-history-close');
     var requestSequence = 0;
     var currentOwnerData = null;
     var careerTouchdownTotals = null;
@@ -91,6 +92,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ownerDropdown.addEventListener('change', handleOwnerChange);
     recordDropdown.addEventListener('change', renderSelectedRecordList);
     seasonHistoryToggle.addEventListener('click', toggleSeasonHistory);
+    if (achievementHistoryClose) achievementHistoryClose.addEventListener('click', closeAchievementHistory);
+    if (achievementHistoryModal) {
+        achievementHistoryModal.addEventListener('click', function (event) {
+            if (event.target === achievementHistoryModal) closeAchievementHistory();
+        });
+    }
     if (seasonHistoryMedia.addEventListener) {
         seasonHistoryMedia.addEventListener('change', renderSeasonHistoryRows);
     } else {
@@ -260,48 +267,20 @@ document.addEventListener('DOMContentLoaded', function() {
         achievementCase.hidden = false;
         achievementCount.textContent = earned + ' unlocked';
         achievementGrid.textContent = '';
-        if (achievementTierDetail) {
-            achievementTierDetail.hidden = true;
-            achievementTierDetail.textContent = '';
-        }
-        renderAchievementTierLegend(achievements);
         achievements.forEach(function (achievement) {
             var card = document.createElement('button');
             var unlocked = achievement.value >= achievement.tiers[0].target;
             var tier = getAchievementTier(achievement);
             card.className = 'achievement-crest achievement-crest--' + achievement.type + ' achievement-tier--' + achievementTierStyle(tier) + (unlocked ? ' is-unlocked' : ' is-locked');
             card.type = 'button';
-            card.setAttribute('aria-expanded', 'false');
-            card.setAttribute('aria-controls', 'achievement-tier-detail');
-            card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Select to see the next tier.');
+            card.setAttribute('aria-haspopup', 'dialog');
+            card.setAttribute('aria-controls', 'achievement-history-modal');
+            card.setAttribute('aria-label', achievement.title + ': ' + (unlocked ? 'unlocked' : 'in progress') + '. Open achievement history and tier guide.');
             card.innerHTML = '<span class="achievement-crest__medallion">' + achievementTrophy(tier, achievement.type) + '</span><span class="achievement-crest__copy"><span class="achievement-crest__state">' + (tier.current ? tier.current.name.toUpperCase() : 'IN PROGRESS') + '</span><span class="achievement-crest__title">' + achievement.title + '</span><span class="achievement-crest__detail">' + achievement.detail + '</span><span class="achievement-crest__progress">' + formatAchievementProgress(achievement) + '</span></span>';
             card.addEventListener('click', function () {
-                selectAchievement(card, achievement, tier);
+                openAchievementHistory(achievement, tier);
             });
             achievementGrid.appendChild(card);
-        });
-    }
-
-    function renderAchievementTierLegend(achievements) {
-        if (!achievementTierLegend) return;
-        achievementTierLegend.textContent = '';
-        achievements.forEach(function (achievement) {
-            var row = document.createElement('div');
-            row.className = 'achievement-tier-guide__row';
-            var label = document.createElement('strong');
-            label.textContent = achievement.title;
-            row.appendChild(label);
-
-            var tiers = document.createElement('div');
-            tiers.className = 'achievement-tier-guide__tiers';
-            achievement.tiers.forEach(function (tier) {
-                var tierItem = document.createElement('span');
-                tierItem.className = 'achievement-tier-guide__tier achievement-tier-guide__tier--' + tier.name.split(' ')[0].toLowerCase();
-                tierItem.innerHTML = '<b>' + tier.name.replace(' Crest', '') + '</b><small>' + tier.target + ' ' + formatAchievementUnit(tier.target, achievement.unit) + '</small>';
-                tiers.appendChild(tierItem);
-            });
-            row.appendChild(tiers);
-            achievementTierLegend.appendChild(row);
         });
     }
 
@@ -325,6 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function formatAchievementUnit(value, unit) {
         if (value === 1) return unit;
         if (unit === '10-win season') return '10-win seasons';
+        if (unit === 'last-place finish') return 'last-place finishes';
         return unit + 's';
     }
 
@@ -332,24 +312,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return achievement.value + ' ' + formatAchievementUnit(achievement.value, achievement.unit);
     }
 
-    function selectAchievement(card, achievement, tier) {
-        if (!achievementTierDetail) return;
-        Array.prototype.forEach.call(achievementGrid.querySelectorAll('.achievement-crest'), function (crest) {
-            crest.classList.remove('is-selected');
-            crest.setAttribute('aria-expanded', 'false');
-        });
-        card.classList.add('is-selected');
-        card.setAttribute('aria-expanded', 'true');
-
+    function openAchievementHistory(achievement, tier) {
+        if (!achievementHistoryModal || !achievementHistoryContent) return;
         var nextMessage = tier.next
             ? (tier.next.target - achievement.value) + ' more ' + formatAchievementUnit(tier.next.target - achievement.value, achievement.unit) + ' to unlock ' + tier.next.name + ' at ' + tier.next.target + '.'
             : 'Every available tier is unlocked.';
         var currentMessage = tier.current
             ? 'Current tier: ' + tier.current.name + '.'
             : 'Current tier: Not yet unlocked.';
+        var tiers = achievement.tiers.map(function (tierItem) {
+            var tierStyle = tierItem.name.split(' ')[0].toLowerCase();
+            var state = achievement.value >= tierItem.target ? ' is-earned' : '';
+            return '<li class="achievement-history__tier achievement-history__tier--' + tierStyle + state + '><strong>' + tierItem.name + '</strong><span>' + tierItem.target + ' ' + formatAchievementUnit(tierItem.target, achievement.unit) + '</span></li>';
+        }).join('');
 
-        achievementTierDetail.innerHTML = '<span class="achievement-tier-detail__eyebrow">' + achievement.title + ' TIERS</span><strong>' + currentMessage + '</strong><p>' + nextMessage + '</p>';
-        achievementTierDetail.hidden = false;
+        achievementHistoryContent.innerHTML = '<div class="achievement-history__hero achievement-history--' + achievement.type + '"><span class="achievement-history__trophy">' + achievementTrophy(tier, achievement.type) + '</span><div><p class="achievement-history__eyebrow">ACHIEVEMENT HISTORY</p><h2 id="achievement-history-title">' + achievement.title + '</h2><p>' + achievement.detail + '</p></div></div><section class="achievement-history__summary" aria-label="Current achievement history"><span>CAREER TOTAL</span><strong>' + formatAchievementProgress(achievement) + '</strong><p>' + currentMessage + ' ' + nextMessage + '</p></section><section class="achievement-history__legend" aria-labelledby="achievement-history-legend-title"><div><h3 id="achievement-history-legend-title">Tier guide</h3><p>Every crest has four levels.</p></div><ol>' + tiers + '</ol></section>';
+        achievementHistoryModal.showModal();
+    }
+
+    function closeAchievementHistory() {
+        if (achievementHistoryModal && achievementHistoryModal.open) achievementHistoryModal.close();
     }
 
     function renderOwnerHeader(owner) {
@@ -695,11 +677,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (achievementCase) achievementCase.hidden = true;
         if (achievementGrid) achievementGrid.textContent = '';
         if (achievementCount) achievementCount.textContent = '0 unlocked';
-        if (achievementTierDetail) {
-            achievementTierDetail.hidden = true;
-            achievementTierDetail.textContent = '';
-        }
-        if (achievementTierLegend) achievementTierLegend.textContent = '';
+        if (achievementHistoryContent) achievementHistoryContent.textContent = '';
+        closeAchievementHistory();
         recordTableBody.textContent = '';
         resetH2H();
     }
