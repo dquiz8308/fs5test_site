@@ -6,11 +6,13 @@ let playerCatalogCache = null;
 let playerCatalogFetchedAt = 0;
 const PLAYER_CATALOG_CACHE_MS = 24 * 60 * 60 * 1000;
 const PLAYER_SEASON_STATS_CACHE_MS = 60 * 1000;
+const STANDINGS_TIMELINE_CACHE_MS = 5 * 60 * 1000;
 const playerSeasonStatsCache = new Map();
+const standingsTimelineCache = new Map();
 
 exports.handler = async function (event) {
   const qs = event.queryStringParameters || {};
-  const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'season-stats' ? 'season-stats' : (qs.source === 'news' ? 'news' : 'app'))));
+  const source = qs.source === 'scoreboard' ? 'scoreboard' : (qs.source === 'data' ? 'data' : (qs.source === 'players' ? 'players' : (qs.source === 'season-stats' ? 'season-stats' : (qs.source === 'news' ? 'news' : (qs.source === 'standings-timeline' ? 'standings-timeline' : 'app')))));
 
   if (source === 'scoreboard') {
     return getNflScoreboard(qs.season || '2026', qs.week || '1');
@@ -30,6 +32,10 @@ exports.handler = async function (event) {
 
   if (source === 'season-stats') {
     return getPlayerSeasonStats(qs.player || '', qs.season || '2026', qs.week || '1');
+  }
+
+  if (source === 'standings-timeline') {
+    return getStandingsTimeline(qs.league || '');
   }
 
   let path = qs.path || '';
@@ -75,6 +81,92 @@ exports.handler = async function (event) {
   }
   return json(502, { error: lastError, path, source });
 };
+
+async function sleeperJson(path) {
+  let lastError = 'Sleeper request failed.';
+  for (const host of ['https://api.sleeper.app', 'https://api.sleeper.com']) {
+    try {
+      const response = await fetch(host + path, { headers: { 'Accept': 'application/json', 'User-Agent': 'FS5-Live-Scores/1.0' } });
+      if (!response.ok) { lastError = `Sleeper ${response.status} from ${host}${path}`; continue; }
+      return await response.json();
+    } catch (error) { lastError = error && error.message ? error.message : lastError; }
+  }
+  throw new Error(lastError);
+}
+
+function sleeperTeamImage(user) {
+  const customAvatar = user && user.metadata && user.metadata.avatar;
+  if (customAvatar) {
+    const value = String(customAvatar).trim();
+    if (/^https?:\/\//i.test(value)) return value;
+    if (/^\/\//.test(value)) return 'https:' + value;
+    if (value.charAt(0) === '/') return 'https://sleepercdn.com' + value;
+    return 'https://sleepercdn.com/' + value.replace(/^\/+/, '');
+  }
+  return user && user.avatar ? 'https://sleepercdn.com/avatars/' + encodeURIComponent(String(user.avatar)) : '';
+}
+
+function numberValue(value) { const number = Number(value); return Number.isFinite(number) ? number : 0; }
+
+function rankedStandings(totals) {
+  return Array.from(totals.values()).sort((first, second) => {
+    if (second.wins !== first.wins) return second.wins - first.wins;
+    if (first.losses !== second.losses) return first.losses - second.losses;
+    if (second.points_for !== first.points_for) return second.points_for - first.points_for;
+    return first.roster_id - second.roster_id;
+  }).map((team, index) => Object.assign({}, team, { rank: index + 1 }));
+}
+
+async function getStandingsTimeline(leagueId) {
+  const id = String(leagueId || '').trim();
+  if (!/^\d{10,25}$/.test(id)) return json(400, { error: 'A valid Sleeper league ID is required.' });
+  const cached = standingsTimelineCache.get(id);
+  if (cached && Date.now() - cached.saved < STANDINGS_TIMELINE_CACHE_MS) return cached.response;
+  try {
+    const [league, rosters, users, drafts] = await Promise.all([
+      sleeperJson('/v1/league/' + id), sleeperJson('/v1/league/' + id + '/rosters'),
+      sleeperJson('/v1/league/' + id + '/users'), sleeperJson('/v1/league/' + id + '/drafts')
+    ]);
+    if (!league || !Array.isArray(rosters) || !Array.isArray(users) || !Array.isArray(drafts)) throw new Error('Sleeper returned incomplete league data.');
+    const usersById = new Map(users.map(user => [String(user.user_id), user]));
+    const draft = drafts.find(item => String(item.draft_id) === String(league.draft_id)) || drafts.find(item => item.status === 'complete');
+    const draftOrder = draft && draft.draft_order || {};
+    const teams = rosters.map(roster => {
+      const user = usersById.get(String(roster.owner_id)) || {};
+      const metadata = user.metadata || {};
+      return { roster_id: Number(roster.roster_id), owner_name: String(metadata.owner_name || user.display_name || user.username || 'FS5 Owner').trim(), team_name: String(metadata.team_name || user.display_name || user.username || 'FS5 Team').trim(), avatar: sleeperTeamImage(user), draft_order: Number(draftOrder[String(roster.owner_id)]) || null };
+    }).filter(team => Number.isInteger(team.roster_id));
+    if (!teams.length || teams.some(team => !team.draft_order)) throw new Error('Sleeper draft order is not available for this league.');
+    const completedWeek = Math.max(0, Math.min(17, Number(league.settings && league.settings.last_scored_leg) || 0));
+    const matchupSets = await Promise.all(Array.from({ length: completedWeek }, (_, index) => sleeperJson('/v1/league/' + id + '/matchups/' + (index + 1))));
+    const totals = new Map(teams.map(team => [team.roster_id, { roster_id: team.roster_id, wins: 0, losses: 0, ties: 0, points_for: 0 }]));
+    const preStandings = teams.slice().sort((first, second) => first.draft_order - second.draft_order).map((team, index) => ({ roster_id: team.roster_id, rank: index + 1, wins: 0, losses: 0, ties: 0, points_for: 0 }));
+    const frames = [{ week: 0, label: 'PRE', standings: preStandings }];
+    matchupSets.forEach((entries, index) => {
+      const matchups = new Map();
+      (Array.isArray(entries) ? entries : []).forEach(entry => {
+        const matchupId = Number(entry && entry.matchup_id); const rosterId = Number(entry && entry.roster_id);
+        if (!Number.isInteger(matchupId) || !Number.isInteger(rosterId) || !totals.has(rosterId)) return;
+        if (!matchups.has(matchupId)) matchups.set(matchupId, []);
+        matchups.get(matchupId).push(entry);
+      });
+      matchups.forEach(entriesForMatchup => {
+        if (entriesForMatchup.length !== 2) return;
+        const first = entriesForMatchup[0]; const second = entriesForMatchup[1];
+        const firstPoints = numberValue(first.points) + numberValue(first.custom_points); const secondPoints = numberValue(second.points) + numberValue(second.custom_points);
+        const firstTotal = totals.get(Number(first.roster_id)); const secondTotal = totals.get(Number(second.roster_id));
+        firstTotal.points_for += firstPoints; secondTotal.points_for += secondPoints;
+        if (firstPoints > secondPoints) { firstTotal.wins += 1; secondTotal.losses += 1; }
+        else if (secondPoints > firstPoints) { secondTotal.wins += 1; firstTotal.losses += 1; }
+        else { firstTotal.ties += 1; secondTotal.ties += 1; }
+      });
+      frames.push({ week: index + 1, label: 'W' + (index + 1), standings: rankedStandings(totals) });
+    });
+    const response = { statusCode: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=60' }, body: JSON.stringify({ league_id: id, season: Number(league.season) || null, playoff_teams: Math.max(1, Number(league.settings && league.settings.playoff_teams) || 6), through_week: completedWeek, teams: teams, frames: frames }) };
+    standingsTimelineCache.set(id, { saved: Date.now(), response: response });
+    return response;
+  } catch (error) { return json(502, { error: error && error.message ? error.message : 'Standings timeline is unavailable.' }); }
+}
 
 async function getRequestedPlayers(idsParam) {
   const ids = Array.from(new Set(String(idsParam || '')

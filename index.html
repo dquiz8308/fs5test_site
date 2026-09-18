@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FastStrongFive Fantasy Football</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=power-lines-20260918">
     <link rel="stylesheet" href="common.css">
 </head>
 <body>
@@ -156,6 +156,35 @@
             <div class="home-welcome">
                 <img src="artwork/welcomebanner.png" alt="Welcome to the Fast Strong Five Fantasy Football League" class="home-welcome__image" loading="lazy">
             </div>
+
+            <section class="power-lines" data-power-lines data-league-id="1387297022695993344" aria-labelledby="power-lines-title">
+                <div class="power-lines__header">
+                    <div>
+                        <p class="power-lines__kicker">FS5 STANDINGS STORY</p>
+                        <h2 id="power-lines-title">Power Lines</h2>
+                        <p>From draft order to the weekly race for the playoffs.</p>
+                    </div>
+                    <p class="power-lines__status" data-power-lines-status aria-live="polite">Loading the season race…</p>
+                </div>
+                <div class="power-lines__board-wrap" data-power-lines-board-wrap hidden>
+                    <div class="power-lines__board" data-power-lines-board>
+                        <div class="power-lines__weeks" data-power-lines-weeks aria-hidden="true"></div>
+                        <div class="power-lines__ranks" data-power-lines-ranks aria-hidden="true"></div>
+                        <div class="power-lines__playoff-line" data-power-lines-playoff-line aria-hidden="true"><span>PLAYOFF LINE</span></div>
+                        <svg class="power-lines__paths" data-power-lines-paths aria-hidden="true" preserveAspectRatio="none"></svg>
+                        <div class="power-lines__markers" data-power-lines-markers aria-label="Standings at the selected week"></div>
+                    </div>
+                </div>
+                <div class="power-lines__controls" data-power-lines-controls hidden>
+                    <button class="power-lines__play" type="button" data-power-lines-play aria-label="Play standings progression" aria-pressed="false">
+                        <span aria-hidden="true">▶</span><span data-power-lines-play-label>Play</span>
+                    </button>
+                    <label class="power-lines__range-label" for="power-lines-range">Choose a point in the season</label>
+                    <input class="power-lines__range" id="power-lines-range" data-power-lines-range type="range" min="0" max="0" value="0" step="1">
+                    <output class="power-lines__week-output" data-power-lines-output for="power-lines-range">PRE</output>
+                </div>
+                <div class="power-lines__teams" data-power-lines-teams aria-label="Teams in the standings race"></div>
+            </section>
         </div>
     </main>
     <footer>
@@ -167,6 +196,7 @@
     <script src="supabase-config.js"></script>
     <script src="footer-status.js"></script>
     <script src="homepage.js"></script>
+    <script src="home-power-lines.js?v=20260918"></script>
     <script src="mobile-menu.js"></script>
 </body>
 </html>
