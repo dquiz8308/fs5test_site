@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (bowl.indexOf('city of homes') !== -1) return { label: 'Welcome to Newnan Sign', type: 'city-of-homes', asset: 'artwork/locker/objects/newnan-city-of-homes-sign.png' };
         if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Tank', type: 'battle-tank', asset: 'artwork/locker/objects/battle-tank.png' };
         if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Rusted Stadium Sign', type: 'lynch-football', asset: 'artwork/locker/objects/lynch-rusted-sign.png' };
-        if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dice', type: 'random-dice', asset: 'artwork/locker/objects/random-dice.png' };
+        if (bowl.indexOf('random') !== -1) return { label: 'R.A.N.D.O.M. Dancer', type: 'random-dancer', asset: 'artwork/locker/objects/random-dancer.png' };
         if (bowl.indexOf('edge') !== -1) return { label: 'Edge Relic', type: 'edge', asset: 'artwork/locker/objects/edge.png' };
         if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial', asset: 'artwork/locker/objects/memorial.png' };
         if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel', asset: 'artwork/locker/objects/studio-reel.png' };
