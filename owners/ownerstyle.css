@@ -3555,4 +3555,28 @@ body.owners-dark main .achievement-crest__state,
 body.owners-dark .achievement-history-modal .achievement-history__eyebrow,
 body.owners-dark .locker-item-modal .locker-item-detail__eyebrow { color:#f5d885 !important; }
 
+/* The record panel and native selects have more-specific light-theme rules. */
+body.owners-dark .owner-profile-layout #owner-dropdown,
+body.owners-dark .team-game-records #game-record-dropdown {
+    border-color:#4b6d7f !important;
+    background:#122b39 !important;
+    color:#edf7fa !important;
+    color-scheme:dark;
+}
+body.owners-dark .owner-profile-layout #owner-dropdown option,
+body.owners-dark .team-game-records #game-record-dropdown option { background:#122b39; color:#edf7fa; }
+body.owners-dark .row3 > .game-records-container.team-game-records {
+    border-color:#315364 !important;
+    border-top-color:#dc4951 !important;
+    background:#122936 !important;
+    color:#e8f3f7 !important;
+}
+body.owners-dark .row3 > .game-records-container.team-game-records .team-game-records__results,
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table { background:#112733 !important; }
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table th { background:#1d3d4c !important; color:#d9edf6 !important; }
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table td { border-bottom-color:#2e5060 !important; color:#e6f2f6 !important; }
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table tbody tr,
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table tbody tr:nth-child(even) { background:#162f3b !important; }
+body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table tbody tr:hover { background:#214657 !important; }
+
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
