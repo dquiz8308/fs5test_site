@@ -3154,3 +3154,138 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .locker-item-detail__object { width: 142px; height: 142px; }
     .locker-item-detail__object img { width: 140px; height: 140px; }
 }
+
+/* Football locker finish: a framed equipment stall rather than a generic bookcase. */
+.owner-locker__cabinet {
+    min-height: 790px;
+    padding: 72px 68px 36px;
+    border: 12px solid #27333d;
+    border-radius: 9px 9px 5px 5px;
+    background:
+        radial-gradient(ellipse at 50% 4%, rgba(255,227,167,.18), transparent 26%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, transparent 1px 23px),
+        linear-gradient(90deg, #2c1a10, #724628 10%, #4d2d1b 50%, #744829 90%, #2b180e);
+    box-shadow: inset 0 0 0 3px #10181f, inset 0 0 46px rgba(0,0,0,.58), 0 17px 29px rgba(0,0,0,.4);
+}
+
+.owner-locker__cabinet::before,
+.owner-locker__cabinet::after {
+    z-index: 3;
+    width: 38px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.13), transparent 17% 80%, rgba(0,0,0,.5)),
+        repeating-linear-gradient(180deg, #34434d 0 10px, #17242d 10px 18px, #42535e 18px 20px);
+    box-shadow: inset 2px 0 rgba(210,228,233,.16), inset -3px 0 rgba(0,0,0,.55), 1px 0 0 rgba(255,255,255,.12);
+}
+
+.owner-locker__locker-header {
+    position: absolute;
+    z-index: 4;
+    top: 17px;
+    right: 52px;
+    left: 52px;
+    display: grid;
+    grid-template-columns: auto repeat(3, 1fr);
+    gap: 10px;
+    align-items: center;
+    height: 34px;
+    padding: 0 13px;
+    border: 1px solid #8197a3;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #3d515d, #1b2a33);
+    box-shadow: inset 0 1px rgba(255,255,255,.22), 0 3px 5px rgba(0,0,0,.45);
+}
+
+.owner-locker__locker-header span {
+    padding-right: 11px;
+    border-right: 1px solid rgba(220,237,240,.3);
+    color: #fff3d2;
+    font: 1000 .67rem/1 Arial, sans-serif;
+    letter-spacing: .14em;
+}
+
+.owner-locker__locker-header i {
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0b141a, #6f8791 45%, #0c151a);
+    box-shadow: inset 0 1px rgba(255,255,255,.15);
+}
+
+.owner-locker__shelves {
+    min-height: 682px;
+    grid-template-rows: repeat(4, minmax(148px, 1fr));
+    gap: 13px;
+}
+
+.owner-locker__shelf {
+    overflow: hidden;
+    padding: 11px 36px 27px;
+    border: 1px solid rgba(18,11,7,.76);
+    border-bottom: 0;
+    border-radius: 4px 4px 0 0;
+    background:
+        linear-gradient(180deg, rgba(255,230,184,.14), transparent 28%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.026) 0 1px, transparent 1px 18px),
+        linear-gradient(90deg, rgba(20,10,5,.35), rgba(117,73,39,.2) 14% 86%, rgba(20,10,5,.42));
+    box-shadow: inset 0 0 22px rgba(0,0,0,.24), inset 0 1px rgba(255,228,189,.13);
+}
+
+.owner-locker__shelf::before {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    width: 25px;
+    height: 9px;
+    content: "";
+    border: 2px solid rgba(184,197,198,.48);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 -2px 3px rgba(0,0,0,.35);
+}
+
+.owner-locker__shelf::after {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 22px;
+    border-top: 2px solid #d09a5f;
+    border-bottom: 6px solid #2c1609;
+    background: linear-gradient(180deg, #9a6036, #5a2f17 50%, #251105);
+    box-shadow: 0 9px 10px rgba(0,0,0,.6), inset 0 2px rgba(255,231,190,.23);
+}
+
+.owner-locker__shelf-items {
+    min-height: 134px;
+    padding: 0 10px 18px;
+}
+
+.owner-locker__shelf-items::after {
+    right: 5px;
+    bottom: 3px;
+    left: 5px;
+    z-index: 0;
+    height: 16px;
+    border-top-color: rgba(255,232,190,.58);
+    background: linear-gradient(#b97948, #673519 52%, #2c1407);
+    box-shadow: 0 6px 8px rgba(0,0,0,.52);
+}
+
+.locker-object img {
+    transform: translateY(8px);
+    filter: drop-shadow(0 11px 7px rgba(0,0,0,.72));
+}
+
+@media (max-width: 765px) {
+    .owner-locker__cabinet { min-height: 598px; padding: 56px 27px 24px; border-width: 9px; }
+    .owner-locker__cabinet::before,
+    .owner-locker__cabinet::after { width: 18px; }
+    .owner-locker__locker-header { top: 12px; right: 22px; left: 22px; height: 28px; gap: 6px; padding: 0 8px; }
+    .owner-locker__locker-header span { padding-right: 7px; font-size: .56rem; }
+    .owner-locker__shelves { min-height: 510px; gap: 10px; grid-template-rows: repeat(4, minmax(112px, 1fr)); }
+    .owner-locker__shelf { padding: 6px 11px 17px; }
+    .owner-locker__shelf::before { top: 7px; right: 8px; width: 16px; height: 6px; border-width: 1px; }
+    .owner-locker__shelf::after { height: 16px; border-bottom-width: 4px; }
+    .owner-locker__shelf-items { min-height: 94px; padding: 0 2px 12px; }
+    .owner-locker__shelf-items::after { right: 1px; bottom: 1px; left: 1px; height: 11px; }
+    .locker-object img { transform: translateY(5px); }
+}
