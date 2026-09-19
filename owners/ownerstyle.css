@@ -3597,12 +3597,12 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 .owner-locker__stadium-light,
 .owner-locker__locker-header,
 .owner-locker__floor { display:none; }
-.owner-locker__shelves { z-index:2; min-height:589px; gap:14px; grid-template-rows:repeat(4, minmax(130px, 1fr)); }
-.owner-locker__shelf { overflow:visible; padding:4px 6px 14px; border:0; border-radius:0; background:transparent; box-shadow:none; }
+.owner-locker__shelves { z-index:2; min-height:492px; gap:0; grid-template-rows:132px 120px 120px 120px; }
+.owner-locker__shelf { overflow:visible; padding:0 6px; border:0; border-radius:0; background:transparent; box-shadow:none; }
 .owner-locker__shelf::before,
 .owner-locker__shelf::after,
 .owner-locker__shelf-items::after { display:none; }
-.owner-locker__shelf-items { min-height:112px; padding:0 2px 10px; gap:7px; background:transparent; box-shadow:none; }
+.owner-locker__shelf-items { min-height:0; height:100%; padding:0 2px; gap:7px; background:transparent; box-shadow:none; }
 .locker-collectible { filter:drop-shadow(0 11px 7px rgba(0,0,0,.74)); }
 .locker-object img { transform:translateY(4px); filter:drop-shadow(0 10px 6px rgba(0,0,0,.78)); }
 .locker-collectible:hover,
@@ -3610,9 +3610,9 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 
 @media (max-width:765px) {
     .owner-locker__cabinet { min-height:650px; padding:103px 54px 131px; }
-    .owner-locker__shelves { min-height:416px; gap:9px; grid-template-rows:repeat(4, minmax(92px, 1fr)); }
-    .owner-locker__shelf { padding:2px 1px 9px; }
-    .owner-locker__shelf-items { min-height:78px; padding:0 0 7px; gap:2px; }
+    .owner-locker__shelves { min-height:342px; gap:0; grid-template-rows:93px 85px 80px 85px; }
+    .owner-locker__shelf { padding:0 1px; }
+    .owner-locker__shelf-items { min-height:0; height:100%; padding:0; gap:2px; }
     .locker-object img { transform:translateY(2px); filter:drop-shadow(0 6px 4px rgba(0,0,0,.76)); }
 }
 
