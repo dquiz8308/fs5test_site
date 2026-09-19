@@ -3667,6 +3667,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     grid-template-rows:11.95fr 15.23fr 15.52fr 15.25fr;
 }
 .owner-locker__shelf {
+    position:relative;
     min-height:0;
     padding:0 2%;
     overflow:visible;
@@ -3675,7 +3676,24 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     background:transparent;
     box-shadow:none;
 }
+.owner-locker__shelf::after {
+    position:absolute;
+    z-index:3;
+    right:0;
+    bottom:-23px;
+    left:0;
+    display:block;
+    height:19px;
+    content:"";
+    pointer-events:none;
+    border-top:1px solid rgba(255,222,158,.78);
+    border-bottom:3px solid #241006;
+    background:linear-gradient(180deg,#dca25a 0 10%,#8a4d21 16%,#4c250f 54%,#281106 100%);
+    box-shadow:inset 0 2px rgba(255,234,180,.32),inset 0 -2px rgba(0,0,0,.52),0 4px 5px rgba(0,0,0,.54);
+}
 .owner-locker__shelf-items {
+    position:relative;
+    z-index:1;
     height:100%;
     min-height:0;
     padding:0;
@@ -3702,7 +3720,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 .locker-object img {
     width:126px;
     height:126px;
-    transform:translateY(3px);
+    transform:translateY(9px);
     filter:drop-shadow(0 3px 2px rgba(0,0,0,.8));
 }
 .locker-collectible:hover,
@@ -3714,10 +3732,11 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .owner-locker__locker-header strong { font-size:clamp(.72rem, 4.4vw, 1.05rem); letter-spacing:.1em; }
     .owner-locker__shelves { top:15%; right:13.2%; bottom:27%; left:13.2%; }
     .owner-locker__shelf { padding:0 1%; }
+    .owner-locker__shelf::after { bottom:-12px; height:10px; border-bottom-width:2px; }
     .owner-locker__shelf-items { height:100%; min-height:0; gap:1px; }
     .locker-collectible__object,
     .locker-object { height:clamp(48px, 16vw, 86px); }
-    .locker-object img { width:clamp(48px, 16vw, 86px); height:clamp(48px, 16vw, 86px); transform:translateY(2px); }
+    .locker-object img { width:clamp(48px, 16vw, 86px); height:clamp(48px, 16vw, 86px); transform:translateY(5px); }
 }
 
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
