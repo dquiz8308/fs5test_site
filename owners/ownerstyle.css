@@ -3522,4 +3522,37 @@ body.owners-dark .locker-item-detail__bowl,
 body.owners-dark .locker-item-detail__result { color:#b8cdd8; }
 body.owners-dark .achievement-history__summary { border-color:#7d6631; background:linear-gradient(120deg,#28374a,#172c38); }
 
+/* A final contrast pass keeps inherited light-theme ink from leaking into dark mode. */
+body.owners-dark main :is(h1,h2,h3,h4,p,span,strong,small,label,td,th,a,button,select,option),
+body.owners-dark .achievement-history-modal :is(h1,h2,h3,h4,p,span,strong,small,label,td,th,a,button),
+body.owners-dark .locker-item-modal :is(h1,h2,h3,h4,p,span,strong,small,label,td,th,a,button) { color:#e5f1f6 !important; }
+body.owners-dark main .owner-profile__eyebrow,
+body.owners-dark main .owner-profile__welcome,
+body.owners-dark main .owner-profile__descriptor,
+body.owners-dark main .stat-box p,
+body.owners-dark main .summary-stat h3,
+body.owners-dark main .metric-row__label,
+body.owners-dark main .streak-row > p,
+body.owners-dark main .season-history__columns,
+body.owners-dark main .season-history__details,
+body.owners-dark main .season-history__note,
+body.owners-dark main .achievement-case__kicker,
+body.owners-dark main .achievement-case__note,
+body.owners-dark main .achievement-crest__detail,
+body.owners-dark main .achievement-tier-detail p,
+body.owners-dark .achievement-history-modal :is(p,small,span),
+body.owners-dark .locker-item-modal :is(p,small,span) { color:#c2d5de !important; }
+body.owners-dark main .metric-row--positive > strong,
+body.owners-dark main .streak-row--win strong { color:#83e5aa !important; }
+body.owners-dark main .metric-row--negative > strong,
+body.owners-dark main .streak-row--loss strong { color:#ff9c9c !important; }
+body.owners-dark main .metric-row--blue > strong,
+body.owners-dark main .streak-row--current strong,
+body.owners-dark main .achievement-crest__progress,
+body.owners-dark .achievement-history-modal .achievement-history__summary strong { color:#82cdf5 !important; }
+body.owners-dark main .achievement-case__count,
+body.owners-dark main .achievement-crest__state,
+body.owners-dark .achievement-history-modal .achievement-history__eyebrow,
+body.owners-dark .locker-item-modal .locker-item-detail__eyebrow { color:#f5d885 !important; }
+
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
