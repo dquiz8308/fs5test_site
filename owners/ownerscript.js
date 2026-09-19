@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var seasonHistoryToggle = document.querySelector('.season-history__toggle');
     var seasonHistoryNote = document.querySelector('.season-history__note');
     var seasonHistoryMedia = window.matchMedia('(max-width: 765px)');
+    var ownersThemeToggle = document.getElementById('owners-theme-toggle');
+    var ownersThemeLabel = document.getElementById('owners-theme-label');
     var recordTable = document.querySelector('.game-records-table');
     var recordTableBody = recordTable.querySelector('tbody');
     var recordResults = document.querySelector('.team-game-records__results');
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentSeasonRows = [];
     var seasonHistoryExpanded = false;
     var lockerRenderToken = 0;
+    var OWNERS_THEME_KEY = 'fs5_owners_theme';
 
     var scoreRecordCategories = [
         'high-scores',
@@ -118,6 +121,21 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         seasonHistoryMedia.addListener(renderSeasonHistoryRows);
     }
+
+    function applyOwnersTheme(theme) {
+        var isDark = theme === 'dark';
+        document.body.classList.toggle('owners-dark', isDark);
+        if (ownersThemeToggle) ownersThemeToggle.setAttribute('aria-pressed', isDark ? 'true' : 'false');
+        if (ownersThemeLabel) ownersThemeLabel.textContent = isDark ? 'Dark' : 'Light';
+        if (ownersThemeToggle) ownersThemeToggle.querySelector('[aria-hidden="true"]').textContent = isDark ? '🌙' : '☀️';
+    }
+
+    try { applyOwnersTheme(localStorage.getItem(OWNERS_THEME_KEY) === 'dark' ? 'dark' : 'light'); } catch (error) { applyOwnersTheme('light'); }
+    if (ownersThemeToggle) ownersThemeToggle.addEventListener('click', function () {
+        var nextTheme = document.body.classList.contains('owners-dark') ? 'light' : 'dark';
+        applyOwnersTheme(nextTheme);
+        try { localStorage.setItem(OWNERS_THEME_KEY, nextTheme); } catch (error) {}
+    });
 
     resetPage();
 

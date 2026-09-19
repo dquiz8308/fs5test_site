@@ -6,7 +6,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/artwork/fs5-ios-icon.png">
     <link rel="manifest" href="/site.webmanifest">
     <title>FastStrongFive Fantasy Football League</title>
-    <link rel="stylesheet" href="ownerstyle.css?v=locker-room-bay-20260918">
+    <link rel="stylesheet" href="ownerstyle.css?v=owners-theme-toggle-20260918">
     <link rel="stylesheet" href="../common.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase-config.js"></script>
@@ -70,6 +70,10 @@
         </div>
     </nav>
     <main class="owners-main--blank">
+
+<div class="owners-theme-toolbar" role="group" aria-label="Owners page theme">
+    <button id="owners-theme-toggle" class="owners-theme-toggle" type="button" aria-pressed="false"><span aria-hidden="true">☀️</span><span id="owners-theme-label">Light</span></button>
+</div>
 
 <div id="owner-data-status" class="owner-data-status" role="status" aria-live="polite" hidden></div>
 <section class="row1 owner-profile-layout" aria-labelledby="team-name">
@@ -516,7 +520,7 @@
         </div>
     </footer>
     <script src="locker-awards.js"></script>
-    <script src="ownerscript.js?v=owners-locker-room-20260918"></script>
+    <script src="ownerscript.js?v=owners-theme-toggle-20260918"></script>
     <script src="../footer-status.js"></script>
     <script src="../mobile-menu.js"></script>
 </body>

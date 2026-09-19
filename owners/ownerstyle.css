@@ -3450,3 +3450,76 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .locker-object img { transform: translateY(5px); filter: drop-shadow(0 8px 5px rgba(0,0,0,.76)); }
     .owner-locker__floor { right: 17px; left: 17px; height: 24px; }
 }
+
+/* Owners page theme control and dark-surface palette. */
+.owners-theme-toolbar { display:flex; width:min(100% - 40px,1390px); margin:14px auto 4px; justify-content:flex-end; }
+.owners-theme-toggle { display:inline-flex; align-items:center; gap:6px; padding:7px 11px; border:1px solid #9ab0bf; border-radius:999px; background:#f8fbfd; color:#153c59; font-size:.67rem; font-weight:900; cursor:pointer; box-shadow:0 3px 8px rgba(12,42,64,.09); }
+.owners-theme-toggle:hover { background:#eaf4f8; }
+.owners-theme-toggle:focus-visible { outline:3px solid #2586cb; outline-offset:3px; }
+
+body.owners-dark { background:#091822; color:#e8f2f7; }
+body.owners-dark main { background:linear-gradient(180deg,#091822,#0b1b26); }
+body.owners-dark .owners-theme-toggle { border-color:#3b6177; background:#173244; color:#eef7fb; box-shadow:0 3px 9px rgba(0,0,0,.28); }
+body.owners-dark .owners-theme-toggle:hover { background:#21465b; }
+body.owners-dark .owner-profile,
+body.owners-dark .owner-profile__selector,
+body.owners-dark .owner-performance-grid .phase2-card,
+body.owners-dark .season-history__card,
+body.owners-dark .team-game-records,
+body.owners-dark .h2h-summary--redesigned,
+body.owners-dark .achievement-case { border-color:#294859; background:#122936; color:#e7f1f5; box-shadow:0 8px 20px rgba(0,0,0,.22); }
+body.owners-dark .owner-profile .stat-box,
+body.owners-dark .owner-profile .summary-stat,
+body.owners-dark .owner-performance-grid .metric-row,
+body.owners-dark .owner-performance-grid .streak-row,
+body.owners-dark .season-history__row,
+body.owners-dark .h2h-summary--redesigned .owner-stats,
+body.owners-dark .achievement-crest,
+body.owners-dark .achievement-tier-guide,
+body.owners-dark .team-game-records__results { border-color:#2c4b5b; background:#172f3d; color:#e7f1f5; }
+body.owners-dark .owner-profile .team-name h2,
+body.owners-dark .owner-profile .summary-stat h3,
+body.owners-dark .owner-performance-grid .phase2-card__header h2,
+body.owners-dark .season-history__header h2,
+body.owners-dark .team-game-records__header h2,
+body.owners-dark .h2h-summary--redesigned .h2h-summary__header h2,
+body.owners-dark .achievement-case h2,
+body.owners-dark .achievement-crest h3 { color:#f1f7fa; }
+body.owners-dark .owner-profile__eyebrow,
+body.owners-dark .owner-profile__welcome,
+body.owners-dark .owner-profile__descriptor,
+body.owners-dark .owner-profile .stat-box p,
+body.owners-dark .owner-profile .summary-stat p,
+body.owners-dark .owner-performance-grid .metric-row__label,
+body.owners-dark .owner-performance-grid .streak-row > p,
+body.owners-dark .season-history__columns,
+body.owners-dark .season-history__details,
+body.owners-dark .season-history__note,
+body.owners-dark .achievement-case__kicker,
+body.owners-dark .achievement-case__note,
+body.owners-dark .achievement-crest p { color:#b5cad5; }
+body.owners-dark .owner-profile #owner-dropdown,
+body.owners-dark .team-game-records #game-record-dropdown { border-color:#456779; background:#102633; color:#eff7fa; }
+body.owners-dark .team-game-records .game-records-table { border-color:#315463; background:#112833; color:#e8f2f6; }
+body.owners-dark .team-game-records .game-records-table th { background:#193846; color:#bcd9e8; }
+body.owners-dark .team-game-records .game-records-table td { border-color:#294958; }
+body.owners-dark .team-game-records .game-records-table tbody tr:nth-child(even) { background:#162f3b; }
+body.owners-dark .team-game-records .game-records-table tbody tr:hover { background:#1c4050; }
+body.owners-dark .season-history__toggle,
+body.owners-dark .achievement-case__count { border-color:#496b7b; background:#193744; color:#f5d885; }
+body.owners-dark .achievement-crest.is-locked { opacity:.8; }
+body.owners-dark .achievement-history-modal__panel,
+body.owners-dark .locker-item-modal__panel { background:linear-gradient(145deg,#122a38,#0d202b); color:#eaf4f8; }
+body.owners-dark .achievement-history-modal__close,
+body.owners-dark .locker-item-modal__close { border-color:#456476; background:#1a3544; color:#eff7fa; }
+body.owners-dark .achievement-history__hero h2,
+body.owners-dark .achievement-history__legend h3,
+body.owners-dark .locker-item-detail h2 { color:#eff7fa; }
+body.owners-dark .achievement-history__hero p:not(.achievement-history__eyebrow),
+body.owners-dark .achievement-history__summary p,
+body.owners-dark .achievement-history__legend p,
+body.owners-dark .locker-item-detail__bowl,
+body.owners-dark .locker-item-detail__result { color:#b8cdd8; }
+body.owners-dark .achievement-history__summary { border-color:#7d6631; background:linear-gradient(120deg,#28374a,#172c38); }
+
+@media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
