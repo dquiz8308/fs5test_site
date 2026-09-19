@@ -3569,6 +3569,20 @@ body.owners-dark .achievement-history__tier--silver { border-color:#7d9aa8; back
 body.owners-dark .achievement-history__tier--gold { border-color:#b69136; background:#3a321b; color:#ffe39a; }
 body.owners-dark .achievement-history__tier--legacy { border-color:#4c86ac; background:#1d3548; color:#bde8ff; }
 
+/* The popup injects this exact four-tile tier guide at runtime. */
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier {
+    border-color:#426779 !important;
+    background:#173140 !important;
+    color:#edf7fa !important;
+}
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier :is(b,small) {
+    color:#edf7fa !important;
+}
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier--bronze { border-color:#a9714b !important; background:#3b2a21 !important; }
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier--silver { border-color:#7c99a8 !important; background:#263b45 !important; }
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier--gold { border-color:#b9973d !important; background:#3a321d !important; }
+body.owners-dark #achievement-history-content .achievement-history__selected-tiers .achievement-tier-guide__tier--legacy { border-color:#578cb0 !important; background:#1c3649 !important; }
+
 /* The record panel and native selects have more-specific light-theme rules. */
 body.owners-dark .owner-profile-layout #owner-dropdown,
 body.owners-dark .team-game-records #game-record-dropdown {
