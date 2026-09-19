@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var ownerLockerShelves = document.getElementById('owner-locker-shelves');
     var ownerLockerCount = document.getElementById('owner-locker-count');
     var ownerLockerEmpty = document.getElementById('owner-locker-empty');
+    var ownerLockerNameplate = document.querySelector('[data-owner-locker-nameplate]');
     var lockerItemModal = document.getElementById('locker-item-modal');
     var lockerItemModalContent = document.getElementById('locker-item-modal-content');
     var lockerItemModalClose = document.getElementById('locker-item-modal-close');
@@ -396,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ownerLockerShelves.textContent = '';
         ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
         ownerLockerEmpty.hidden = awards.length > 0;
+        if (ownerLockerNameplate) ownerLockerNameplate.textContent = owner && owner.team_name ? String(owner.team_name).toUpperCase() : 'FS5 GAME DAY';
 
         var shelfCount = Math.max(4, Math.ceil(awards.length / 5));
         for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {

@@ -3289,3 +3289,164 @@ span[id$='-title'] { /* This selects any <span> whose ID ends with '-title' */
     .owner-locker__shelf-items::after { right: 1px; bottom: 1px; left: 1px; height: 11px; }
     .locker-object img { transform: translateY(5px); }
 }
+
+/* Locker-room rebuild: a lit equipment bay with real cubbies and shelf depth. */
+.owner-locker__cabinet {
+    min-height: 858px;
+    padding: 108px 76px 46px;
+    border: 16px solid #1d2a32;
+    border-radius: 7px;
+    background:
+        radial-gradient(ellipse at 50% 0, rgba(255,244,207,.34), transparent 18%),
+        linear-gradient(180deg, rgba(255,255,255,.13), transparent 11%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.038) 0 2px, transparent 2px 34px),
+        linear-gradient(90deg, #17232b 0, #64737a 7%, #364850 13%, #52646b 50%, #364850 87%, #64737a 93%, #17232b);
+    box-shadow: inset 0 0 0 3px #0a1116, inset 0 0 56px rgba(0,0,0,.55), 0 20px 32px rgba(0,0,0,.42);
+}
+
+.owner-locker__cabinet::before,
+.owner-locker__cabinet::after {
+    z-index: 5;
+    width: 46px;
+    background:
+        radial-gradient(circle at 50% 16px, #d6e0e1 0 2px, #18232a 2.5px 4px, transparent 4.5px) 0 0/100% 38px,
+        linear-gradient(90deg, #111a20, #53676f 22%, #90a0a2 47%, #41545d 73%, #10191f);
+    box-shadow: inset 2px 0 rgba(255,255,255,.25), inset -4px 0 rgba(0,0,0,.55), 3px 0 8px rgba(0,0,0,.38);
+}
+
+.owner-locker__cabinet::before { left: 0; }
+.owner-locker__cabinet::after { right: 0; transform: scaleX(-1); }
+
+.owner-locker__stadium-light {
+    position: absolute;
+    z-index: 4;
+    top: 17px;
+    right: 96px;
+    left: 96px;
+    height: 13px;
+    border: 2px solid #252f34;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #928a6f, #fff5c6 18% 82%, #928a6f);
+    box-shadow: 0 4px 10px rgba(0,0,0,.5), 0 12px 30px rgba(255,225,146,.25), inset 0 2px 3px rgba(255,255,255,.78);
+}
+
+.owner-locker__locker-header {
+    z-index: 6;
+    top: 47px;
+    right: 74px;
+    left: 74px;
+    grid-template-columns: minmax(0, 1fr) auto repeat(3, 1fr);
+    gap: 9px;
+    height: 39px;
+    padding: 0 14px;
+    border: 2px solid #0d171c;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #173b57, #082133 52%, #06141e);
+    box-shadow: inset 0 1px rgba(255,255,255,.28), 0 4px 9px rgba(0,0,0,.56);
+}
+
+.owner-locker__locker-header strong {
+    overflow: hidden;
+    color: #f7d784;
+    font: 1000 .64rem/1 Arial, sans-serif;
+    letter-spacing: .1em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.owner-locker__locker-header span {
+    padding: 5px 8px;
+    border: 1px solid rgba(244,207,118,.58);
+    border-radius: 2px;
+    background: #f1f5ee;
+    color: #0b395b;
+    font-size: .56rem;
+    letter-spacing: .08em;
+}
+
+.owner-locker__shelves {
+    z-index: 2;
+    min-height: 704px;
+    gap: 17px;
+    grid-template-rows: repeat(4, minmax(152px, 1fr));
+}
+
+.owner-locker__shelf {
+    overflow: visible;
+    padding: 12px 18px 31px;
+    border: 3px solid #202e35;
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,.16), transparent 14%),
+        linear-gradient(90deg, rgba(0,0,0,.28), transparent 11% 89%, rgba(0,0,0,.32)),
+        repeating-linear-gradient(90deg, #52656c 0 1px, #3e5058 1px 28px, #52636a 29px 30px);
+    box-shadow: inset 0 0 26px rgba(0,0,0,.27), inset 0 2px rgba(255,255,255,.22), 0 10px 12px rgba(0,0,0,.34);
+}
+
+.owner-locker__shelf::before { display: none; }
+
+.owner-locker__shelf::after {
+    z-index: 4;
+    height: 28px;
+    border-top: 3px solid #b5c1c0;
+    border-bottom: 8px solid #142028;
+    background: linear-gradient(180deg, #73858a, #34464e 38%, #1b2a31 72%, #0b151a);
+    box-shadow: 0 11px 13px rgba(0,0,0,.55), inset 0 2px rgba(255,255,255,.36);
+}
+
+.owner-locker__shelf-items {
+    min-height: 128px;
+    padding: 0 5px 18px;
+    gap: 10px;
+    background:
+        linear-gradient(90deg, transparent 0 19.2%, rgba(12,22,28,.82) 19.2% 20.8%, transparent 20.8% 39.2%, rgba(12,22,28,.82) 39.2% 40.8%, transparent 40.8% 59.2%, rgba(12,22,28,.82) 59.2% 60.8%, transparent 60.8% 79.2%, rgba(12,22,28,.82) 79.2% 80.8%, transparent 80.8%),
+        linear-gradient(180deg, rgba(255,255,255,.12), transparent 28%),
+        linear-gradient(90deg, rgba(0,0,0,.2), transparent 10% 90%, rgba(0,0,0,.23));
+    box-shadow: inset 0 0 15px rgba(0,0,0,.24);
+}
+
+.owner-locker__shelf-items::after {
+    z-index: 3;
+    right: 0;
+    bottom: 2px;
+    left: 0;
+    height: 17px;
+    border-top: 2px solid rgba(230,239,236,.6);
+    background: linear-gradient(180deg, #66797d, #2d3f47 52%, #17242b);
+    box-shadow: 0 7px 9px rgba(0,0,0,.5), inset 0 1px rgba(255,255,255,.34);
+}
+
+.locker-collectible { z-index: 4; }
+.locker-object img { transform: translateY(11px); filter: drop-shadow(0 14px 8px rgba(0,0,0,.78)); }
+.locker-collectible__object::after { bottom: -1px; background: rgba(4,10,13,.68); filter: blur(5px); }
+
+.owner-locker__floor {
+    position: absolute;
+    z-index: 1;
+    right: 44px;
+    bottom: 0;
+    left: 44px;
+    height: 38px;
+    border-top: 2px solid rgba(211,225,221,.24);
+    background: repeating-linear-gradient(125deg, #152127 0 13px, #24363e 13px 26px, #19272e 26px 39px);
+    box-shadow: inset 0 8px 13px rgba(0,0,0,.42);
+}
+
+@media (max-width: 765px) {
+    .owner-locker__cabinet { min-height: 632px; padding: 84px 28px 34px; border-width: 10px; }
+    .owner-locker__cabinet::before,
+    .owner-locker__cabinet::after { width: 18px; }
+    .owner-locker__stadium-light { top: 12px; right: 36px; left: 36px; height: 8px; }
+    .owner-locker__locker-header { top: 30px; right: 27px; left: 27px; height: 31px; gap: 5px; padding: 0 7px; }
+    .owner-locker__locker-header strong { font-size: .48rem; }
+    .owner-locker__locker-header span { padding: 4px 5px; font-size: .45rem; }
+    .owner-locker__locker-header i { height: 3px; }
+    .owner-locker__shelves { min-height: 515px; gap: 11px; grid-template-rows: repeat(4, minmax(111px, 1fr)); }
+    .owner-locker__shelf { padding: 6px 5px 19px; border-width: 2px; }
+    .owner-locker__shelf::after { height: 18px; border-top-width: 2px; border-bottom-width: 5px; }
+    .owner-locker__shelf-items { min-height: 88px; padding: 0 1px 11px; gap: 3px; background-image: linear-gradient(90deg, transparent 0 24.1%, rgba(12,22,28,.8) 24.1% 25.9%, transparent 25.9% 49.1%, rgba(12,22,28,.8) 49.1% 50.9%, transparent 50.9% 74.1%, rgba(12,22,28,.8) 74.1% 75.9%, transparent 75.9%), linear-gradient(180deg, rgba(255,255,255,.12), transparent 28%), linear-gradient(90deg, rgba(0,0,0,.2), transparent 10% 90%, rgba(0,0,0,.23)); }
+    .owner-locker__shelf-items::after { height: 11px; border-top-width: 1px; }
+    .locker-object img { transform: translateY(5px); filter: drop-shadow(0 8px 5px rgba(0,0,0,.76)); }
+    .owner-locker__floor { right: 17px; left: 17px; height: 24px; }
+}
