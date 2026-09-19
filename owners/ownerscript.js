@@ -31,9 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var ownerLockerShelves = document.getElementById('owner-locker-shelves');
     var ownerLockerCount = document.getElementById('owner-locker-count');
     var ownerLockerEmpty = document.getElementById('owner-locker-empty');
-    var ownerLockerMember = document.querySelector('[data-owner-locker-member]');
-    var ownerLockerTeam = document.querySelector('[data-owner-locker-team]');
-    var ownerLockerTeamLogo = document.getElementById('owner-locker-team-logo');
+    var ownerLockerNameplate = document.querySelector('[data-owner-locker-nameplate]');
     var lockerItemModal = document.getElementById('locker-item-modal');
     var lockerItemModalContent = document.getElementById('locker-item-modal-content');
     var lockerItemModalClose = document.getElementById('locker-item-modal-close');
@@ -45,20 +43,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var seasonHistoryExpanded = false;
     var lockerRenderToken = 0;
     var OWNERS_THEME_KEY = 'fs5_owners_theme';
-    var OWNER_LOCKER_KNICKKNACKS = {
-        will: [{ label: 'Will\'s personal locker collection', asset: 'artwork/locker/decor/will-locker-knickknacks.png', type: 'will-art' }, { label: 'Atlanta baseball keepsake', icon: '⚾', type: 'baseball' }],
-        keith: [{ label: 'Metal music keepsake', icon: '🤘', type: 'music' }, { label: 'Texas keepsake', icon: '🤠', type: 'texas' }, { label: 'Fantasy football draft board', icon: '🏈', type: 'football' }, { label: 'Busch Light can', icon: '🍺', type: 'beer' }],
-        cody: [{ label: 'Guitar', icon: '🎸', type: 'music' }, { label: 'Georgia football keepsake', icon: '🐶', type: 'football' }, { label: 'Suit jacket', icon: '🤵', type: 'suit' }, { label: 'German beer stein', icon: '🍺', type: 'beer' }],
-        max: [{ label: 'Tropicalia beer', icon: '🍻', type: 'beer' }, { label: 'Georgia football keepsake', icon: '🐶', type: 'football' }, { label: 'Golf set', icon: '⛳', type: 'golf' }, { label: 'Bourbon bottle', icon: '🥃', type: 'bourbon' }],
-        bailey: [{ label: 'Casino dice', icon: '🎲', type: 'gambling' }, { label: 'Miller Lite can', icon: '🍺', type: 'beer' }, { label: 'Georgia football keepsake', icon: '🐶', type: 'football' }, { label: 'Jacksonville football keepsake', icon: '🐆', type: 'football' }],
-        matthew: [{ label: 'Golf set', icon: '⛳', type: 'golf' }, { label: 'Sports betting slip', icon: '🎲', type: 'gambling' }, { label: 'Beer can', icon: '🍺', type: 'beer' }],
-        ethan: [{ label: 'Manchester soccer keepsake', icon: '⚽', type: 'soccer' }, { label: 'Bud Light can', icon: '🍺', type: 'beer' }, { label: 'Book of dad jokes', icon: '📖', type: 'book' }],
-        jordan: [{ label: 'Manchester soccer keepsake', icon: '⚽', type: 'soccer' }, { label: 'Pierogi plate', icon: '🥟', type: 'food' }, { label: 'Atlanta baseball keepsake', icon: '⚾', type: 'baseball' }, { label: 'Video game controller', icon: '🎮', type: 'gaming' }],
-        david: [{ label: 'Busch Light can', icon: '🍺', type: 'beer' }, { label: 'Past teams movie poster', icon: '🎬', type: 'poster' }, { label: 'Director clapper', icon: '🎞️', type: 'poster' }],
-        chris: [{ label: 'Georgia Tech keepsake', icon: '🐝', type: 'football' }, { label: 'Golf set', icon: '⛳', type: 'golf' }, { label: 'Running shoes', icon: '🏃', type: 'running' }, { label: 'Barbell', icon: '🏋️', type: 'fitness' }, { label: 'Engineering plans', icon: '📐', type: 'engineering' }],
-        mike: [{ label: 'Atlanta football keepsake', icon: '🦅', type: 'football' }, { label: 'Boat model', icon: '🛥️', type: 'boating' }, { label: 'Toyota car model', icon: '🚗', type: 'car' }, { label: 'Georgia football keepsake', icon: '🐶', type: 'football' }],
-        brycen: [{ label: 'Music record', icon: '🎵', type: 'music' }, { label: 'Psychedelic album keepsake', icon: '🌈', type: 'music' }, { label: 'Vape keepsake', icon: '💨', type: 'vape' }, { label: 'Speaker stack', icon: '🔊', type: 'speaker' }]
-    };
 
     var scoreRecordCategories = [
         'high-scores',
@@ -429,23 +413,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         ownerLocker.hidden = false;
         ownerLockerShelves.textContent = '';
-        if (ownerLockerMember) ownerLockerMember.textContent = owner && owner.owner_name ? String(owner.owner_name).toUpperCase() : 'LEAGUE MEMBER';
-        if (ownerLockerTeam) ownerLockerTeam.textContent = owner && owner.team_name ? String(owner.team_name).toUpperCase() : 'FS5 GAME DAY';
-        if (ownerLockerTeamLogo) {
-            ownerLockerTeamLogo.src = owner && owner.owner_name ? 'artwork/profile-current/' + String(owner.owner_name).toLowerCase() + '.png' : '../artwork/logo.png';
-            ownerLockerTeamLogo.alt = (owner && owner.team_name ? String(owner.team_name) : 'Current team') + ' logo';
-            ownerLockerTeamLogo.onerror = function () { this.onerror = null; this.src = '../artwork/logo.png'; };
-        }
+        ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
+        ownerLockerEmpty.hidden = awards.length > 0;
+        if (ownerLockerNameplate) ownerLockerNameplate.textContent = owner && owner.team_name ? String(owner.team_name).toUpperCase() : 'FS5 GAME DAY';
 
-        var decorations = OWNER_LOCKER_KNICKKNACKS[ownerMetricKey(ownerName)] || [];
-        ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' bowl win' : ' bowl wins') + ' · ' + decorations.length + ' personal items';
-        ownerLockerEmpty.hidden = awards.length > 0 || decorations.length > 0;
-        var displayItems = awards.map(function (award) { return { kind: 'award', award: award }; });
-        decorations.forEach(function (decoration, index) {
-            displayItems.splice(Math.min(displayItems.length, index * 2 + 1), 0, { kind: 'decoration', decoration: decoration });
-        });
-
-        var shelfCount = Math.max(4, Math.ceil(displayItems.length / 5));
+        var shelfCount = Math.max(4, Math.ceil(awards.length / 5));
         for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {
             var index = shelfIndex * 5;
             var shelf = document.createElement('section');
@@ -454,30 +426,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var shelfItems = document.createElement('div');
             shelfItems.className = 'owner-locker__shelf-items';
 
-            displayItems.slice(index, index + 5).forEach(function (itemData) {
-                if (itemData.kind === 'decoration') {
-                    var decoration = itemData.decoration;
-                    var knickknack = document.createElement('div');
-                    knickknack.className = 'locker-knickknack locker-knickknack--' + decoration.type;
-                    knickknack.title = decoration.label;
-                    knickknack.setAttribute('aria-label', decoration.label);
-                    if (decoration.asset) {
-                        var decorationImage = document.createElement('img');
-                        decorationImage.src = decoration.asset;
-                        decorationImage.alt = '';
-                        decorationImage.loading = 'lazy';
-                        decorationImage.decoding = 'async';
-                        knickknack.appendChild(decorationImage);
-                    } else {
-                        var decorationIcon = document.createElement('span');
-                        decorationIcon.textContent = decoration.icon;
-                        decorationIcon.setAttribute('aria-hidden', 'true');
-                        knickknack.appendChild(decorationIcon);
-                    }
-                    shelfItems.appendChild(knickknack);
-                    return;
-                }
-                var award = itemData.award;
+            awards.slice(index, index + 5).forEach(function (award) {
                 var profile = lockerItemProfile(award.bowl, award.round);
                 if (!profile) return;
                 var item = document.createElement('button');
