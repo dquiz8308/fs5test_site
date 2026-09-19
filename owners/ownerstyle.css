@@ -3555,6 +3555,20 @@ body.owners-dark main .achievement-crest__state,
 body.owners-dark .achievement-history-modal .achievement-history__eyebrow,
 body.owners-dark .locker-item-modal .locker-item-detail__eyebrow { color:#f5d885 !important; }
 
+/* Keep the crest tier guide legible inside the dark achievement-history modal. */
+body.owners-dark .achievement-history__legend,
+body.owners-dark .achievement-history__selected-tiers { color:#e8f3f7; }
+body.owners-dark .achievement-history__tier {
+    border-color:#3c6172;
+    background:#152f3e;
+    color:#e8f3f7;
+}
+body.owners-dark .achievement-history__tier small { color:#c5dce6 !important; }
+body.owners-dark .achievement-history__tier--bronze { border-color:#9f704e; background:#3a2a22; color:#ffd5b5; }
+body.owners-dark .achievement-history__tier--silver { border-color:#7d9aa8; background:#253943; color:#e5f0f4; }
+body.owners-dark .achievement-history__tier--gold { border-color:#b69136; background:#3a321b; color:#ffe39a; }
+body.owners-dark .achievement-history__tier--legacy { border-color:#4c86ac; background:#1d3548; color:#bde8ff; }
+
 /* The record panel and native selects have more-specific light-theme rules. */
 body.owners-dark .owner-profile-layout #owner-dropdown,
 body.owners-dark .team-game-records #game-record-dropdown {
