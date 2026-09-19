@@ -3616,4 +3616,108 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .locker-object img { transform:translateY(2px); filter:drop-shadow(0 6px 4px rgba(0,0,0,.76)); }
 }
 
+/* Wide rendered locker stage: the HTML awards align to each real shelf surface. */
+.owner-locker__cabinet {
+    width:min(100%, 1180px);
+    min-height:0;
+    aspect-ratio:3 / 2;
+    margin:0 auto;
+    padding:0;
+    overflow:hidden;
+    background:#09131b url('artwork/locker/fs5-3d-locker-wide-template.png') center/100% 100% no-repeat;
+}
+.owner-locker__locker-header {
+    position:absolute;
+    z-index:3;
+    top:2.3%;
+    right:14.5%;
+    left:14.5%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:8.7%;
+    padding:0 8%;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+}
+.owner-locker__locker-header strong {
+    overflow:hidden;
+    color:#f4d08a;
+    font:1000 clamp(.58rem, 1.2vw, .95rem)/1 Arial,sans-serif;
+    letter-spacing:.19em;
+    text-align:center;
+    text-overflow:ellipsis;
+    text-shadow:0 2px 3px rgba(0,0,0,.9);
+    white-space:nowrap;
+}
+.owner-locker__locker-header span,
+.owner-locker__locker-header i { display:none; }
+.owner-locker__shelves {
+    position:absolute;
+    z-index:2;
+    top:15%;
+    right:13.2%;
+    bottom:27%;
+    left:13.2%;
+    display:grid;
+    min-height:0;
+    gap:0;
+    grid-template-rows:11.95fr 15.23fr 15.52fr 15.25fr;
+}
+.owner-locker__shelf {
+    min-height:0;
+    padding:0 2%;
+    overflow:visible;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+}
+.owner-locker__shelf-items {
+    height:100%;
+    min-height:0;
+    padding:0;
+    align-items:end;
+    background:transparent;
+    box-shadow:none;
+}
+.locker-collectible {
+    display:flex;
+    height:100%;
+    min-height:0;
+    align-items:flex-end;
+    justify-content:center;
+    padding:0;
+    filter:drop-shadow(0 8px 5px rgba(0,0,0,.72));
+}
+.locker-collectible__object,
+.locker-object {
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    height:126px;
+}
+.locker-object img {
+    width:126px;
+    height:126px;
+    transform:none;
+    filter:drop-shadow(0 8px 5px rgba(0,0,0,.72));
+}
+.locker-collectible:hover,
+.locker-collectible:focus-visible { transform:translateY(-6px) scale(1.035); }
+
+@media (max-width:765px) {
+    .owner-locker__cabinet { width:100%; min-height:0; }
+    .owner-locker__locker-header { padding:0 7%; }
+    .owner-locker__locker-header strong { font-size:clamp(.45rem, 2.5vw, .7rem); letter-spacing:.12em; }
+    .owner-locker__shelves { top:15%; right:13.2%; bottom:27%; left:13.2%; }
+    .owner-locker__shelf { padding:0 1%; }
+    .owner-locker__shelf-items { height:100%; min-height:0; gap:1px; }
+    .locker-collectible__object,
+    .locker-object { height:clamp(48px, 16vw, 86px); }
+    .locker-object img { width:clamp(48px, 16vw, 86px); height:clamp(48px, 16vw, 86px); transform:none; }
+}
+
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
