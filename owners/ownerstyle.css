@@ -3652,20 +3652,6 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     text-shadow:0 2px 3px rgba(0,0,0,.9);
     white-space:nowrap;
 }
-.owner-locker__brand {
-    position:absolute;
-    top:16%;
-    right:1.4%;
-    z-index:1;
-    display:block;
-    width:clamp(36px, 4.8vw, 62px);
-    height:auto;
-    padding:3px;
-    box-sizing:border-box;
-    border-radius:2px;
-    background:#0c1a28;
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
-}
 .owner-locker__locker-header span,
 .owner-locker__locker-header i { display:none; }
 .owner-locker__shelves {
@@ -3716,7 +3702,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 .locker-object img {
     width:126px;
     height:126px;
-    transform:translateY(8px);
+    transform:translateY(3px);
     filter:drop-shadow(0 3px 2px rgba(0,0,0,.8));
 }
 .locker-collectible:hover,
@@ -3726,13 +3712,12 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .owner-locker__cabinet { width:100%; min-height:0; }
     .owner-locker__locker-header { padding:0 7%; }
     .owner-locker__locker-header strong { font-size:clamp(.72rem, 4.4vw, 1.05rem); letter-spacing:.1em; }
-    .owner-locker__brand { width:clamp(30px, 11vw, 45px); padding:2px; }
     .owner-locker__shelves { top:15%; right:13.2%; bottom:27%; left:13.2%; }
     .owner-locker__shelf { padding:0 1%; }
     .owner-locker__shelf-items { height:100%; min-height:0; gap:1px; }
     .locker-collectible__object,
     .locker-object { height:clamp(48px, 16vw, 86px); }
-    .locker-object img { width:clamp(48px, 16vw, 86px); height:clamp(48px, 16vw, 86px); transform:translateY(5px); }
+    .locker-object img { width:clamp(48px, 16vw, 86px); height:clamp(48px, 16vw, 86px); transform:translateY(2px); }
 }
 
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
