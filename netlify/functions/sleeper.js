@@ -5,6 +5,7 @@
 let playerCatalogCache = null;
 let playerCatalogFetchedAt = 0;
 const PLAYER_CATALOG_CACHE_MS = 24 * 60 * 60 * 1000;
+const LIVE_PLAYER_STATUS_CACHE_MS = 5 * 60 * 1000;
 const PLAYER_SEASON_STATS_CACHE_MS = 60 * 1000;
 const STANDINGS_TIMELINE_CACHE_MS = 5 * 60 * 1000;
 const playerSeasonStatsCache = new Map();
@@ -27,7 +28,7 @@ exports.handler = async function (event) {
   }
 
   if (source === 'players') {
-    return getRequestedPlayers(qs.ids || '');
+    return getRequestedPlayers(qs.ids || '', qs.fresh === '1');
   }
 
   if (source === 'season-stats') {
@@ -168,7 +169,7 @@ async function getStandingsTimeline(leagueId) {
   } catch (error) { return json(502, { error: error && error.message ? error.message : 'Standings timeline is unavailable.' }); }
 }
 
-async function getRequestedPlayers(idsParam) {
+async function getRequestedPlayers(idsParam, freshStatuses) {
   const ids = Array.from(new Set(String(idsParam || '')
     .split(',')
     .map(id => id.trim())
@@ -178,7 +179,11 @@ async function getRequestedPlayers(idsParam) {
   if (!ids.length) return json(400, { error: 'At least one valid player ID is required.' });
 
   let catalog = playerCatalogCache;
-  if (!catalog || Date.now() - playerCatalogFetchedAt > PLAYER_CATALOG_CACHE_MS) {
+  // The full catalog is large, so historical lineup lookups retain the daily
+  // cache. The live page explicitly opts into a five-minute refresh for
+  // gameday availability fields such as inactive and questionable status.
+  const catalogMaxAge = freshStatuses ? LIVE_PLAYER_STATUS_CACHE_MS : PLAYER_CATALOG_CACHE_MS;
+  if (!catalog || Date.now() - playerCatalogFetchedAt > catalogMaxAge) {
     let lastError = 'Unable to load the Sleeper player catalog.';
     for (const host of ['https://api.sleeper.app', 'https://api.sleeper.com']) {
       try {
@@ -214,7 +219,7 @@ async function getRequestedPlayers(idsParam) {
     statusCode: 200,
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'public, max-age=86400'
+      'Cache-Control': freshStatuses ? 'public, max-age=300' : 'public, max-age=86400'
     },
     body: JSON.stringify(players)
   };

@@ -8,6 +8,7 @@
     var REFRESH_MS = 5000;
     var IDLE_REFRESH_MS = 30000;
     var PLAYER_CACHE_MS = 24 * 60 * 60 * 1000;
+    var LIVE_PLAYER_STATUS_CACHE_MS = 5 * 60 * 1000;
     var PROJECTION_CACHE_MS = 5 * 60 * 1000;
     var NOTIFICATION_PREFERENCE_KEY = "fs5_live_notifications_enabled";
     var HISTORICAL_OWNER_IDS = { bailey: 6, brycen: 1, chris: 5, cody: 11, david: 3, ethan: 9, jordan: 4, keith: 8, matthew: 10, max: 12, mike: 7, will: 2 };
@@ -330,6 +331,57 @@
 
     function playerMeta(id) { return state.players[String(id)] || {}; }
 
+    function playerPracticeStatus(player) {
+        var value = player && (player.practice_participation || player.practiceParticipation || player.practice_status || player.practiceStatus);
+        return String(value || '').trim();
+    }
+
+    function weekHasPublishedGames() {
+        var selectedWeek = Number(state.selectedWeek);
+        var games = (Array.isArray(state.nflGames) && state.nflGames.length) ? state.nflGames : state.schedule;
+        return Array.isArray(games) && games.some(function (game) {
+            var gameWeek = Number(game && game.week);
+            return !Number.isFinite(gameWeek) || gameWeek === selectedWeek;
+        });
+    }
+
+    function playerAvailability(id) {
+        var player = playerMeta(id) || {};
+        // Sleeper's player availability is current data. Never project it back
+        // onto a completed historical week, where it would be misleading.
+        if (Number(state.selectedWeek) < Number(state.currentWeek)) return null;
+        var rosterStatus = String(player.status || '').toLowerCase();
+        var injuryStatus = String(player.injury_status || player.injuryStatus || '').toLowerCase();
+        var practice = playerPracticeStatus(player);
+        var team = String(player.team || '').toUpperCase();
+        var unavailableTitle = [player.status, player.injury_status || player.injuryStatus, player.injury_body_part || player.injuryBodyPart].filter(Boolean).join(' · ');
+
+        if (player.active === false || /(?:^|\s)inactive(?:\s|$)/.test(rosterStatus)) {
+            return { label: 'INACTIVE', kind: 'inactive', title: unavailableTitle || 'Not active for this NFL game' };
+        }
+        if (/suspend/.test(rosterStatus)) return { label: 'SUSP.', kind: 'out', title: unavailableTitle || 'Suspended' };
+        if (/(injured reserve|\bir\b|physically unable|\bpup\b|non-football injury|\bnfi\b)/.test(rosterStatus) || injuryStatus === 'out') {
+            return { label: 'OUT', kind: 'out', title: unavailableTitle || 'Unavailable' };
+        }
+        if (injuryStatus === 'doubtful') return { label: 'DOUBTFUL', kind: 'doubtful', title: unavailableTitle || 'Doubtful' };
+        if (injuryStatus === 'questionable') return { label: 'GTD', kind: 'gtd', title: unavailableTitle || 'Game-time decision' };
+
+        if (team && team !== 'FA' && weekHasPublishedGames() && !scheduleGameForTeam(team, state.selectedWeek)) {
+            return { label: 'BYE', kind: 'bye', title: 'No NFL game this week' };
+        }
+
+        var practiceCode = practice.toUpperCase();
+        if (/^(DNP|DID NOT PRACTICE)$/.test(practiceCode)) return { label: 'DNP', kind: 'practice', title: 'Did not practice' };
+        if (/^(LP|LIMITED|LIMITED PARTICIPATION)$/.test(practiceCode)) return { label: 'LIMITED', kind: 'practice', title: 'Limited practice participation' };
+        return null;
+    }
+
+    function playerAvailabilityBadge(id, detail) {
+        var availability = playerAvailability(id);
+        if (!availability) return '';
+        return '<span class="player-status-badge player-status-badge--' + availability.kind + (detail ? ' player-status-badge--detail' : '') + '" title="' + esc(availability.title) + '">' + esc(availability.label) + '</span>';
+    }
+
     function directFantasyPoints(stats, scoring) {
         if (!stats || !scoring) return null;
         var total = 0;
@@ -536,12 +588,13 @@
         var injury = p.injury_status ? " · " + p.injury_status : "";
         var points = getPlayerPoints(id);
         var projection = getProjection(id);
+        var availabilityMarkup = playerAvailabilityBadge(id, false);
         var row = document.createElement("button");
         row.type = "button";
         row.className = "player-row" + (showGameData ? " player-row--game-data" : "");
         var gameInfo = showGameData ? playerGameInfo(id) : null;
         var gameMarkup = gameInfo ? '<span class="player-game-info player-game-info--' + gameInfo.stateClass + '"><b>' + esc(gameInfo.stateText) + '</b><span>' + esc(gameInfo.scoreText || '') + '</span></span>' : '';
-        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam + injury) + '</small>' + gameMarkup + '</span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
+        row.innerHTML = '<img src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><span class="player-main"><strong>' + esc(playerName(id)) + ' ' + playerTrendBadge(id) + '</strong><small>' + esc(pos + " · " + nflTeam) + availabilityMarkup + esc(injury) + '</small>' + gameMarkup + '</span><span class="player-points"><b>' + formatScore(points) + '</b><small>Proj. ' + formatScore(projection) + '</small></span>';
         row.addEventListener("click", function () { openPlayerModal(id); });
         row.setAttribute("aria-label", "View " + playerName(id));
         return row;
@@ -2267,10 +2320,11 @@
         var detail = document.createElement('div'); detail.className = 'player-detail';
         var pGame = playerGameInfo(id);
         var pGameMarkup = pGame ? '<div class="player-detail__game player-detail__game--' + pGame.stateClass + '"><b>' + esc(pGame.stateText) + '</b><span>' + esc(pGame.scoreText || '') + '</span></div>' : '';
-        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span></div>' + pGameMarkup + '</div>';
+        var practice = Number(state.selectedWeek) >= Number(state.currentWeek) ? playerPracticeStatus(p) : '';
+        detail.innerHTML = '<img class="player-detail__image" src="' + playerImageUrl(id) + '" alt="" onerror="this.onerror=null;this.src=\'/artwork/logo.png\';"><div><h2>' + esc(playerName(id)) + '</h2><p class="player-detail__team">' + esc((p.position || '--') + ' · ' + (p.team || 'FA') + (p.injury_status ? ' · ' + p.injury_status : '')) + '</p><div class="player-detail__chips"><span>Current ' + formatScore(getPlayerPoints(id)) + '</span><span>Weekly projection ' + formatScore(getProjection(id)) + '</span>' + playerAvailabilityBadge(id, true) + '</div>' + pGameMarkup + '</div>';
         body.appendChild(detail);
         var meta = document.createElement('dl'); meta.className = 'player-meta';
-        meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>';
+        meta.innerHTML = '<div><dt>Age</dt><dd>' + esc(p.age || '--') + '</dd></div><div><dt>Experience</dt><dd>' + esc(p.years_exp != null ? p.years_exp + ' yrs' : '--') + '</dd></div><div><dt>College</dt><dd>' + esc(p.college || '--') + '</dd></div><div><dt>Jersey</dt><dd>' + esc(p.number || '--') + '</dd></div><div><dt>Status</dt><dd>' + esc(p.status || '--') + '</dd></div><div><dt>Depth Chart</dt><dd>' + esc(p.depth_chart_position || '--') + '</dd></div>' + (practice ? '<div><dt>Practice</dt><dd>' + esc(practice) + '</dd></div>' : '');
         body.appendChild(meta);
         body.appendChild(loadPlayerNews(id));
         body.appendChild(loadPlayerSeasonStats(id));
@@ -2293,15 +2347,17 @@
         // Cache only the players needed for this week's matchups. This avoids
         // downloading Sleeper's very large full NFL player catalog to the browser.
         var cacheKey = "fs5_sleeper_players_" + list.slice().sort().join(",");
+        var cacheMaxAge = state.selectedWeek === state.currentWeek ? LIVE_PLAYER_STATUS_CACHE_MS : PLAYER_CACHE_MS;
         try {
             var cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-            if (cached && cached.saved && Date.now() - cached.saved < PLAYER_CACHE_MS && cached.players) {
+            if (cached && cached.saved && Date.now() - cached.saved < cacheMaxAge && cached.players) {
                 state.players = cached.players;
                 return Promise.resolve(true);
             }
         } catch (e) {}
 
-        return fetch("/.netlify/functions/sleeper?source=players&ids=" + encodeURIComponent(list.join(",")), {
+        var freshStatuses = state.selectedWeek === state.currentWeek;
+        return fetch("/.netlify/functions/sleeper?source=players&fresh=" + (freshStatuses ? "1" : "0") + "&ids=" + encodeURIComponent(list.join(",")), {
             cache: "no-store",
             headers: { "Accept": "application/json" }
         }).then(function (response) {
@@ -2370,6 +2426,7 @@
             renderMatchups(state.matchups, week);
             state.matchups.forEach(function (m) { if (m && m.roster_id != null) state.previousScores[String(m.roster_id)] = Number(m.points || 0); });
             saveReactionSnapshot();
+            refreshOpenPlayerModal();
         });
     }
 
@@ -2389,6 +2446,13 @@
             var chips = detail.querySelector(".player-detail__chips");
             if (chips) chips.insertAdjacentElement("afterend", game);
             else detail.appendChild(game);
+        }
+        var chips = detail.querySelector('.player-detail__chips');
+        if (chips) {
+            var oldAvailability = chips.querySelector('.player-status-badge--detail');
+            if (oldAvailability) oldAvailability.remove();
+            var availabilityMarkup = playerAvailabilityBadge(state.openPlayerId, true);
+            if (availabilityMarkup) chips.insertAdjacentHTML('beforeend', availabilityMarkup);
         }
     }
 

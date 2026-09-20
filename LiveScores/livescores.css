@@ -293,6 +293,18 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .player-game-info--live b{color:#6ed6a0}
 .fs5-live-dark .player-game-info--final b{color:#9aabb6}
 .fs5-live-dark .player-game-info--upcoming b{color:#70bdf0}
+.player-status-badge{display:inline-flex;align-items:center;margin-left:5px;padding:1px 4px;border:1px solid transparent;border-radius:999px;font-size:.50rem;font-weight:900;letter-spacing:.045em;line-height:1.25;vertical-align:middle;white-space:nowrap}
+.player-status-badge--inactive,.player-status-badge--out{border-color:#df8b8b;background:#fff0f0;color:#a12727}
+.player-status-badge--gtd{border-color:#d5aa3a;background:#fff7db;color:#805b00}
+.player-status-badge--doubtful{border-color:#d5a06b;background:#fff1e2;color:#985819}
+.player-status-badge--bye{border-color:#98afbd;background:#eef4f7;color:#486372}
+.player-status-badge--practice{border-color:#9678bb;background:#f4effb;color:#65458e}
+.player-detail__chips .player-status-badge{padding:5px 8px;border-radius:999px;font-size:.64rem;line-height:1.2}
+.fs5-live-dark .player-status-badge--inactive,.fs5-live-dark .player-status-badge--out{border-color:#a75058;background:#44252d;color:#ffb8bd}
+.fs5-live-dark .player-status-badge--gtd{border-color:#b88d32;background:#453818;color:#ffe197}
+.fs5-live-dark .player-status-badge--doubtful{border-color:#ad7950;background:#47301d;color:#ffd0a5}
+.fs5-live-dark .player-status-badge--bye{border-color:#577a8f;background:#1d3544;color:#c7e0ee}
+.fs5-live-dark .player-status-badge--practice{border-color:#8665a9;background:#322443;color:#e1c6ff}
 @media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}}
 /* Dark mode: keep the tiny available-playing-time percentage readable. */
 .fs5-live-dark .playing-time-label strong{color:#f0f6f9!important;opacity:1}
