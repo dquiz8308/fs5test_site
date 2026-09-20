@@ -3607,6 +3607,16 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table tbody tr:nth-child(even) { background:#162f3b !important; }
 body.owners-dark .row3 > .game-records-container.team-game-records .game-records-table tbody tr:hover { background:#214657 !important; }
 
+/* On phones the season year is a badge. Keep its surface dark so the global
+   dark-theme light ink remains readable instead of landing on the light badge. */
+@media only screen and (max-width:765px) {
+    body.owners-dark .season-history__year {
+        border:1px solid #426273;
+        background:#1d3a4a;
+        color:#f1f8fb !important;
+    }
+}
+
 /* The rendered FS5 locker is the physical stage; earned objects remain interactive above it. */
 .owner-locker__cabinet {
     width:min(100%, 690px);
