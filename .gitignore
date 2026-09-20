@@ -7,3 +7,10 @@
 # Windows/macOS system files
 Thumbs.db
 .DS_Store
+
+# Local package caches and secrets
+node_modules/
+.pnpm-store/
+.env
+.env.*
+!.env.example

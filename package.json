@@ -1,0 +1,10 @@
+{
+  "name": "fs5-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "FastStrongFive website Netlify functions",
+  "type": "commonjs",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.0"
+  }
+}
