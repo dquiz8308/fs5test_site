@@ -305,6 +305,27 @@ body.modal-open{overflow:hidden}
 .fs5-live-dark .player-status-badge--doubtful{border-color:#ad7950;background:#47301d;color:#ffd0a5}
 .fs5-live-dark .player-status-badge--bye{border-color:#577a8f;background:#1d3544;color:#c7e0ee}
 .fs5-live-dark .player-status-badge--practice{border-color:#8665a9;background:#322443;color:#e1c6ff}
+
+/* Live Prediction Model: the marker may overhang the track, while the lane
+   beneath it clips every animated effect to its rounded edges. */
+.prob-track,.modal-prob-track{isolation:isolate;overflow:visible;background:transparent!important;box-shadow:0 5px 12px rgba(8,39,65,.14)}
+.prob-lane,.modal-prob-lane{position:absolute;inset:0;overflow:hidden;border:1px solid rgba(5,39,70,.13);border-radius:999px;background:linear-gradient(90deg,#df4a4a 0%,#d9333b 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.28),inset 0 -2px 3px rgba(92,12,19,.16)}
+.prob-lane::after,.modal-prob-lane::after{position:absolute;inset:2px;z-index:3;content:"";border-radius:inherit;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),rgba(255,255,255,.14) calc(10% - 1px),rgba(255,255,255,.14) 10%);pointer-events:none}
+.prob-track::before,.modal-prob-track::before{position:absolute;z-index:4;top:2px;bottom:2px;left:50%;width:1px;content:"";background:rgba(255,255,255,.72);box-shadow:0 0 5px rgba(255,255,255,.5);pointer-events:none}
+.prob-fill,.modal-prob-fill{position:relative;z-index:2;height:100%;border-radius:inherit;background:linear-gradient(90deg,#0b4f8c 0%,#1976d2 62%,#55b8ef 100%)!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.32),inset 0 -2px 3px rgba(0,37,79,.2)}
+.prob-fill::after,.modal-prob-fill::after{position:absolute;inset:1px 0 auto;width:100%;height:38%;content:"";border-radius:inherit;background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 72%);pointer-events:none}
+.prob-pulse,.modal-prob-pulse{top:0;left:-32%;z-index:3;width:32%;height:100%;border-radius:inherit;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08) 12%,rgba(255,255,255,.85) 50%,rgba(255,255,255,.08) 88%,transparent);filter:blur(.4px);will-change:transform,opacity}
+.prob-track--live .prob-pulse,.modal-prob-track--live .modal-prob-pulse{display:block;animation:fs5-probability-sweep-right 2.7s cubic-bezier(.32,.04,.2,1) infinite}
+.prob-track--live.prob-track--a-favored .prob-pulse,.modal-prob-track--live.modal-prob-track--a-favored .modal-prob-pulse{animation-name:fs5-probability-sweep-right}
+.prob-track--live.prob-track--b-favored .prob-pulse,.modal-prob-track--live.modal-prob-track--b-favored .modal-prob-pulse{animation-name:fs5-probability-sweep-left}
+.prob-thumb,.modal-prob-thumb{z-index:5;border-color:#f6fcff;background:conic-gradient(from 90deg,#df3c42 0 50%,#166fc5 50% 100%);box-shadow:0 0 0 2px rgba(7,38,66,.28),0 4px 12px rgba(5,28,49,.38)}
+.prob-badge,.modal-prob-badge{z-index:6;border-color:#f6fcff;background:linear-gradient(145deg,#113f65,#061f36);box-shadow:0 2px 0 rgba(255,255,255,.35) inset,0 3px 10px rgba(0,0,0,.35)}
+.modal-prob-track{box-shadow:0 6px 16px rgba(8,39,65,.18)}
+.fs5-live-dark .prob-lane,.fs5-live-dark .modal-prob-lane{border-color:rgba(156,213,244,.22);box-shadow:inset 0 1px 1px rgba(255,255,255,.15),inset 0 -2px 3px rgba(0,0,0,.22)}
+.fs5-live-dark .prob-track::before,.fs5-live-dark .modal-prob-track::before{background:rgba(229,246,255,.72)}
+@keyframes fs5-probability-sweep-right{0%{transform:translateX(0);opacity:0}16%{opacity:.2}42%{opacity:.95}78%{opacity:.28}100%{transform:translateX(415%);opacity:0}}
+@keyframes fs5-probability-sweep-left{0%{transform:translateX(415%);opacity:0}16%{opacity:.2}42%{opacity:.95}78%{opacity:.28}100%{transform:translateX(0);opacity:0}}
+@media(prefers-reduced-motion:reduce){.prob-track--live .prob-pulse,.modal-prob-track--live .modal-prob-pulse{animation:none;transform:translateX(190%);opacity:.38}}
 @media(max-width:520px){.player-game-info{font-size:.56rem}.player-game-info b{font-size:.53rem}}
 /* Dark mode: keep the tiny available-playing-time percentage readable. */
 .fs5-live-dark .playing-time-label strong{color:#f0f6f9!important;opacity:1}
