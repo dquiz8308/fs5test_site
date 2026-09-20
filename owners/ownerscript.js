@@ -43,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var seasonHistoryExpanded = false;
     var lockerRenderToken = 0;
     var OWNERS_THEME_KEY = 'fs5_owners_theme';
+    // Keep in-progress presentation features out of the public owner page without
+    // removing their data, markup, or rendering code. Switch to true when ready.
+    var OWNER_COLLECTIONS_VISIBLE = false;
 
     var scoreRecordCategories = [
         'high-scores',
@@ -171,13 +174,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
             currentOwnerData = data;
             renderOwnerPage(data);
-            Promise.all([loadCareerTouchdownTotals(), loadLastPlaceGameLossTotals()]).then(function (totals) {
-                if (requestId !== requestSequence || currentOwnerData !== data) return;
-                var ownerKey = ownerMetricKey(data.owner && data.owner.owner_name);
-                renderOwnerAchievements(data, totals[0][ownerKey], totals[1][ownerKey]);
-            }).catch(function (error) {
-                console.warn('Owner achievement totals could not be loaded.', error);
-            });
+            if (OWNER_COLLECTIONS_VISIBLE) {
+                Promise.all([loadCareerTouchdownTotals(), loadLastPlaceGameLossTotals()]).then(function (totals) {
+                    if (requestId !== requestSequence || currentOwnerData !== data) return;
+                    var ownerKey = ownerMetricKey(data.owner && data.owner.owner_name);
+                    renderOwnerAchievements(data, totals[0][ownerKey], totals[1][ownerKey]);
+                }).catch(function (error) {
+                    console.warn('Owner achievement totals could not be loaded.', error);
+                });
+            }
             hideStatus();
         } catch (error) {
             if (requestId !== requestSequence) {
@@ -264,13 +269,13 @@ document.addEventListener('DOMContentLoaded', function() {
         renderOverall(data.overall);
         renderSeasonSummary(data.season_summary);
         renderStreaks(data.streaks);
-        renderOwnerAchievements(data);
+        if (OWNER_COLLECTIONS_VISIBLE) renderOwnerAchievements(data);
         renderPoints(data.points);
         renderPostseason(data.postseason);
         renderAllYears(data.seasons);
         renderSelectedRecordList();
         renderH2H(data.h2h);
-        scheduleOwnerLocker(data.owner);
+        if (OWNER_COLLECTIONS_VISIBLE) scheduleOwnerLocker(data.owner);
     }
 
     function achievementTrophy(tier, type) {
@@ -285,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderOwnerAchievements(data, totalTouchdowns, lastPlaceGameLosses) {
-        if (!achievementCase || !achievementGrid || !achievementCount) return;
+        if (!OWNER_COLLECTIONS_VISIBLE || !achievementCase || !achievementGrid || !achievementCount) return;
         var overall = data.overall || {};
         var summary = data.season_summary || {};
         var streaks = data.streaks || {};
@@ -406,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderOwnerLocker(owner) {
-        if (!ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
+        if (!OWNER_COLLECTIONS_VISIBLE || !ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
         var ownerName = owner && owner.owner_name;
         var awards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
             .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName) && award.bowl !== 'First Round'; });
@@ -463,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function scheduleOwnerLocker(owner) {
+        if (!OWNER_COLLECTIONS_VISIBLE) return;
         var renderToken = ++lockerRenderToken;
         var renderWhenIdle = function () {
             if (renderToken !== lockerRenderToken) return;
