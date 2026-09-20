@@ -734,7 +734,7 @@
         var trackClass = "prob-track prob-track--" + favoredSide + "-favored" + (hasLiveGame ? " prob-track--live" : "");
         var section = document.createElement("div");
         section.className = "predictor";
-        section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div><span class="predictor-note">Live projection: ' + formatScore(pred.meanA) + ' – ' + formatScore(pred.meanB) + '</span></div>' +
+        section.innerHTML = '<div class="predictor-head"><div><strong>Live Predictor</strong><span class="model-tag">FS5 model · current score + projected remaining production</span></div></div>' +
             '<div class="prob-wrap"><div class="prob-labels"><b>' + esc(aInfo ? aInfo.teamName : "Team A") + ' ' + pred.a.toFixed(0) + '%</b><span>WIN PROBABILITY</span><b>' + pred.b.toFixed(0) + '% ' + esc(bInfo ? bInfo.teamName : "Team B") + '</b></div><div class="' + trackClass + '"><div class="prob-lane" aria-hidden="true"><div class="prob-fill" style="width:' + pred.a.toFixed(2) + '%"></div><span class="prob-pulse"></span></div><div class="prob-thumb" style="left:' + pred.a.toFixed(2) + '%"><span class="prob-badge">' + Math.max(pred.a, pred.b).toFixed(0) + '%</span></div></div><div class="prob-sub">Remaining projection: ' + formatScore(pred.remainingA) + ' vs ' + formatScore(pred.remainingB) + '</div></div>';
         card.appendChild(section);
     }
@@ -1810,10 +1810,15 @@
         card.appendChild(strip);
     }
 
-    function renderScoreBox(matchup, week) {
+    function renderScoreBox(matchup, week, showProjection) {
         var box = document.createElement("div");
         box.className = "score-box";
         box.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
+        if (showProjection) {
+            var rosterInfo = state.rosterMap.get(String(matchup.roster_id));
+            var projectedTotal = Number(matchup.points || 0) + projectedRemaining(rosterInfo && rosterInfo.roster);
+            box.insertAdjacentHTML('beforeend', '<small class="score-projection">Live proj. ' + formatScore(projectedTotal) + '</small>');
+        }
         var previous = state.previousScores[String(matchup.roster_id)];
         var delta = Number(matchup.points || 0) - Number(previous == null ? matchup.points || 0 : previous);
         if (Math.abs(delta) >= 0.5) {
@@ -2074,7 +2079,7 @@
                 var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
                 appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
                 identity.appendChild(img); identity.appendChild(text);
-                var scoreBox = renderScoreBox(matchup, week);
+                var scoreBox = renderScoreBox(matchup, week, !isFinalMatchup);
                 team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
@@ -2091,7 +2096,6 @@
                 if (oddsReason) { var reason = document.createElement("div"); reason.className = "odds-change-reason"; reason.textContent = oddsReason; card.appendChild(reason); }
                 if (matchupHasMondayTakeover(teams)) { var monday = document.createElement("div"); monday.className = "monday-takeover"; monday.innerHTML = "<span>🌙</span><div><strong>MONDAY NIGHT TAKEOVER</strong><small>The final chapter of this matchup is waiting for Monday Night Football.</small></div></div>"; card.appendChild(monday); }
                 appendMatchupSuperlatives(card, teams);
-                appendPointsBank(card, teams);
                 var trash = document.createElement("div"); trash.className="trash-talk"; trash.innerHTML=trashTalk(teams[0],teams[1]); card.appendChild(trash); applyTrashTalkExpiry(trash);
             }
             var alert = matchupAlert(teams[0], teams[1]);
