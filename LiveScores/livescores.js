@@ -1995,6 +1995,23 @@
         card.querySelector(".matchup-card__head").appendChild(badgeEl);
     }
 
+    function orderedMatchupEntries(groups, week) {
+        return Array.from(groups.entries()).sort(function (first, second) {
+            var firstMarket = isGotwMatchup(first[1].slice(0, 2), week);
+            var secondMarket = isGotwMatchup(second[1].slice(0, 2), week);
+            var firstNumber = Number(firstMarket && firstMarket.gotwNumber);
+            var secondNumber = Number(secondMarket && secondMarket.gotwNumber);
+            var firstPriority = firstMarket ? (Number.isFinite(firstNumber) ? firstNumber : 0) : Infinity;
+            var secondPriority = secondMarket ? (Number.isFinite(secondNumber) ? secondNumber : 0) : Infinity;
+
+            // The SportsBook's explicitly designated one or two Game of the
+            // Week markets lead the grid. Every other matchup remains in its
+            // established Sleeper matchup-ID order.
+            if (firstPriority !== secondPriority) return firstPriority - secondPriority;
+            return Number(first[0]) - Number(second[0]);
+        });
+    }
+
     function renderMatchups(matchups, week) {
         grid.replaceChildren();
         renderLiveGuide();
@@ -2020,7 +2037,7 @@
             grid.hidden = true; empty.hidden = false; empty.textContent = "No matchup data is available for this week."; return;
         }
         grid.hidden = false; empty.hidden = true;
-        Array.from(groups.entries()).sort(function (a, b) { return Number(a[0]) - Number(b[0]); }).forEach(function (entry) {
+        orderedMatchupEntries(groups, week).forEach(function (entry) {
             var teams = entry[1].slice(0, 2);
             if (teams.length < 2) return;
             var card = document.createElement("article");
