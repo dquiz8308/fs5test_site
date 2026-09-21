@@ -1,5 +1,14 @@
+[build]
+  command = "npm run build"
+  publish = "."
+
 [functions]
   directory = "netlify/functions"
 
 [functions."discord-live"]
   schedule = "* * * * *"
+
+[[headers]]
+  for = "/owners/locker-personal-items.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

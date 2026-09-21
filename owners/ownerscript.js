@@ -410,6 +410,18 @@ document.addEventListener('DOMContentLoaded', function() {
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
+    function personalLockerItemProfile(item) {
+        return {
+            label: item && item.label ? item.label : 'Personal Keepsake',
+            type: 'personal-item',
+            asset: item && item.asset ? item.asset : ''
+        };
+    }
+
+    function isPersonalLockerItem(item) {
+        return item && item.kind === 'personal-item';
+    }
+
     function isFeatureLockerAward(award) {
         var displaySlot = String(award && (award.display_slot || award.displaySlot || award.presentation) || '').toLowerCase();
         return displaySlot === 'feature' || displaySlot === 'large' || displaySlot === 'hanging';
@@ -421,7 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
         item.type = 'button';
         item.setAttribute('aria-haspopup', 'dialog');
         item.setAttribute('aria-controls', 'locker-item-modal');
-        item.setAttribute('aria-label', profile.label + ', won in ' + award.season + '. Open game details.');
+        item.setAttribute('aria-label', isPersonalLockerItem(award)
+            ? profile.label + ', personal locker item. Open details.'
+            : profile.label + ', won in ' + award.season + '. Open game details.');
 
         var object = document.createElement('span');
         object.className = 'locker-collectible__object locker-object locker-object--' + profile.type;
@@ -451,7 +465,9 @@ document.addEventListener('DOMContentLoaded', function() {
         shelfItems.className = 'owner-locker__shelf-items';
 
         awards.forEach(function (award) {
-            var profile = lockerItemProfile(award.bowl, award.round);
+            var profile = isPersonalLockerItem(award)
+                ? personalLockerItemProfile(award)
+                : lockerItemProfile(award.bowl, award.round);
             if (profile) shelfItems.appendChild(createLockerCollectible(award, profile, isFeature));
         });
 
@@ -462,18 +478,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderOwnerLocker(owner) {
         if (!OWNER_COLLECTIONS_VISIBLE || !ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
         var ownerName = owner && owner.owner_name;
-        var awards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
+        var bowlAwards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
             .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName) && award.bowl !== 'First Round'; });
+        var personalItems = (window.FS5_LOCKER_PERSONAL_ITEMS && window.FS5_LOCKER_PERSONAL_ITEMS[ownerMetricKey(ownerName)]) || [];
+        var awards = bowlAwards.concat(personalItems.map(function (item) {
+            return {
+                kind: 'personal-item',
+                owner: ownerName,
+                label: item.label,
+                asset: item.asset
+            };
+        }));
 
         ownerLocker.hidden = false;
         ownerLockerShelves.textContent = '';
-        ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' keepsake' : ' keepsakes');
+        ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' item' : ' items');
         ownerLockerEmpty.hidden = awards.length > 0;
         if (ownerLockerNameplate) ownerLockerNameplate.textContent = ownerName ? String(ownerName).toUpperCase() : 'FS5 GAME DAY';
 
         var itemsPerShelf = 5;
-        var featureAwards = awards.filter(isFeatureLockerAward);
-        var standardAwards = awards.filter(function (award) { return !isFeatureLockerAward(award); });
+        var featureAwards = bowlAwards.filter(isFeatureLockerAward);
+        var standardAwards = bowlAwards.filter(function (award) { return !isFeatureLockerAward(award); }).concat(awards.filter(isPersonalLockerItem));
         // The top display bay has two hanger/oversize slots. Extra feature items
         // fall back to standard shelves so every earned keepsake remains visible.
         var featureSlots = featureAwards.slice(0, 2);
@@ -538,16 +563,18 @@ document.addEventListener('DOMContentLoaded', function() {
         copy.className = 'locker-item-detail__copy';
         var eyebrow = document.createElement('p');
         eyebrow.className = 'locker-item-detail__eyebrow';
-        eyebrow.textContent = award.season + ' · ' + award.round;
+        eyebrow.textContent = isPersonalLockerItem(award) ? 'PERSONAL LOCKER ITEM' : award.season + ' · ' + award.round;
         var title = document.createElement('h2');
         title.id = 'locker-item-modal-title';
         title.textContent = profile.label;
         var bowl = document.createElement('p');
         bowl.className = 'locker-item-detail__bowl';
-        bowl.textContent = award.bowl;
+        bowl.textContent = isPersonalLockerItem(award) ? 'Personal collection' : award.bowl;
         var result = document.createElement('p');
         result.className = 'locker-item-detail__result';
-        result.textContent = award.team + ' won ' + formatDecimal(award.score, 2) + '–' + formatDecimal(award.opponentScore, 2) + ' over ' + award.opponent + '.';
+        result.textContent = isPersonalLockerItem(award)
+            ? 'A personal keepsake displayed in this owner\'s locker.'
+            : award.team + ' won ' + formatDecimal(award.score, 2) + '–' + formatDecimal(award.opponentScore, 2) + ' over ' + award.opponent + '.';
         copy.append(eyebrow, title, bowl, result);
         item.appendChild(copy);
         lockerItemModalContent.appendChild(item);

@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "description": "FastStrongFive website Netlify functions",
   "type": "commonjs",
+  "scripts": {
+    "build": "node scripts/build-owner-locker-personal-items.js"
+  },
   "dependencies": {
     "@netlify/blobs": "^11.1.0"
   }
