@@ -3789,7 +3789,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     aspect-ratio:2 / 3;
     min-height:0;
     padding:0;
-    background:#281307 url('artwork/locker/wooden-shelf-locker-nameplate-template.png') center/100% 100% no-repeat;
+    background:#281307 url('artwork/locker/wooden-shelf-locker-feature-template.png') center/100% 100% no-repeat;
 }
 .owner-locker__locker-header {
     top:4.2%;
@@ -3812,7 +3812,12 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     left:6.2%;
     grid-template-rows:repeat(var(--owner-locker-shelf-count), minmax(0, 1fr));
 }
+.owner-locker[data-shelf-count="4"] .owner-locker__shelves { grid-template-rows:1.32fr repeat(3, 1fr); }
 .owner-locker__shelf::after { bottom:-14px; height:12px; }
+.owner-locker__shelf--feature .owner-locker__shelf-items { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10%; }
+.owner-locker__shelf--feature .locker-collectible__object,
+.owner-locker__shelf--feature .locker-object { height:clamp(126px, 22vw, 178px); }
+.owner-locker__shelf--feature .locker-object img { width:clamp(126px, 22vw, 178px); height:clamp(126px, 22vw, 178px); transform:translateY(7px); }
 
 /* More than four groups get a real vertically extended wooden cabinet rather
    than compressing the original artwork's shelf bays. */
@@ -3870,4 +3875,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .owner-locker.owner-locker--extended .owner-locker__shelves { height:calc(var(--owner-locker-shelf-count) * 124px); }
     .owner-locker.owner-locker--extended .owner-locker__shelf { padding:0 4px 13px; }
     .owner-locker.owner-locker--extended .owner-locker__shelf::after { bottom:-8px; height:7px; }
+    .owner-locker__shelf--feature .locker-collectible__object,
+    .owner-locker__shelf--feature .locker-object { height:clamp(72px, 25vw, 132px); }
+    .owner-locker__shelf--feature .locker-object img { width:clamp(72px, 25vw, 132px); height:clamp(72px, 25vw, 132px); }
 }

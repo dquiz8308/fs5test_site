@@ -410,6 +410,55 @@ document.addEventListener('DOMContentLoaded', function() {
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
+    function isFeatureLockerAward(award) {
+        var displaySlot = String(award && (award.display_slot || award.displaySlot || award.presentation) || '').toLowerCase();
+        return displaySlot === 'feature' || displaySlot === 'large' || displaySlot === 'hanging';
+    }
+
+    function createLockerCollectible(award, profile, isFeature) {
+        var item = document.createElement('button');
+        item.className = 'locker-collectible locker-collectible--' + profile.type + (isFeature ? ' locker-collectible--feature' : '');
+        item.type = 'button';
+        item.setAttribute('aria-haspopup', 'dialog');
+        item.setAttribute('aria-controls', 'locker-item-modal');
+        item.setAttribute('aria-label', profile.label + ', won in ' + award.season + '. Open game details.');
+
+        var object = document.createElement('span');
+        object.className = 'locker-collectible__object locker-object locker-object--' + profile.type;
+        object.setAttribute('aria-hidden', 'true');
+        if (profile.asset) {
+            var objectImage = document.createElement('img');
+            objectImage.src = profile.asset;
+            objectImage.alt = '';
+            objectImage.loading = 'lazy';
+            objectImage.decoding = 'async';
+            object.appendChild(objectImage);
+        } else {
+            object.appendChild(document.createElement('span'));
+        }
+        item.appendChild(object);
+        item.addEventListener('click', function () {
+            openLockerItemModal(award, profile);
+        });
+        return item;
+    }
+
+    function appendLockerShelf(shelves, awards, shelfIndex, isFeature) {
+        var shelf = document.createElement('section');
+        shelf.className = 'owner-locker__shelf' + (isFeature ? ' owner-locker__shelf--feature' : '');
+        shelf.setAttribute('aria-label', isFeature ? 'Featured locker display' : 'Locker shelf ' + shelfIndex);
+        var shelfItems = document.createElement('div');
+        shelfItems.className = 'owner-locker__shelf-items';
+
+        awards.forEach(function (award) {
+            var profile = lockerItemProfile(award.bowl, award.round);
+            if (profile) shelfItems.appendChild(createLockerCollectible(award, profile, isFeature));
+        });
+
+        shelf.appendChild(shelfItems);
+        shelves.appendChild(shelf);
+    }
+
     function renderOwnerLocker(owner) {
         if (!OWNER_COLLECTIONS_VISIBLE || !ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
         var ownerName = owner && owner.owner_name;
@@ -423,51 +472,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (ownerLockerNameplate) ownerLockerNameplate.textContent = ownerName ? String(ownerName).toUpperCase() : 'FS5 GAME DAY';
 
         var itemsPerShelf = 5;
-        var shelfCount = Math.max(4, Math.ceil(awards.length / itemsPerShelf));
+        var featureAwards = awards.filter(isFeatureLockerAward);
+        var standardAwards = awards.filter(function (award) { return !isFeatureLockerAward(award); });
+        // The top display bay has two hanger/oversize slots. Extra feature items
+        // fall back to standard shelves so every earned keepsake remains visible.
+        var featureSlots = featureAwards.slice(0, 2);
+        standardAwards = standardAwards.concat(featureAwards.slice(2));
+        var shelfCount = Math.max(4, Math.ceil(standardAwards.length / itemsPerShelf) + 1);
         ownerLocker.style.setProperty('--owner-locker-shelf-count', shelfCount);
         ownerLocker.dataset.shelfCount = String(shelfCount);
         ownerLocker.classList.toggle('owner-locker--extended', shelfCount > 4);
-        for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {
-            var index = shelfIndex * itemsPerShelf;
-            var shelf = document.createElement('section');
-            shelf.className = 'owner-locker__shelf';
-            shelf.setAttribute('aria-label', 'Locker shelf ' + (shelfIndex + 1));
-            var shelfItems = document.createElement('div');
-            shelfItems.className = 'owner-locker__shelf-items';
-
-            awards.slice(index, index + itemsPerShelf).forEach(function (award) {
-                var profile = lockerItemProfile(award.bowl, award.round);
-                if (!profile) return;
-                var item = document.createElement('button');
-                item.className = 'locker-collectible locker-collectible--' + profile.type;
-                item.type = 'button';
-                item.setAttribute('aria-haspopup', 'dialog');
-                item.setAttribute('aria-controls', 'locker-item-modal');
-                item.setAttribute('aria-label', profile.label + ', won in ' + award.season + '. Open game details.');
-
-                var object = document.createElement('span');
-                object.className = 'locker-collectible__object locker-object locker-object--' + profile.type;
-                object.setAttribute('aria-hidden', 'true');
-                if (profile.asset) {
-                    var objectImage = document.createElement('img');
-                    objectImage.src = profile.asset;
-                    objectImage.alt = '';
-                    objectImage.loading = 'lazy';
-                    objectImage.decoding = 'async';
-                    object.appendChild(objectImage);
-                } else {
-                    object.appendChild(document.createElement('span'));
-                }
-                item.appendChild(object);
-
-                item.addEventListener('click', function () {
-                    openLockerItemModal(award, profile);
-                });
-                shelfItems.appendChild(item);
-            });
-
-            shelf.appendChild(shelfItems);
-            ownerLockerShelves.appendChild(shelf);
+        appendLockerShelf(ownerLockerShelves, featureSlots, 1, true);
+        for (var shelfIndex = 1; shelfIndex < shelfCount; shelfIndex++) {
+            var index = (shelfIndex - 1) * itemsPerShelf;
+            appendLockerShelf(ownerLockerShelves, standardAwards.slice(index, index + itemsPerShelf), shelfIndex + 1, false);
         }
     }
 

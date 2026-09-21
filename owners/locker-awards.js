@@ -1,4 +1,6 @@
-/* Derived from named Vault bowls beginning in 2024, plus historical championships. */
+/* Derived from named Vault bowls beginning in 2024, plus historical championships.
+   Add display_slot: "hanging", "large", or "feature" to reserve either of the
+   two oversized top-bay positions; untagged awards use the standard shelves. */
 window.FS5_LOCKER_AWARDS = [
   {"owner":"Bailey","season":2025,"bowl":"The Crosby Studios Bowl","round":"Fifth Place Game","art":"../vault/brackets/artwork/2025/F5.png","team":"FS5 PENITENTIARY","score":103.88,"opponent":"Georgassic Park","opponentScore":84},
   {"owner":"Brycen","season":2025,"bowl":"First Round","round":"First Round","art":null,"team":"Merry Christmas","score":134.24,"opponent":"ROUGH DRAFT","opponentScore":115.08},
