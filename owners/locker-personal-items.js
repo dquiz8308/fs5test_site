@@ -10,6 +10,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   ],
   "cody": [
     {
+      "label": "Double Neck Guitar",
+      "asset": "artwork/locker/cody/double-neck-guitar.png"
+    },
+    {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/cody/georgia-bulldogs-helmet.png"
     }
