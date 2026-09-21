@@ -386,27 +386,27 @@ document.addEventListener('DOMContentLoaded', function() {
     function lockerItemProfile(bowlName, roundName) {
         var bowl = String(bowlName || '').toLowerCase();
         var round = String(roundName || '').toLowerCase();
-        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/objects/bronze-chair.png' };
-        if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi', asset: 'artwork/locker/objects/pierogi.png' };
-        if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls', asset: 'artwork/locker/objects/pizza-rolls.png' };
-        if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco', asset: 'artwork/locker/objects/disco.png' };
-        if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath', asset: 'artwork/locker/objects/bloodbath.png' };
-        if (bowl.indexOf('city of homes') !== -1) return { label: 'Welcome to Newnan Sign', type: 'city-of-homes', asset: 'artwork/locker/objects/newnan-city-of-homes-sign.png' };
-        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Tank', type: 'battle-tank', asset: 'artwork/locker/objects/battle-tank.png' };
-        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Rusted Stadium Sign', type: 'lynch-football', asset: 'artwork/locker/objects/lynch-rusted-sign.png' };
-        if (bowl.indexOf('random') !== -1 || bowl.indexOf('r.a.n.d.o.m') !== -1) return { label: 'R.A.N.D.O.M. Dancer', type: 'random-dancer', asset: 'artwork/locker/objects/random-dancer.png' };
-        if (bowl.indexOf('edge') !== -1) return { label: 'Edge Seat', type: 'edge-seat', asset: 'artwork/locker/objects/edge-seat.png' };
-        if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial', asset: 'artwork/locker/objects/memorial.png' };
-        if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel', asset: 'artwork/locker/objects/studio-reel.png' };
-        if (bowl.indexOf('shut the') !== -1) return { label: 'Duct Tape', type: 'duct-tape', asset: 'artwork/locker/objects/duct-tape.png' };
+        if (bowl.indexOf('bronze chair') !== -1) return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bowl game trophies/bronze-chair.png' };
+        if (bowl.indexOf('pierogi') !== -1) return { label: 'Pierogi Platter', type: 'pierogi', asset: 'artwork/locker/bowl game trophies/pierogi.png' };
+        if (bowl.indexOf('pizza roll') !== -1) return { label: 'Pizza Roll Tray', type: 'pizza-rolls', asset: 'artwork/locker/bowl game trophies/pizza-rolls.png' };
+        if (bowl.indexOf('disco') !== -1) return { label: 'Disco Feeler', type: 'disco', asset: 'artwork/locker/bowl game trophies/disco.png' };
+        if (bowl.indexOf('bloodbath') !== -1) return { label: 'Bloodbath Relic', type: 'bloodbath', asset: 'artwork/locker/bowl game trophies/bloodbath.png' };
+        if (bowl.indexOf('city of homes') !== -1) return { label: 'Welcome to Newnan Sign', type: 'city-of-homes', asset: 'artwork/locker/bowl game trophies/newnan-city-of-homes-sign.png' };
+        if (bowl.indexOf('battle of the bulge') !== -1) return { label: 'Bulge Tank', type: 'battle-tank', asset: 'artwork/locker/bowl game trophies/battle-tank.png' };
+        if (bowl.indexOf('jordan lynch') !== -1) return { label: 'Rusted Stadium Sign', type: 'lynch-football', asset: 'artwork/locker/bowl game trophies/lynch-rusted-sign.png' };
+        if (bowl.indexOf('random') !== -1 || bowl.indexOf('r.a.n.d.o.m') !== -1) return { label: 'R.A.N.D.O.M. Dancer', type: 'random-dancer', asset: 'artwork/locker/bowl game trophies/random-dancer.png' };
+        if (bowl.indexOf('edge') !== -1) return { label: 'Edge Seat', type: 'edge-seat', asset: 'artwork/locker/bowl game trophies/edge-seat.png' };
+        if (bowl.indexOf('memorial') !== -1) return { label: 'Memorial Frame', type: 'memorial', asset: 'artwork/locker/bowl game trophies/memorial.png' };
+        if (bowl.indexOf('crosby') !== -1) return { label: 'Studio Reel', type: 'studio-reel', asset: 'artwork/locker/bowl game trophies/studio-reel.png' };
+        if (bowl.indexOf('shut the') !== -1) return { label: 'Duct Tape', type: 'duct-tape', asset: 'artwork/locker/bowl game trophies/duct-tape.png' };
         if (bowl.indexOf('last place') !== -1) return { label: 'Basement Trophy', type: 'basement-trophy' };
-        if (bowl.indexOf('ninth place') !== -1) return { label: 'Ninth Place Medal', type: 'ninth-medal', asset: 'artwork/locker/objects/ninth-medal.png' };
+        if (bowl.indexOf('ninth place') !== -1) return { label: 'Ninth Place Medal', type: 'ninth-medal', asset: 'artwork/locker/bowl game trophies/ninth-medal.png' };
         if (bowl.indexOf('fifth place') !== -1) return { label: 'Fifth Place Pennant', type: 'fifth-pennant' };
         if (bowl.indexOf('consolation') !== -1) return { label: 'Consolation Cup', type: 'consolation-cup' };
-        if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football', asset: 'artwork/locker/objects/championship-football.png' };
+        if (bowl === 'championship' || round === 'championship') return { label: 'Championship Football', type: 'championship-football', asset: 'artwork/locker/bowl game trophies/championship-football.png' };
         if (bowl === 'semifinal' || round === 'semifinal') return { label: 'Semifinal Playbook', type: 'playbook' };
         if (bowl === 'first round' || round === 'first round') return null;
-        if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/objects/bronze-chair.png' };
+        if (bowl === 'third place game' || round === 'third place game') return { label: 'Bronze Chair', type: 'bronze-chair', asset: 'artwork/locker/bowl game trophies/bronze-chair.png' };
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
