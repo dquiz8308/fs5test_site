@@ -422,16 +422,20 @@ document.addEventListener('DOMContentLoaded', function() {
         ownerLockerEmpty.hidden = awards.length > 0;
         if (ownerLockerNameplate) ownerLockerNameplate.textContent = ownerName ? String(ownerName).toUpperCase() : 'FS5 GAME DAY';
 
-        var shelfCount = Math.max(4, Math.ceil(awards.length / 5));
+        var itemsPerShelf = 5;
+        var shelfCount = Math.max(4, Math.ceil(awards.length / itemsPerShelf));
+        ownerLocker.style.setProperty('--owner-locker-shelf-count', shelfCount);
+        ownerLocker.dataset.shelfCount = String(shelfCount);
+        ownerLocker.classList.toggle('owner-locker--extended', shelfCount > 4);
         for (var shelfIndex = 0; shelfIndex < shelfCount; shelfIndex++) {
-            var index = shelfIndex * 5;
+            var index = shelfIndex * itemsPerShelf;
             var shelf = document.createElement('section');
             shelf.className = 'owner-locker__shelf';
             shelf.setAttribute('aria-label', 'Locker shelf ' + (shelfIndex + 1));
             var shelfItems = document.createElement('div');
             shelfItems.className = 'owner-locker__shelf-items';
 
-            awards.slice(index, index + 5).forEach(function (award) {
+            awards.slice(index, index + itemsPerShelf).forEach(function (award) {
                 var profile = lockerItemProfile(award.bowl, award.round);
                 if (!profile) return;
                 var item = document.createElement('button');
@@ -883,6 +887,11 @@ document.addEventListener('DOMContentLoaded', function() {
         closeAchievementHistory();
         lockerRenderToken++;
         if (ownerLocker) ownerLocker.hidden = true;
+        if (ownerLocker) {
+            ownerLocker.classList.remove('owner-locker--extended');
+            ownerLocker.removeAttribute('data-shelf-count');
+            ownerLocker.style.removeProperty('--owner-locker-shelf-count');
+        }
         if (ownerLockerShelves) ownerLockerShelves.textContent = '';
         if (ownerLockerCount) ownerLockerCount.textContent = '0 keepsakes';
         if (ownerLockerEmpty) ownerLockerEmpty.hidden = true;

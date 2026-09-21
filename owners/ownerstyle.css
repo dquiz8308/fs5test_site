@@ -3778,3 +3778,96 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 }
 
 @media (max-width: 765px) { .owners-theme-toolbar { width:min(100% - 24px,680px); margin:10px auto 2px; } }
+
+/* The wooden locker uses four illustrated bays by default. The renderer supplies
+   --owner-locker-shelf-count so future awards can grow into real extra shelves. */
+.owner-locker {
+    --owner-locker-shelf-count:4;
+}
+.owner-locker__cabinet {
+    width:min(100%, 690px);
+    aspect-ratio:2 / 3;
+    min-height:0;
+    padding:0;
+    background:#281307 url('artwork/locker/wooden-shelf-locker-nameplate-template.png') center/100% 100% no-repeat;
+}
+.owner-locker__locker-header {
+    top:4.2%;
+    right:11%;
+    left:11%;
+    height:12.5%;
+    justify-content:flex-start;
+    padding:0 27% 0 8%;
+}
+.owner-locker__locker-header strong {
+    width:100%;
+    color:#fff8df;
+    font-size:clamp(.95rem, 2.5vw, 1.5rem);
+    text-align:center;
+}
+.owner-locker__shelves {
+    top:21%;
+    right:6.2%;
+    bottom:3.8%;
+    left:6.2%;
+    grid-template-rows:repeat(var(--owner-locker-shelf-count), minmax(0, 1fr));
+}
+.owner-locker__shelf::after { bottom:-14px; height:12px; }
+
+/* More than four groups get a real vertically extended wooden cabinet rather
+   than compressing the original artwork's shelf bays. */
+.owner-locker.owner-locker--extended .owner-locker__cabinet {
+    aspect-ratio:auto;
+    min-height:calc(175px + (var(--owner-locker-shelf-count) * 185px));
+    padding:157px 44px 38px;
+    background:linear-gradient(90deg,#311609 0 4%,rgba(93,47,21,.72) 4% 96%,#311609 96%),repeating-linear-gradient(90deg,rgba(255,203,126,.07) 0 2px,transparent 2px 22px),linear-gradient(120deg,#5b2a12,#1e0e06 62%,#4a210e);
+}
+.owner-locker.owner-locker--extended .owner-locker__cabinet::before {
+    display:block;
+    inset:0 0 auto;
+    height:142px;
+    background:linear-gradient(180deg,rgba(255,220,158,.22),transparent 18%),linear-gradient(100deg,#41200f,#b2773b 42%,#3a1b0d 100%);
+    opacity:1;
+    mix-blend-mode:normal;
+}
+.owner-locker.owner-locker--extended .owner-locker__locker-header {
+    top:23px;
+    right:48px;
+    left:48px;
+    height:92px;
+    border:2px solid #b88746;
+    border-radius:9px;
+    background:linear-gradient(135deg,#31343a,#a79c88 48%,#353941 52%,#756d60);
+    box-shadow:inset 0 0 0 4px rgba(28,21,14,.58),0 6px 12px rgba(0,0,0,.45);
+}
+.owner-locker.owner-locker--extended .owner-locker__shelves {
+    position:relative;
+    top:auto;
+    right:auto;
+    bottom:auto;
+    left:auto;
+    height:calc(var(--owner-locker-shelf-count) * 172px);
+}
+.owner-locker.owner-locker--extended .owner-locker__shelf {
+    padding:0 12px 18px;
+    border:1px solid rgba(255,207,139,.32);
+    background:linear-gradient(180deg,rgba(255,209,126,.16),transparent 28%),linear-gradient(90deg,rgba(0,0,0,.26),transparent 11% 89%,rgba(0,0,0,.3));
+    box-shadow:inset 0 -6px 0 #3a1909,inset 0 -9px 0 #a6632e;
+}
+.owner-locker.owner-locker--extended .owner-locker__shelf::after {
+    right:4%;
+    bottom:-11px;
+    left:4%;
+    height:9px;
+}
+
+@media (max-width:765px) {
+    .owner-locker__locker-header { right:10%; left:10%; padding-right:25%; }
+    .owner-locker__shelves { top:21%; right:6%; bottom:3.6%; left:6%; }
+    .owner-locker.owner-locker--extended .owner-locker__cabinet { min-height:calc(130px + (var(--owner-locker-shelf-count) * 135px)); padding:117px 16px 26px; }
+    .owner-locker.owner-locker--extended .owner-locker__cabinet::before { height:105px; }
+    .owner-locker.owner-locker--extended .owner-locker__locker-header { top:15px; right:20px; left:20px; height:69px; }
+    .owner-locker.owner-locker--extended .owner-locker__shelves { height:calc(var(--owner-locker-shelf-count) * 124px); }
+    .owner-locker.owner-locker--extended .owner-locker__shelf { padding:0 4px 13px; }
+    .owner-locker.owner-locker--extended .owner-locker__shelf::after { bottom:-8px; height:7px; }
+}
