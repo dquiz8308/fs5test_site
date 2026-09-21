@@ -3,14 +3,29 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "bailey": [],
   "brycen": [],
   "chris": [],
-  "cody": [],
+  "cody": [
+    {
+      "label": "Georgia Bulldogs Helmet",
+      "asset": "artwork/locker/cody/georgia-bulldogs-helmet.png"
+    }
+  ],
   "david": [],
   "ethan": [],
   "jordan": [],
   "keith": [],
   "matthew": [],
-  "max": [],
-  "mike": [],
+  "max": [
+    {
+      "label": "Georgia Bulldogs Helmet",
+      "asset": "artwork/locker/max/georgia-bulldogs-helmet.png"
+    }
+  ],
+  "mike": [
+    {
+      "label": "Georgia Bulldogs Helmet",
+      "asset": "artwork/locker/mike/georgia-bulldogs-helmet.png"
+    }
+  ],
   "will": [
     {
       "label": "Kennesaw State Helmet",
