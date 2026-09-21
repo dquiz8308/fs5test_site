@@ -11,5 +11,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "matthew": [],
   "max": [],
   "mike": [],
-  "will": []
+  "will": [
+    {
+      "label": "Kennesaw State Helmet",
+      "asset": "artwork/locker/will/kennesaw-state-helmet.png"
+    }
+  ]
 };
