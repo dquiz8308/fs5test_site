@@ -129,6 +129,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/max/georgia-bulldogs-helmet.png"
+    },
+    {
+      "label": "Titleist Pro V1 Golf Balls",
+      "asset": "artwork/locker/max/titleist-pro-v1-golf-balls.png"
     }
   ],
   "mike": [
