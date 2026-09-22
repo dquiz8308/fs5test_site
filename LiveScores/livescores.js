@@ -1820,7 +1820,7 @@
         card.appendChild(strip);
     }
 
-    function renderScoreBox(matchup, week, showProjection) {
+    function renderScoreBox(matchup, week, showProjection, showLiveActivity) {
         var box = document.createElement("div");
         box.className = "score-box";
         box.innerHTML = '<strong>' + formatScore(matchup.points) + '</strong><span>points</span>';
@@ -1831,11 +1831,11 @@
         }
         var previous = state.previousScores[String(matchup.roster_id)];
         var delta = Number(matchup.points || 0) - Number(previous == null ? matchup.points || 0 : previous);
-        if (Number(week) === Number(state.currentWeek) && Math.abs(delta) >= 0.5) {
+        if (showLiveActivity && Number(week) === Number(state.currentWeek) && Math.abs(delta) >= 0.5) {
             var deltaBadge = document.createElement("span"); deltaBadge.className="score-change"; deltaBadge.textContent=(delta>0?"+":"")+formatScore(delta); box.appendChild(deltaBadge);
             setTimeout(function(){ if(deltaBadge && deltaBadge.parentNode){deltaBadge.classList.add("is-hiding"); setTimeout(function(){if(deltaBadge.parentNode)deltaBadge.parentNode.removeChild(deltaBadge);},250);} },10000);
         }
-        var reaction = getScoreReaction(matchup, week);
+        var reaction = showLiveActivity ? getScoreReaction(matchup, week) : null;
         if (reaction) {
             var badge = document.createElement("span");
             badge.className = "score-reaction score-reaction--" + reaction.type;
@@ -2146,7 +2146,7 @@
                 var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
                 appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
                 identity.appendChild(img); identity.appendChild(text);
-                var scoreBox = renderScoreBox(matchup, week, !isFinalMatchup);
+                var scoreBox = renderScoreBox(matchup, week, !isFinalMatchup, !isFinalMatchup);
                 team.appendChild(identity); team.appendChild(scoreBox); card.appendChild(team);
                 if (index === 0) { var divider = document.createElement("div"); divider.className = "vs-divider"; divider.innerHTML = '<span>VS</span>'; card.appendChild(divider); }
             });
