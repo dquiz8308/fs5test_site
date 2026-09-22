@@ -462,6 +462,10 @@
     }
 
     function playerTrendBadge(id) {
+        // These badges describe fresh scoring activity. Historical week loads
+        // compare against the live snapshot, which can otherwise create false
+        // touchdown, score-swing, and projection-reaction emotes.
+        if (Number(state.selectedWeek) < Number(state.currentWeek)) return "";
         var points = getPlayerPoints(id), projection = getProjection(id), prev = getPreviousPlayerPoints(id);
         var badges = [];
         // Player performance badges describe actual football activity. A future
@@ -928,7 +932,7 @@
     }
 
     function getScoreReaction(matchup, week) {
-        if (week !== state.currentWeek) return null;
+        if (Number(week) !== Number(state.currentWeek)) return null;
         var key = String(matchup.roster_id);
         var now = Number(matchup.points || 0);
         var previous = state.previousScores[key];
@@ -1646,6 +1650,12 @@
 
     function renderLiveTicker() {
         var ticker = $("live-event-ticker"); if (!ticker) return;
+        if (Number(state.selectedWeek) < Number(state.currentWeek)) {
+            ticker.hidden = true;
+            ticker.textContent = "";
+            return;
+        }
+        ticker.hidden = false;
         var events = state.eventHistory.filter(function(e){ return !e.at || Date.now()-e.at < 5*60*1000; }).slice(0,5);
         if (!events.length) {
             var active = currentPlayingCount();
@@ -1821,7 +1831,7 @@
         }
         var previous = state.previousScores[String(matchup.roster_id)];
         var delta = Number(matchup.points || 0) - Number(previous == null ? matchup.points || 0 : previous);
-        if (Math.abs(delta) >= 0.5) {
+        if (Number(week) === Number(state.currentWeek) && Math.abs(delta) >= 0.5) {
             var deltaBadge = document.createElement("span"); deltaBadge.className="score-change"; deltaBadge.textContent=(delta>0?"+":"")+formatScore(delta); box.appendChild(deltaBadge);
             setTimeout(function(){ if(deltaBadge && deltaBadge.parentNode){deltaBadge.classList.add("is-hiding"); setTimeout(function(){if(deltaBadge.parentNode)deltaBadge.parentNode.removeChild(deltaBadge);},250);} },10000);
         }
