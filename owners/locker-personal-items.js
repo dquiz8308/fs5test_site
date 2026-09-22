@@ -4,6 +4,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Black Metal T Shirt",
       "asset": "artwork/locker/bailey/black-metal-t-shirt.png"
+    },
+    {
+      "label": "Mike Check Microphone",
+      "asset": "artwork/locker/bailey/mike-check-microphone.png"
     }
   ],
   "brycen": [],
