@@ -9,9 +9,17 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Mike Check Microphone",
       "asset": "artwork/locker/bailey/mike-check-microphone.png"
+    },
+    {
+      "label": "Pbr Can",
+      "asset": "artwork/locker/bailey/pbr-can.png"
     }
   ],
   "brycen": [
+    {
+      "label": "Bud Light Can",
+      "asset": "artwork/locker/brycen/bud-light-can.png"
+    },
     {
       "label": "Tame Impala Currents Poster",
       "asset": "artwork/locker/brycen/tame-impala-currents-poster.png",
@@ -23,6 +31,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "label": "Black Metal T Shirt",
       "asset": "artwork/locker/chris/black-metal-t-shirt.png",
       "presentation": "oversize"
+    },
+    {
+      "label": "Busch Light Can",
+      "asset": "artwork/locker/chris/busch-light-can.png"
     },
     {
       "label": "Drum Set",
@@ -47,6 +59,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/cody/georgia-bulldogs-helmet.png"
+    },
+    {
+      "label": "Miller Lite Can",
+      "asset": "artwork/locker/cody/miller-lite-can.png"
     }
   ],
   "david": [
@@ -59,6 +75,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Georgia Southern Helmet",
       "asset": "artwork/locker/ethan/georgia-southern-helmet.png"
+    },
+    {
+      "label": "Pbr Can",
+      "asset": "artwork/locker/ethan/pbr-can.png"
     }
   ],
   "jordan": [
@@ -81,6 +101,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "label": "Black Metal T Shirt",
       "asset": "artwork/locker/keith/black-metal-t-shirt.png",
       "presentation": "oversize"
+    },
+    {
+      "label": "Bud Light Can",
+      "asset": "artwork/locker/keith/bud-light-can.png"
     }
   ],
   "matthew": [
@@ -101,6 +125,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   ],
   "mike": [
     {
+      "label": "Busch Light Can",
+      "asset": "artwork/locker/mike/busch-light-can.png"
+    },
+    {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/mike/georgia-bulldogs-helmet.png"
     }
@@ -114,6 +142,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Kennesaw State Helmet",
       "asset": "artwork/locker/will/kennesaw-state-helmet.png"
+    },
+    {
+      "label": "Miller Lite Can",
+      "asset": "artwork/locker/will/miller-lite-can.png"
     }
   ]
 };
