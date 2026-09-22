@@ -89,6 +89,11 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   ],
   "will": [
     {
+      "label": "Golf Driver Headcover Oversize",
+      "asset": "artwork/locker/will/golf-driver-headcover-oversize.png",
+      "presentation": "oversize"
+    },
+    {
       "label": "Kennesaw State Helmet",
       "asset": "artwork/locker/will/kennesaw-state-helmet.png"
     }
