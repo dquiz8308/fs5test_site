@@ -97,6 +97,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Pbr Can",
       "asset": "artwork/locker/jordan/pbr-can.png"
+    },
+    {
+      "label": "Standing Playstation 5",
+      "asset": "artwork/locker/jordan/standing-playstation-5.png"
     }
   ],
   "keith": [
