@@ -422,6 +422,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return item && item.kind === 'personal-item';
     }
 
+    function isOversizeLockerItem(item) {
+        return isPersonalLockerItem(item) && String(item.presentation || '').toLowerCase() === 'oversize';
+    }
+
     function isFeatureLockerAward(award) {
         var displaySlot = String(award && (award.display_slot || award.displaySlot || award.presentation) || '').toLowerCase();
         return displaySlot === 'feature' || displaySlot === 'large' || displaySlot === 'hanging';
@@ -429,7 +433,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createLockerCollectible(award, profile, isFeature) {
         var item = document.createElement('button');
-        item.className = 'locker-collectible locker-collectible--' + profile.type + (isFeature ? ' locker-collectible--feature' : '');
+        item.className = 'locker-collectible locker-collectible--' + profile.type +
+            (isFeature ? ' locker-collectible--feature' : '') +
+            (isOversizeLockerItem(award) ? ' locker-collectible--oversize' : '');
         item.type = 'button';
         item.setAttribute('aria-haspopup', 'dialog');
         item.setAttribute('aria-controls', 'locker-item-modal');
@@ -457,9 +463,13 @@ document.addEventListener('DOMContentLoaded', function() {
         return item;
     }
 
-    function appendLockerShelf(shelves, awards, shelfIndex, isFeature) {
+    function appendLockerShelf(shelves, awards, shelfIndex, presentation) {
+        var isFeature = presentation === 'feature';
         var shelf = document.createElement('section');
-        shelf.className = 'owner-locker__shelf' + (isFeature ? ' owner-locker__shelf--feature' : '');
+        shelf.className = 'owner-locker__shelf' + (isFeature ? ' owner-locker__shelf--feature' : '') +
+            (presentation === 'half-first' ? ' owner-locker__shelf--half owner-locker__shelf--half-first' : '') +
+            (presentation === 'half-second' ? ' owner-locker__shelf--half owner-locker__shelf--half-second' : '') +
+            (presentation === 'full' ? ' owner-locker__shelf--full' : '');
         shelf.setAttribute('aria-label', isFeature ? 'Featured locker display' : 'Locker shelf ' + shelfIndex);
         var shelfItems = document.createElement('div');
         shelfItems.className = 'owner-locker__shelf-items';
@@ -486,7 +496,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 kind: 'personal-item',
                 owner: ownerName,
                 label: item.label,
-                asset: item.asset
+                asset: item.asset,
+                presentation: item.presentation
             };
         }));
 
@@ -497,20 +508,36 @@ document.addEventListener('DOMContentLoaded', function() {
         if (ownerLockerNameplate) ownerLockerNameplate.textContent = ownerName ? String(ownerName).toUpperCase() : 'FS5 GAME DAY';
 
         var itemsPerShelf = 5;
+        var oversizeAwards = awards.filter(isOversizeLockerItem);
         var featureAwards = bowlAwards.filter(isFeatureLockerAward);
-        var standardAwards = bowlAwards.filter(function (award) { return !isFeatureLockerAward(award); }).concat(awards.filter(isPersonalLockerItem));
-        // The top display bay has two hanger/oversize slots. Extra feature items
-        // fall back to standard shelves so every earned keepsake remains visible.
-        var featureSlots = featureAwards.slice(0, 2);
-        standardAwards = standardAwards.concat(featureAwards.slice(2));
-        var shelfCount = Math.max(4, Math.ceil(standardAwards.length / itemsPerShelf) + 1);
+        var standardAwards = bowlAwards.filter(function (award) { return !isFeatureLockerAward(award); })
+            .concat(awards.filter(function (award) { return isPersonalLockerItem(award) && !isOversizeLockerItem(award); }));
+        // One two-row open bay is reserved for the first poster, hanger, or
+        // other oversize keepsake. Its neighboring half shelves retain room for
+        // smaller objects, and any overflow continues on full-width shelves.
+        var featureSlots = oversizeAwards.concat(featureAwards).slice(0, 1);
+        var hasOversizeBay = featureSlots.length > 0 && isOversizeLockerItem(featureSlots[0]);
+        standardAwards = standardAwards.concat(oversizeAwards.concat(featureAwards).slice(1));
+        var shelfCount = hasOversizeBay
+            ? Math.max(4, 2 + Math.max(2, Math.ceil(Math.max(0, standardAwards.length - 4) / itemsPerShelf)))
+            : Math.max(4, Math.ceil(standardAwards.length / itemsPerShelf) + 1);
         ownerLocker.style.setProperty('--owner-locker-shelf-count', shelfCount);
         ownerLocker.dataset.shelfCount = String(shelfCount);
         ownerLocker.classList.toggle('owner-locker--extended', shelfCount > 4);
-        appendLockerShelf(ownerLockerShelves, featureSlots, 1, true);
+        ownerLocker.classList.toggle('owner-locker--has-oversize-bay', hasOversizeBay);
+        appendLockerShelf(ownerLockerShelves, featureSlots, 1, 'feature');
+        if (hasOversizeBay) {
+            appendLockerShelf(ownerLockerShelves, standardAwards.slice(0, 2), 2, 'half-first');
+            appendLockerShelf(ownerLockerShelves, standardAwards.slice(2, 4), 3, 'half-second');
+            var fullShelfCount = shelfCount - 2;
+            for (var fullShelfIndex = 0, standardIndex = 4; fullShelfIndex < fullShelfCount; fullShelfIndex++, standardIndex += itemsPerShelf) {
+                appendLockerShelf(ownerLockerShelves, standardAwards.slice(standardIndex, standardIndex + itemsPerShelf), fullShelfIndex + 4, 'full');
+            }
+            return;
+        }
         for (var shelfIndex = 1; shelfIndex < shelfCount; shelfIndex++) {
             var index = (shelfIndex - 1) * itemsPerShelf;
-            appendLockerShelf(ownerLockerShelves, standardAwards.slice(index, index + itemsPerShelf), shelfIndex + 1, false);
+            appendLockerShelf(ownerLockerShelves, standardAwards.slice(index, index + itemsPerShelf), shelfIndex + 1, 'standard');
         }
     }
 
@@ -933,7 +960,7 @@ document.addEventListener('DOMContentLoaded', function() {
         lockerRenderToken++;
         if (ownerLocker) ownerLocker.hidden = true;
         if (ownerLocker) {
-            ownerLocker.classList.remove('owner-locker--extended');
+            ownerLocker.classList.remove('owner-locker--extended', 'owner-locker--has-oversize-bay');
             ownerLocker.removeAttribute('data-shelf-count');
             ownerLocker.style.removeProperty('--owner-locker-shelf-count');
         }

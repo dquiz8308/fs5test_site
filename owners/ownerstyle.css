@@ -3819,6 +3819,39 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 .owner-locker__shelf--feature .locker-object { height:clamp(126px, 22vw, 178px); }
 .owner-locker__shelf--feature .locker-object img { width:clamp(126px, 22vw, 178px); height:clamp(126px, 22vw, 178px); transform:translateY(7px); }
 
+/* Oversize keepsakes use a two-row open bay. Two half shelves sit beside it,
+   preserving a proper place for smaller objects while posters and hangers have
+   the height and width they need. */
+.owner-locker--has-oversize-bay .owner-locker__shelves {
+    grid-template-columns:62% 38%;
+    grid-template-rows:repeat(var(--owner-locker-shelf-count), minmax(0, 1fr));
+}
+.owner-locker--has-oversize-bay .owner-locker__shelf--feature {
+    grid-column:1;
+    grid-row:1 / span 2;
+    padding:0 5% 0 2%;
+}
+.owner-locker--has-oversize-bay .owner-locker__shelf--half {
+    grid-column:2;
+    padding:0 4% 0 8%;
+}
+.owner-locker--has-oversize-bay .owner-locker__shelf--half-first { grid-row:1; }
+.owner-locker--has-oversize-bay .owner-locker__shelf--half-second { grid-row:2; }
+.owner-locker--has-oversize-bay .owner-locker__shelf--full { grid-column:1 / -1; }
+.owner-locker--has-oversize-bay .owner-locker__shelf--feature .owner-locker__shelf-items { grid-template-columns:1fr; }
+.owner-locker--has-oversize-bay .locker-collectible--oversize,
+.owner-locker--has-oversize-bay .locker-collectible--oversize .locker-collectible__object,
+.owner-locker--has-oversize-bay .locker-collectible--oversize .locker-object {
+    width:100%;
+    height:100%;
+}
+.owner-locker--has-oversize-bay .locker-collectible--oversize .locker-object img {
+    width:min(100%, 300px);
+    height:96%;
+    object-fit:contain;
+    transform:translateY(7px);
+}
+
 /* More than four groups get a real vertically extended wooden cabinet rather
    than compressing the original artwork's shelf bays. */
 .owner-locker.owner-locker--extended .owner-locker__cabinet {
@@ -3878,4 +3911,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .owner-locker__shelf--feature .locker-collectible__object,
     .owner-locker__shelf--feature .locker-object { height:clamp(72px, 25vw, 132px); }
     .owner-locker__shelf--feature .locker-object img { width:clamp(72px, 25vw, 132px); height:clamp(72px, 25vw, 132px); }
+    .owner-locker--has-oversize-bay .owner-locker__shelf--feature { padding-right:4%; }
+    .owner-locker--has-oversize-bay .owner-locker__shelf--half { padding-right:2%; padding-left:7%; }
+    .owner-locker--has-oversize-bay .locker-collectible--oversize .locker-object img { width:100%; height:95%; transform:translateY(4px); }
 }

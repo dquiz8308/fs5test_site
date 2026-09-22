@@ -3,7 +3,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "bailey": [
     {
       "label": "Black Metal T Shirt",
-      "asset": "artwork/locker/bailey/black-metal-t-shirt.png"
+      "asset": "artwork/locker/bailey/black-metal-t-shirt.png",
+      "presentation": "oversize"
     },
     {
       "label": "Mike Check Microphone",
@@ -13,13 +14,15 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "brycen": [
     {
       "label": "Tame Impala Currents Poster",
-      "asset": "artwork/locker/brycen/tame-impala-currents-poster.png"
+      "asset": "artwork/locker/brycen/tame-impala-currents-poster.png",
+      "presentation": "oversize"
     }
   ],
   "chris": [
     {
       "label": "Black Metal T Shirt",
-      "asset": "artwork/locker/chris/black-metal-t-shirt.png"
+      "asset": "artwork/locker/chris/black-metal-t-shirt.png",
+      "presentation": "oversize"
     },
     {
       "label": "Drum Set",
@@ -33,11 +36,13 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "cody": [
     {
       "label": "Black Metal T Shirt",
-      "asset": "artwork/locker/cody/black-metal-t-shirt.png"
+      "asset": "artwork/locker/cody/black-metal-t-shirt.png",
+      "presentation": "oversize"
     },
     {
       "label": "Double Neck Guitar",
-      "asset": "artwork/locker/cody/double-neck-guitar.png"
+      "asset": "artwork/locker/cody/double-neck-guitar.png",
+      "presentation": "oversize"
     },
     {
       "label": "Georgia Bulldogs Helmet",
@@ -60,11 +65,13 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   "keith": [
     {
       "label": "Black Five String Bass",
-      "asset": "artwork/locker/keith/black-five-string-bass.png"
+      "asset": "artwork/locker/keith/black-five-string-bass.png",
+      "presentation": "oversize"
     },
     {
       "label": "Black Metal T Shirt",
-      "asset": "artwork/locker/keith/black-metal-t-shirt.png"
+      "asset": "artwork/locker/keith/black-metal-t-shirt.png",
+      "presentation": "oversize"
     }
   ],
   "matthew": [],

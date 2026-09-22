@@ -17,6 +17,15 @@ function labelFromFilename(filename) {
         .replace(/\b\w/g, function (character) { return character.toUpperCase(); });
 }
 
+function presentationFromFilename(filename) {
+    // Large, vertical, or hanging collectibles need the locker’s open display
+    // bay instead of being squeezed into a standard shelf slot. Future items
+    // can opt in explicitly by including "oversize" in their filename.
+    return /(?:^|[-_])(oversize|poster|shirt|jersey|jacket|guitar|bass|bat|clubs?|hanger|banner|flag)(?:[-_.]|$)/i.test(filename)
+        ? 'oversize'
+        : '';
+}
+
 const collection = {};
 
 ownerKeys.forEach(function (ownerKey) {
@@ -27,10 +36,13 @@ ownerKeys.forEach(function (ownerKey) {
                 return entry.isFile() && supportedExtensions.has(path.extname(entry.name).toLowerCase());
             })
             .map(function (entry) {
-                return {
+                const asset = {
                     label: labelFromFilename(entry.name),
                     asset: 'artwork/locker/' + ownerKey + '/' + entry.name
                 };
+                const presentation = presentationFromFilename(entry.name);
+                if (presentation) asset.presentation = presentation;
+                return asset;
             })
             .sort(function (left, right) { return left.asset.localeCompare(right.asset); })
         : [];
