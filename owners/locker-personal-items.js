@@ -10,7 +10,12 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/bailey/mike-check-microphone.png"
     }
   ],
-  "brycen": [],
+  "brycen": [
+    {
+      "label": "Tame Impala Currents Poster",
+      "asset": "artwork/locker/brycen/tame-impala-currents-poster.png"
+    }
+  ],
   "chris": [
     {
       "label": "Black Metal T Shirt",
