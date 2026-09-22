@@ -7,6 +7,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "presentation": "oversize"
     },
     {
+      "label": "Cougars Helmet",
+      "asset": "artwork/locker/bailey/cougars-helmet.png"
+    },
+    {
       "label": "Mike Check Microphone",
       "asset": "artwork/locker/bailey/mike-check-microphone.png"
     },
@@ -66,6 +70,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     }
   ],
   "david": [
+    {
+      "label": "Cougars Helmet",
+      "asset": "artwork/locker/david/cougars-helmet.png"
+    },
     {
       "label": "Miller Lite Can",
       "asset": "artwork/locker/david/miller-lite-can.png"
