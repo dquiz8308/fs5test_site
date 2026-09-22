@@ -17,6 +17,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/chris/black-metal-t-shirt.png"
     },
     {
+      "label": "Drum Set",
+      "asset": "artwork/locker/chris/drum-set.png"
+    },
+    {
       "label": "Georgia Tech Helmet",
       "asset": "artwork/locker/chris/georgia-tech-helmet.png"
     }
