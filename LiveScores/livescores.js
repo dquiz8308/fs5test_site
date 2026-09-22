@@ -1952,21 +1952,56 @@
 
     async function loadPublicGotwMarkets() {
         var cachedMarkets = [];
+        var archivedMarkets = [];
         try {
             var cached = JSON.parse(localStorage.getItem('fs5_public_gotw_markets') || 'null');
             cachedMarkets = cached && Array.isArray(cached.markets) ? cached.markets : [];
         } catch (e) {}
-        state.gotwMarkets = cachedMarkets;
+        try {
+            var archive = JSON.parse(localStorage.getItem('fs5_live_gotw_archive') || 'null');
+            archivedMarkets = archive && Array.isArray(archive.markets) ? archive.markets : [];
+        } catch (e) {}
+
+        function marketKey(market) {
+            var week = Number(market && (market.weekNumber ?? market.week));
+            var number = Number(market && market.gotwNumber);
+            var teams = [market && market.owner1, market && market.owner2].map(function (side) {
+                return gotwTeamKey(side && (side.teamName || side.ownerName));
+            }).sort();
+            return (Number.isFinite(week) ? week : '') + '|' + (Number.isFinite(number) ? number : '') + '|' + teams.join('|');
+        }
+
+        function mergeMarkets() {
+            var merged = new Map();
+            Array.prototype.slice.call(arguments).forEach(function (markets) {
+                (Array.isArray(markets) ? markets : []).forEach(function (market) {
+                    if (!market) return;
+                    var key = marketKey(market);
+                    var previous = merged.get(key) || {};
+                    merged.set(key, Object.assign({}, previous, market, {
+                        owner1: Object.assign({}, previous.owner1 || {}, market.owner1 || {}),
+                        owner2: Object.assign({}, previous.owner2 || {}, market.owner2 || {})
+                    }));
+                });
+            });
+            return Array.from(merged.values());
+        }
+
+        function saveMergedMarkets(publishedMarkets) {
+            state.gotwMarkets = mergeMarkets(archivedMarkets, cachedMarkets, publishedMarkets);
+            try { localStorage.setItem('fs5_live_gotw_archive', JSON.stringify({ savedAt: Date.now(), markets: state.gotwMarkets })); } catch (e) {}
+        }
+
         try {
             var response = await fetch("/gotw.json?ts=" + Date.now(), { cache: "no-store" });
             if (!response.ok) throw new Error("GOTW configuration unavailable");
             var payload = await response.json();
-            state.gotwMarkets = payload && Array.isArray(payload.markets) ? payload.markets : [];
+            saveMergedMarkets(payload && Array.isArray(payload.markets) ? payload.markets : []);
         } catch (e) {
             // FS5 Sportsbook stores its current public market snapshot on the
             // shared site origin after a member loads the book. Use it when a
             // standalone published snapshot is unavailable.
-            state.gotwMarkets = cachedMarkets;
+            saveMergedMarkets([]);
         }
     }
 
@@ -1995,6 +2030,21 @@
         }) || null;
     }
 
+    function gotwSpreadForTeam(market, matchup) {
+        if (!market || !matchup) return '';
+        var teamKey = gotwTeamKey(teamLabel(matchup));
+        var side = [market.owner1, market.owner2].find(function (candidate) {
+            return gotwTeamKey(candidate && (candidate.teamName || candidate.ownerName)) === teamKey;
+        });
+        if (!side || side.spread == null || side.spread === '') return '';
+        var numericSpread = Number(side.spread);
+        if (Number.isFinite(numericSpread)) {
+            if (numericSpread === 0) return 'PK';
+            return numericSpread > 0 ? '+' + numericSpread : String(numericSpread);
+        }
+        return String(side.spread);
+    }
+
     function addGotwPresentation(card, market, matchupState) {
         if (!market) return;
         card.classList.add("matchup-card--gotw");
@@ -2002,7 +2052,7 @@
         var number = Number(market.gotwNumber);
         var ribbon = document.createElement("div");
         ribbon.className = "gotw-ribbon";
-        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK ' + (Number.isFinite(number) ? "#" + number : "") + '</strong><small>' + esc(market.marketTitle || "FEATURED BY THE FS5 SPORTSBOOK") + '</small></span><span class="gotw-ribbon__signal">' + (matchupState === "LIVE" ? "LIVE FEATURE" : "SPOTLIGHT MATCHUP") + '</span>';
+        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK ' + (Number.isFinite(number) ? "#" + number : "") + '</strong><small>' + esc(market.marketTitle || "FEATURED BY THE FS5 SPORTSBOOK") + '</small></span><span class="gotw-ribbon__signal">' + (matchupState === "LIVE" ? "LIVE FEATURE" : (matchupState === "FINAL" ? "FINAL FEATURE" : "SPOTLIGHT MATCHUP")) + '</span>';
         card.insertBefore(ribbon, card.firstChild);
         var badgeEl = document.createElement("span");
         badgeEl.className = "matchup-card__gotw-badge";
@@ -2068,12 +2118,12 @@
             notifyIfMatchupFinal(teams, isFinalMatchup, week);
             var matchupState = isFinalMatchup ? 'FINAL' : (matchupHasStarted(teams[0], teams[1]) ? 'LIVE' : 'UPCOMING');
             var gotwNumber = Number(gotwMarket && gotwMarket.gotwNumber);
-            var matchupTitle = gotwMarket && matchupState !== 'FINAL' ? 'Game of the Week ' + (Number.isFinite(gotwNumber) ? gotwNumber : '') : 'Matchup ' + entry[0];
+            var matchupTitle = gotwMarket ? 'Game of the Week ' + (Number.isFinite(gotwNumber) ? gotwNumber : '') : 'Matchup ' + entry[0];
             card.setAttribute("aria-label", "Open " + matchupTitle.trim());
             card.setAttribute("data-matchup-key", matchupKey(teams[0]));
             head.innerHTML = '<span>' + esc(matchupTitle.trim()) + '</span><span class="matchup-card__state' + (matchupState === 'LIVE' ? ' is-current' : '') + '">' + matchupState + '</span>';
             card.appendChild(head);
-            if (matchupState !== 'FINAL') addGotwPresentation(card, gotwMarket, matchupState);
+            addGotwPresentation(card, gotwMarket, matchupState);
             teams.forEach(function (matchup, index) {
                 var info = state.rosterMap.get(String(matchup.roster_id));
                 var team = document.createElement("div"); team.className = "matchup-team";
@@ -2085,6 +2135,13 @@
                 var img = teamImage(info, "team-avatar");
                 var text = document.createElement("div");
                 var name = document.createElement("h3"); name.textContent = info ? info.teamName : "Roster " + matchup.roster_id; text.appendChild(name);
+                var gotwSpread = gotwSpreadForTeam(gotwMarket, matchup);
+                if (gotwSpread) {
+                    var spread = document.createElement("span");
+                    spread.className = "gotw-team__spread";
+                    spread.textContent = 'SportsBook ' + gotwSpread;
+                    name.appendChild(spread);
+                }
                 var account = document.createElement("span"); account.textContent = info && info.account ? info.account : ""; text.appendChild(account);
                 var record = document.createElement("small"); record.textContent = info ? "Record: " + info.wins + "-" + info.losses + "-" + info.ties : ""; text.appendChild(record);
                 appendPlayingTimeBar(text, matchup.starters || (info && info.roster && info.roster.starters) || []);
