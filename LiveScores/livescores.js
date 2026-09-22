@@ -2014,27 +2014,34 @@
             .replace(/[^a-z0-9]+/g, "");
     }
 
+    function gotwSideMatchesMatchup(side, matchup) {
+        if (!side || !matchup) return false;
+        if (side.teamName && gotwTeamKey(side.teamName) === gotwTeamKey(teamLabel(matchup))) return true;
+        if (!side.ownerName) return false;
+        var info = state.rosterMap.get(String(matchup.roster_id));
+        var user = info && info.user;
+        var ownerKey = gotwTeamKey(side.ownerName);
+        if (HISTORICAL_OWNER_IDS[ownerKey] && historicalOwnerId(info) === HISTORICAL_OWNER_IDS[ownerKey]) return true;
+        return [user && user.display_name, user && user.username, user && user.metadata && user.metadata.owner_name]
+            .some(function (name) { return gotwTeamKey(name) === ownerKey; });
+    }
+
     function isGotwMatchup(teams, week) {
         if (!Array.isArray(teams) || teams.length < 2) return null;
-        var teamNames = teams.map(function(m) {
-            var info = state.rosterMap.get(String(m.roster_id));
-            return gotwTeamKey(info && info.teamName);
-        });
         return state.gotwMarkets.find(function(market) {
             var marketWeek = Number(market && (market.weekNumber ?? market.week));
             if (Number.isFinite(marketWeek) && marketWeek !== Number(week)) return false;
-            var names = [market && market.owner1, market && market.owner2].map(function(side) {
-                return gotwTeamKey(side && (side.teamName || side.ownerName));
+            var sides = [market && market.owner1, market && market.owner2];
+            return sides.length === 2 && sides.every(function (side) {
+                return teams.some(function (matchup) { return gotwSideMatchesMatchup(side, matchup); });
             });
-            return names.length === 2 && names.indexOf(teamNames[0]) !== -1 && names.indexOf(teamNames[1]) !== -1;
         }) || null;
     }
 
     function gotwSpreadForTeam(market, matchup) {
         if (!market || !matchup) return '';
-        var teamKey = gotwTeamKey(teamLabel(matchup));
         var side = [market.owner1, market.owner2].find(function (candidate) {
-            return gotwTeamKey(candidate && (candidate.teamName || candidate.ownerName)) === teamKey;
+            return gotwSideMatchesMatchup(candidate, matchup);
         });
         if (!side || side.spread == null || side.spread === '') return '';
         var numericSpread = Number(side.spread);

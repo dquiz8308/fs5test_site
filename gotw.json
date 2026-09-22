@@ -2,6 +2,34 @@
   "markets": [
     {
       "gotwNumber": 1,
+      "marketTitle": "Week 1 GOTW 1: Mike vs Chris",
+      "weekNumber": 1,
+      "status": "FINAL",
+      "owner1": {
+        "ownerName": "Mike",
+        "spread": -9
+      },
+      "owner2": {
+        "ownerName": "Chris",
+        "spread": 9
+      }
+    },
+    {
+      "gotwNumber": 2,
+      "marketTitle": "Week 1 GOTW 2: Matthew vs Cody",
+      "weekNumber": 1,
+      "status": "FINAL",
+      "owner1": {
+        "ownerName": "Matthew",
+        "spread": -4.5
+      },
+      "owner2": {
+        "ownerName": "Cody",
+        "spread": 4.5
+      }
+    },
+    {
+      "gotwNumber": 1,
       "marketTitle": "Week 2 GOTW 1: Will vs Bailey",
       "weekNumber": 2,
       "status": "OPEN",
