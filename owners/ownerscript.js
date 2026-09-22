@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var ownerLockerCount = document.getElementById('owner-locker-count');
     var ownerLockerEmpty = document.getElementById('owner-locker-empty');
     var ownerLockerNameplate = document.querySelector('[data-owner-locker-nameplate]');
+    var ownerLockerLastPlacePlate = document.getElementById('owner-locker-last-place-plate');
+    var ownerLockerLastPlaceYear = document.getElementById('owner-locker-last-place-year');
     var lockerItemModal = document.getElementById('locker-item-modal');
     var lockerItemModalContent = document.getElementById('locker-item-modal-content');
     var lockerItemModalClose = document.getElementById('locker-item-modal-close');
@@ -178,7 +180,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 Promise.all([loadCareerTouchdownTotals(), loadLastPlaceGameLossTotals()]).then(function (totals) {
                     if (requestId !== requestSequence || currentOwnerData !== data) return;
                     var ownerKey = ownerMetricKey(data.owner && data.owner.owner_name);
-                    renderOwnerAchievements(data, totals[0][ownerKey], totals[1][ownerKey]);
+                    var lastPlaceGameLosses = totals[1][ownerKey];
+                    renderOwnerAchievements(data, totals[0][ownerKey], lastPlaceGameLosses);
+                    scheduleOwnerLocker(data.owner, {
+                        lastPlaceGameLosses: lastPlaceGameLosses,
+                        seasons: data.seasons
+                    });
                 }).catch(function (error) {
                     console.warn('Owner achievement totals could not be loaded.', error);
                 });
@@ -485,7 +492,44 @@ document.addEventListener('DOMContentLoaded', function() {
         shelves.appendChild(shelf);
     }
 
-    function renderOwnerLocker(owner) {
+    function getLockerLastPlaceYears(seasons, lastPlaceGameLosses) {
+        var verifiedFinishCount = numberOrZero(lastPlaceGameLosses);
+        if (!verifiedFinishCount) return [];
+
+        // A last-place achievement is earned by losing the final consolation game.
+        // Season history exposes its result as the 12th-place finish, so only use
+        // years when their total matches the verified achievement count.
+        var finishYears = (Array.isArray(seasons) ? seasons : []).filter(function (season) {
+            return Number(season && season.final_finish) === 12 && Number.isFinite(Number(season.year));
+        }).map(function (season) {
+            return Number(season.year);
+        }).sort(function (a, b) {
+            return b - a;
+        });
+
+        return finishYears.length === verifiedFinishCount ? finishYears : [];
+    }
+
+    function renderLockerLastPlacePlate(lockerContext) {
+        if (!ownerLockerLastPlacePlate || !ownerLockerLastPlaceYear) return;
+
+        var finishYears = getLockerLastPlaceYears(
+            lockerContext && lockerContext.seasons,
+            lockerContext && lockerContext.lastPlaceGameLosses
+        );
+        var latestYear = finishYears[0];
+
+        ownerLockerLastPlacePlate.hidden = !latestYear;
+        ownerLockerLastPlaceYear.textContent = latestYear ? String(latestYear) : '';
+
+        if (latestYear) {
+            ownerLockerLastPlacePlate.setAttribute('aria-label', 'Last-place finish in ' + finishYears.join(', '));
+        } else {
+            ownerLockerLastPlacePlate.removeAttribute('aria-label');
+        }
+    }
+
+    function renderOwnerLocker(owner, lockerContext) {
         if (!OWNER_COLLECTIONS_VISIBLE || !ownerLocker || !ownerLockerShelves || !ownerLockerCount || !ownerLockerEmpty) return;
         var ownerName = owner && owner.owner_name;
         var bowlAwards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
@@ -506,6 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ownerLockerCount.textContent = awards.length + (awards.length === 1 ? ' item' : ' items');
         ownerLockerEmpty.hidden = awards.length > 0;
         if (ownerLockerNameplate) ownerLockerNameplate.textContent = ownerName ? String(ownerName).toUpperCase() : 'FS5 GAME DAY';
+        renderLockerLastPlacePlate(lockerContext);
 
         var itemsPerShelf = 5;
         var oversizeAwards = awards.filter(isOversizeLockerItem);
@@ -541,12 +586,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function scheduleOwnerLocker(owner) {
+    function scheduleOwnerLocker(owner, lockerContext) {
         if (!OWNER_COLLECTIONS_VISIBLE) return;
         var renderToken = ++lockerRenderToken;
         var renderWhenIdle = function () {
             if (renderToken !== lockerRenderToken) return;
-            renderOwnerLocker(owner);
+            renderOwnerLocker(owner, lockerContext);
         };
 
         if ('requestIdleCallback' in window) {
@@ -959,6 +1004,8 @@ document.addEventListener('DOMContentLoaded', function() {
         closeAchievementHistory();
         lockerRenderToken++;
         if (ownerLocker) ownerLocker.hidden = true;
+        if (ownerLockerLastPlacePlate) ownerLockerLastPlacePlate.hidden = true;
+        if (ownerLockerLastPlaceYear) ownerLockerLastPlaceYear.textContent = '';
         if (ownerLocker) {
             ownerLocker.classList.remove('owner-locker--extended', 'owner-locker--has-oversize-bay');
             ownerLocker.removeAttribute('data-shelf-count');

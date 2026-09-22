@@ -3805,6 +3805,28 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     font-size:clamp(.95rem, 2.5vw, 1.5rem);
     text-align:center;
 }
+.owner-locker__last-place-plate {
+    position:absolute;
+    z-index:1;
+    top:47%;
+    left:50%;
+    width:clamp(170px, 36%, 260px);
+    transform:translate(-50%, -50%) rotate(-1.5deg);
+    pointer-events:none;
+    filter:drop-shadow(0 7px 5px rgba(0,0,0,.55));
+}
+.owner-locker__last-place-plate img { display:block; width:100%; height:auto; }
+.owner-locker__last-place-year {
+    position:absolute;
+    top:44%;
+    left:13%;
+    width:74%;
+    color:#202020;
+    font:900 clamp(.9rem, 3.2vw, 1.65rem)/1.1 "Arial Black", Arial, sans-serif;
+    letter-spacing:.13em;
+    text-align:center;
+    text-shadow:0 1px 0 #fff, 0 2px 2px rgba(0,0,0,.16);
+}
 .owner-locker__shelves {
     top:21%;
     right:6.2%;
@@ -3901,6 +3923,8 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
 
 @media (max-width:765px) {
     .owner-locker__locker-header { right:10%; left:10%; padding-right:25%; }
+    .owner-locker__last-place-plate { width:clamp(118px, 39%, 220px); }
+    .owner-locker__last-place-year { font-size:clamp(.62rem, 3vw, .95rem); }
     .owner-locker__shelves { top:21%; right:6%; bottom:3.6%; left:6%; }
     .owner-locker.owner-locker--extended .owner-locker__cabinet { min-height:calc(130px + (var(--owner-locker-shelf-count) * 135px)); padding:117px 16px 26px; }
     .owner-locker.owner-locker--extended .owner-locker__cabinet::before { height:105px; }
