@@ -50,6 +50,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   ],
   "keith": [
     {
+      "label": "Black Five String Bass",
+      "asset": "artwork/locker/keith/black-five-string-bass.png"
+    },
+    {
       "label": "Black Metal T Shirt",
       "asset": "artwork/locker/keith/black-metal-t-shirt.png"
     }
