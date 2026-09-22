@@ -49,7 +49,12 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/cody/georgia-bulldogs-helmet.png"
     }
   ],
-  "david": [],
+  "david": [
+    {
+      "label": "Miller Lite Can",
+      "asset": "artwork/locker/david/miller-lite-can.png"
+    }
+  ],
   "ethan": [
     {
       "label": "Georgia Southern Helmet",
@@ -60,6 +65,10 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
     {
       "label": "Georgia Southern Helmet",
       "asset": "artwork/locker/jordan/georgia-southern-helmet.png"
+    },
+    {
+      "label": "Pbr Can",
+      "asset": "artwork/locker/jordan/pbr-can.png"
     }
   ],
   "keith": [
@@ -74,8 +83,17 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "presentation": "oversize"
     }
   ],
-  "matthew": [],
+  "matthew": [
+    {
+      "label": "Busch Light Can",
+      "asset": "artwork/locker/matthew/busch-light-can.png"
+    }
+  ],
   "max": [
+    {
+      "label": "Bud Light Can",
+      "asset": "artwork/locker/max/bud-light-can.png"
+    },
     {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/max/georgia-bulldogs-helmet.png"
