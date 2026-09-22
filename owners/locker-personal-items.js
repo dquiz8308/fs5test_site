@@ -137,6 +137,11 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/mike/busch-light-can.png"
     },
     {
+      "label": "Falcons Jersey With Tag",
+      "asset": "artwork/locker/mike/falcons-jersey-with-tag.png",
+      "presentation": "oversize"
+    },
+    {
       "label": "Georgia Bulldogs Helmet",
       "asset": "artwork/locker/mike/georgia-bulldogs-helmet.png"
     }
