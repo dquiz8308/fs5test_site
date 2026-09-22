@@ -2059,7 +2059,7 @@
         var number = Number(market.gotwNumber);
         var ribbon = document.createElement("div");
         ribbon.className = "gotw-ribbon";
-        ribbon.innerHTML = '<span class="gotw-ribbon__star">★</span><span><strong>FS5 GAME OF THE WEEK ' + (Number.isFinite(number) ? "#" + number : "") + '</strong><small>' + esc(market.marketTitle || "FEATURED BY THE FS5 SPORTSBOOK") + '</small></span><span class="gotw-ribbon__signal">' + (matchupState === "LIVE" ? "LIVE FEATURE" : (matchupState === "FINAL" ? "FINAL FEATURE" : "SPOTLIGHT MATCHUP")) + '</span>';
+        ribbon.innerHTML = '<img class="gotw-ribbon__bill" src="/fs5book/artwork/fivebill.png" alt="Five Bill"><span><strong>FS5 GAME OF THE WEEK ' + (Number.isFinite(number) ? "#" + number : "") + '</strong><small>' + esc(market.marketTitle || "FEATURED BY THE FS5 SPORTSBOOK") + '</small></span><span class="gotw-ribbon__signal">' + (matchupState === "LIVE" ? "LIVE FEATURE" : (matchupState === "FINAL" ? "FINAL FEATURE" : "SPOTLIGHT MATCHUP")) + '</span>';
         card.insertBefore(ribbon, card.firstChild);
         var badgeEl = document.createElement("span");
         badgeEl.className = "matchup-card__gotw-badge";
