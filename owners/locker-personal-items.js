@@ -15,14 +15,14 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/bailey/mike-check-microphone.png"
     },
     {
-      "label": "Pbr Can",
-      "asset": "artwork/locker/bailey/pbr-can.png"
+      "label": "Pbr Can Pyramid",
+      "asset": "artwork/locker/bailey/pbr-can-pyramid.png"
     }
   ],
   "brycen": [
     {
-      "label": "Bud Light Can",
-      "asset": "artwork/locker/brycen/bud-light-can.png"
+      "label": "Bud Light Cans Crushed Scattered",
+      "asset": "artwork/locker/brycen/bud-light-cans-crushed-scattered.png"
     },
     {
       "label": "Tame Impala Currents Poster",
@@ -37,8 +37,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "presentation": "oversize"
     },
     {
-      "label": "Busch Light Can",
-      "asset": "artwork/locker/chris/busch-light-can.png"
+      "label": "Busch Light Can Shotgunned",
+      "asset": "artwork/locker/chris/busch-light-can-shotgunned.png"
     },
     {
       "label": "Drum Set",
@@ -65,8 +65,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/cody/georgia-bulldogs-helmet.png"
     },
     {
-      "label": "Miller Lite Can",
-      "asset": "artwork/locker/cody/miller-lite-can.png"
+      "label": "Miller Lite Can Pyramid",
+      "asset": "artwork/locker/cody/miller-lite-can-pyramid.png"
     }
   ],
   "david": [
@@ -75,8 +75,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/david/cougars-helmet.png"
     },
     {
-      "label": "Miller Lite Can",
-      "asset": "artwork/locker/david/miller-lite-can.png"
+      "label": "Miller Lite Cans Crushed Scattered",
+      "asset": "artwork/locker/david/miller-lite-cans-crushed-scattered.png"
     }
   ],
   "ethan": [
@@ -85,8 +85,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/ethan/georgia-southern-helmet.png"
     },
     {
-      "label": "Pbr Can",
-      "asset": "artwork/locker/ethan/pbr-can.png"
+      "label": "Pbr Can Shotgunned",
+      "asset": "artwork/locker/ethan/pbr-can-shotgunned.png"
     }
   ],
   "jordan": [
@@ -95,8 +95,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/jordan/georgia-southern-helmet.png"
     },
     {
-      "label": "Pbr Can",
-      "asset": "artwork/locker/jordan/pbr-can.png"
+      "label": "Pbr Can Pyramid",
+      "asset": "artwork/locker/jordan/pbr-can-pyramid.png"
     },
     {
       "label": "Standing Playstation 5",
@@ -115,20 +115,20 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "presentation": "oversize"
     },
     {
-      "label": "Bud Light Can",
-      "asset": "artwork/locker/keith/bud-light-can.png"
+      "label": "Bud Light Cans Crushed Scattered",
+      "asset": "artwork/locker/keith/bud-light-cans-crushed-scattered.png"
     }
   ],
   "matthew": [
     {
-      "label": "Busch Light Can",
-      "asset": "artwork/locker/matthew/busch-light-can.png"
+      "label": "Busch Light Can Shotgunned",
+      "asset": "artwork/locker/matthew/busch-light-can-shotgunned.png"
     }
   ],
   "max": [
     {
-      "label": "Bud Light Can",
-      "asset": "artwork/locker/max/bud-light-can.png"
+      "label": "Bud Light Can Pyramid",
+      "asset": "artwork/locker/max/bud-light-can-pyramid.png"
     },
     {
       "label": "Georgia Bulldogs Helmet",
@@ -141,8 +141,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
   ],
   "mike": [
     {
-      "label": "Busch Light Can",
-      "asset": "artwork/locker/mike/busch-light-can.png"
+      "label": "Busch Light Cans Crushed Scattered",
+      "asset": "artwork/locker/mike/busch-light-cans-crushed-scattered.png"
     },
     {
       "label": "Falcons Jersey With Tag",
@@ -165,8 +165,8 @@ window.FS5_LOCKER_PERSONAL_ITEMS = {
       "asset": "artwork/locker/will/kennesaw-state-helmet.png"
     },
     {
-      "label": "Miller Lite Can",
-      "asset": "artwork/locker/will/miller-lite-can.png"
+      "label": "Miller Lite Can Shotgunned",
+      "asset": "artwork/locker/will/miller-lite-can-shotgunned.png"
     }
   ]
 };
