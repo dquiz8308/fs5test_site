@@ -2320,9 +2320,14 @@
             var info = state.rosterMap.get(String(team.roster_id));
             var col = document.createElement("section"); col.className = "modal-team-column";
             var roster = info && info.roster;
+            // Sleeper stores the actual lineup on each weekly matchup. Using the
+            // current roster here rewrites old modal lineups after an owner makes
+            // a later lineup move, so final and historical matchups must never
+            // fall back to that mutable roster state.
+            var useFrozenLineup = isFinalMatchup || Number(week) < Number(state.currentWeek);
             col.innerHTML = '<div class="modal-team-header"><img src="' + esc(info && info.avatar ? info.avatar : '/artwork/logo.png') + '" alt=""><div><h3>' + esc(info ? info.teamName : 'Roster ' + team.roster_id) + '</h3><span>' + esc(info && info.account ? info.account : '') + '</span></div><strong>' + formatScore(team.points) + '</strong></div>';
-            var starters = Array.isArray(roster && roster.starters) ? roster.starters.filter(Boolean) : [];
-            var all = Array.isArray(roster && roster.players) ? roster.players.filter(Boolean) : [];
+            var starters = Array.isArray(team.starters) ? team.starters.filter(Boolean) : (useFrozenLineup ? [] : (Array.isArray(roster && roster.starters) ? roster.starters.filter(Boolean) : []));
+            var all = Array.isArray(team.players) ? team.players.filter(Boolean) : (useFrozenLineup ? starters : (Array.isArray(roster && roster.players) ? roster.players.filter(Boolean) : []));
             var set = new Set(starters.map(String));
             var bench = all.filter(function (id) { return !set.has(String(id)); });
             var startHeading = document.createElement("h4"); startHeading.textContent = "STARTERS"; col.appendChild(startHeading);
