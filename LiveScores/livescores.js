@@ -2269,14 +2269,17 @@
                     }
                 });
             });
-            box.innerHTML = '<div class="superlative-card"><span>🏆 HIGHEST SCORE</span><strong>' + esc(high.team) + '</strong><b>' + formatScore(high.score) + '</b></div>' +
-                '<div class="superlative-card"><span>💀 LOWEST PROJECTED</span><strong>' + esc(lowestProjected.team) + '</strong><b>' + formatScore(lowestProjected.projected) + ' proj.</b></div>' +
+            box.innerHTML = '<div class="superlative-card"><span>💀 LOWEST PROJECTED</span><strong>' + esc(lowestProjected.team) + '</strong><b>' + formatScore(lowestProjected.projected) + ' proj.</b></div>' +
                 '<div class="superlative-card"><span>⚡ MOST PROJECTED</span><strong>' + esc(mostLeft.team) + '</strong><b>' + formatScore(mostLeft.remaining) + ' proj.</b></div>' +
                 (projectedCloseGames.length ? '<div class="superlative-card"><span>🤏 CLOSEST PROJECTED MATCHUP</span><strong>' + esc(teamLabel(projectedCloseGames[0].a)) + ' vs ' + esc(teamLabel(projectedCloseGames[0].b)) + '</strong><b>' + formatScore(projectedCloseGames[0].diff) + ' pts</b></div>' : '') +
                 (highestProjectedPlayer ? '<div class="superlative-card"><span>🔥 HIGHEST PROJECTED PLAYER</span><strong>' + esc(playerName(highestProjectedPlayer.id)) + '</strong><b>' + formatScore(highestProjectedPlayer.projection) + ' proj.</b></div>' : '');
             return;
         }
-        box.innerHTML = '<div class="superlative-card"><span>🏆 HIGHEST SCORE</span><strong>' + esc(high.team) + '</strong><b>' + formatScore(high.score) + '</b></div>' +
+        // Kickoff alone is not enough: wait for actual starter scoring, including negative points.
+        var hasPlayerScoring = state.matchups.some(function (matchup) {
+            return getTeamPlayerIds(matchup).some(function (id) { return getPlayerPoints(id) !== 0; });
+        });
+        box.innerHTML = (weekIsConcluded || hasPlayerScoring ? '<div class="superlative-card"><span>🏆 HIGHEST SCORE</span><strong>' + esc(high.team) + '</strong><b>' + formatScore(high.score) + '</b></div>' : '') +
             '<div class="superlative-card"><span>💀 LOWEST SCORE</span><strong>' + esc(low.team) + '</strong><b>' + formatScore(low.score) + '</b></div>' +
             (weekIsConcluded ? '' : '<div class="superlative-card"><span>⚡ MOST PROJECTED</span><strong>' + esc(mostLeft.team) + '</strong><b>' + formatScore(mostLeft.remaining) + ' proj.</b></div>');
         var closeGames = [];
