@@ -3,7 +3,7 @@
   "short_name": "FS5",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#031d36",
   "theme_color": "#003f73",
   "icons": [
     {
