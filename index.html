@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-title" content="FS5">
     <link rel="manifest" href="site.webmanifest">
     <link rel="apple-touch-icon" sizes="180x180" href="artwork/fs5-ios-icon.png">
-    <link rel="preload" as="image" href="artwork/logo.png" media="(max-width: 900px), (display-mode: standalone)">
+    <link rel="preload" as="image" href="artwork/fs5-intro-beveled.png" media="(max-width: 900px), (display-mode: standalone)">
     <!-- Critical opening styles stay inline so the shield needs no extra stylesheet. -->
     <style>
         .app-intro {
@@ -31,9 +31,31 @@
             -webkit-tap-highlight-color: transparent;
         }
         .app-intro[hidden] { display: none; }
-        .app-intro__shield {
-            display: block;
+        .app-intro__mark {
+            position: relative;
+            display: grid;
+            place-items: center;
             width: min(156px, 38vw, 38vh);
+        }
+        .app-intro__mark::before,
+        .app-intro__mark::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid rgba(126, 192, 245, .65);
+            border-radius: 50%;
+            box-shadow: 0 0 16px rgba(84, 161, 223, .2);
+            opacity: 0;
+            pointer-events: none;
+            animation: fs5-intro-ripple 1100ms ease-out 2;
+        }
+        .app-intro__mark::after { animation-delay: 187ms; }
+        .app-intro__shield {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
             height: auto;
             filter: drop-shadow(0 10px 28px rgba(0, 0, 0, .3));
             animation: fs5-heartbeat 1100ms ease-in-out 2;
@@ -46,9 +68,15 @@
             21% { transform: scale(1); }
             29% { transform: scale(1.075); }
         }
+        @keyframes fs5-intro-ripple {
+            0% { transform: scale(.8); opacity: 0; }
+            12% { opacity: .65; }
+            85%, 100% { transform: scale(2.15); opacity: 0; }
+        }
         @media (prefers-reduced-motion: reduce) {
             .app-intro { display: none; transition: none; }
             .app-intro__shield { animation: none; }
+            .app-intro__mark::before, .app-intro__mark::after { animation: none; }
         }
     </style>
     <link rel="stylesheet" href="styles.css?v=power-lines-flow-20260918">
@@ -56,7 +84,9 @@
 </head>
 <body>
     <button class="app-intro" id="app-intro" type="button" aria-label="Skip FS5 opening animation" hidden>
-        <img class="app-intro__shield" src="artwork/logo.png" width="300" height="323" alt="" fetchpriority="high">
+        <span class="app-intro__mark" aria-hidden="true">
+            <img class="app-intro__shield" src="artwork/fs5-intro-beveled.png" width="1267" height="1241" alt="" fetchpriority="high">
+        </span>
     </button>
     <script src="app-intro.js?v=heartbeat-20260924"></script>
     <header>
