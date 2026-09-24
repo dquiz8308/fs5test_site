@@ -3939,3 +3939,7 @@ body.owners-dark .row3 > .game-records-container.team-game-records .game-records
     .owner-locker--has-oversize-bay .owner-locker__shelf--half { padding-right:2%; padding-left:7%; }
     .owner-locker--has-oversize-bay .locker-collectible--oversize .locker-object img { width:100%; height:95%; transform:translateY(4px); }
 }
+/* PPR medals scale their engraving with the artwork on shelves and in dialogs. */
+.locker-ppr-medal { display:block; width:100%; height:100%; overflow:visible; }
+.locker-object--ppr-medal { aspect-ratio:1; }
+.locker-item-detail__object.locker-object--ppr-medal { width:240px; height:240px; max-width:100%; transform:none; }

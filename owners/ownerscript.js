@@ -417,6 +417,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return { label: bowlName || 'Bowl Keepsake', type: 'bowl-keepsake' };
     }
 
+    function pprMedalProfile(item) {
+        return { label: item.player_name + ' · ' + item.position + ' PPR Leader', type: 'ppr-medal' };
+    }
+
     function personalLockerItemProfile(item) {
         return {
             label: item && item.label ? item.label : 'Personal Keepsake',
@@ -446,14 +450,16 @@ document.addEventListener('DOMContentLoaded', function() {
         item.type = 'button';
         item.setAttribute('aria-haspopup', 'dialog');
         item.setAttribute('aria-controls', 'locker-item-modal');
-        item.setAttribute('aria-label', isPersonalLockerItem(award)
+        item.setAttribute('aria-label', award.kind === 'ppr-medal' ? profile.label + ', ' + award.season + '. Open medal details.' : isPersonalLockerItem(award)
             ? profile.label + ', personal locker item. Open details.'
             : profile.label + ', won in ' + award.season + '. Open game details.');
 
         var object = document.createElement('span');
         object.className = 'locker-collectible__object locker-object locker-object--' + profile.type;
         object.setAttribute('aria-hidden', 'true');
-        if (profile.asset) {
+        if (award.kind === 'ppr-medal') {
+            object.appendChild(window.createFS5PprMedal(award));
+        } else if (profile.asset) {
             var objectImage = document.createElement('img');
             objectImage.src = profile.asset;
             objectImage.alt = '';
@@ -482,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
         shelfItems.className = 'owner-locker__shelf-items';
 
         awards.forEach(function (award) {
-            var profile = isPersonalLockerItem(award)
+            var profile = award.kind === 'ppr-medal' ? pprMedalProfile(award) : isPersonalLockerItem(award)
                 ? personalLockerItemProfile(award)
                 : lockerItemProfile(award.bowl, award.round);
             if (profile) shelfItems.appendChild(createLockerCollectible(award, profile, isFeature));
@@ -534,6 +540,9 @@ document.addEventListener('DOMContentLoaded', function() {
         var ownerName = owner && owner.owner_name;
         var bowlAwards = (Array.isArray(window.FS5_LOCKER_AWARDS) ? window.FS5_LOCKER_AWARDS : [])
             .filter(function (award) { return ownerMetricKey(award.owner) === ownerMetricKey(ownerName) && award.bowl !== 'First Round'; });
+        bowlAwards = bowlAwards.concat((window.FS5_LOCKER_PPR_MEDALS || []).filter(function (award) {
+            return award.kind === 'ppr-medal' && ownerMetricKey(award.owner) === ownerMetricKey(ownerName);
+        }));
         var personalItems = (window.FS5_LOCKER_PERSONAL_ITEMS && window.FS5_LOCKER_PERSONAL_ITEMS[ownerMetricKey(ownerName)]) || [];
         var awards = bowlAwards.concat(personalItems.map(function (item) {
             return {
@@ -619,7 +628,9 @@ document.addEventListener('DOMContentLoaded', function() {
             var fallbackObject = document.createElement('span');
             fallbackObject.className = 'locker-item-detail__object locker-collectible__object locker-object locker-object--' + profile.type;
             fallbackObject.setAttribute('aria-hidden', 'true');
-            if (profile.asset) {
+            if (award.kind === 'ppr-medal') {
+                fallbackObject.appendChild(window.createFS5PprMedal(award));
+            } else if (profile.asset) {
                 var fallbackImage = document.createElement('img');
                 fallbackImage.src = profile.asset;
                 fallbackImage.alt = '';
@@ -635,16 +646,16 @@ document.addEventListener('DOMContentLoaded', function() {
         copy.className = 'locker-item-detail__copy';
         var eyebrow = document.createElement('p');
         eyebrow.className = 'locker-item-detail__eyebrow';
-        eyebrow.textContent = isPersonalLockerItem(award) ? 'PERSONAL LOCKER ITEM' : award.season + ' · ' + award.round;
+        eyebrow.textContent = award.kind === 'ppr-medal' ? award.season + ' · FULL-SEASON PPR LEADER' : isPersonalLockerItem(award) ? 'PERSONAL LOCKER ITEM' : award.season + ' · ' + award.round;
         var title = document.createElement('h2');
         title.id = 'locker-item-modal-title';
         title.textContent = profile.label;
         var bowl = document.createElement('p');
         bowl.className = 'locker-item-detail__bowl';
-        bowl.textContent = isPersonalLockerItem(award) ? 'Personal collection' : award.bowl;
+        bowl.textContent = award.kind === 'ppr-medal' ? award.position + ' · ' + formatDecimal(award.points, 2) + ' PPR points' : isPersonalLockerItem(award) ? 'Personal collection' : award.bowl;
         var result = document.createElement('p');
         result.className = 'locker-item-detail__result';
-        result.textContent = isPersonalLockerItem(award)
+        result.textContent = award.kind === 'ppr-medal' ? 'Awarded to ' + award.owner + ', the player’s final FS5 owner that season. Based on full NFL regular-season PPR points.' : isPersonalLockerItem(award)
             ? 'A personal keepsake displayed in this owner\'s locker.'
             : award.team + ' won ' + formatDecimal(award.score, 2) + '–' + formatDecimal(award.opponentScore, 2) + ' over ' + award.opponent + '.';
         copy.append(eyebrow, title, bowl, result);
