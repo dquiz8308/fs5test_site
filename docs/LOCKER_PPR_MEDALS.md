@@ -1,6 +1,6 @@
 # Owner locker PPR medals
 
-Status: presentation prepared; recipient verification blocked by unavailable historical data access. No medals have been awarded yet. The public site's key cannot read `player_week_performances` or `players`. Do not expose those tables or add privileged credentials to the website.
+Status: presentation prepared; all 28 QB/RB/WR/TE leaders for 2019–2025 now matched to final FS5 rosters through the public Vault archives. No medals have been awarded yet; canonical player IDs and scoring-compatible totals remain pending. The public site's key cannot read `player_week_performances` or `players`. Do not expose those tables or add privileged credentials to the website.
 
 The requested award recognizes the full NFL regular-season PPR points leader at each position, starting in 2019, and belongs only to that player's final FS5 owner for that season. NFL playoffs are excluded. Use complete seasons only; 2025 is the latest completed season currently documented by the site. Full NFL seasons may include weeks beyond the FS5 championship.
 
@@ -28,4 +28,23 @@ NFL.com provides [official historical season statistics](https://www.nfl.com/sta
 
 Before engraving point totals or assigning medals, reconcile the provider's [scoring settings](https://www.fantasypros.com/scoring-settings/) with the intended award rules. PPR alone does not define passing, kicking or defense scoring. The linked scoring-settings page describes the provider's default half-PPR settings; the leader tables above explicitly select PPR. Kicker and DST winners still need a scoring-compatible validation decision. Full-season totals include the final NFL regular-season week even when FS5 competition ends earlier.
 
-Remaining work: obtain final FS5 roster records, match canonical player identities, resolve scoring and exact totals, and populate approved medal records. Keep the live awards list empty and the locker hidden until those requirements are met.
+Remaining work: reconcile the archived roster matches below with canonical player IDs, resolve scoring and exact totals, and populate approved medal records. Keep the live awards list empty and the locker hidden until those requirements are met.
+
+
+## Final FS5 owner cross-reference
+
+The site-linked NFL Fantasy archives contain all 12 final-week team rosters in each season. Both `week` and `statWeek` were checked: week 16 for 2019–2020 and week 17 for 2021–2025. Players were matched in full roster text, including bench entries, rather than draft lists or their last earlier-season appearance. Each of the 28 leaders matched exactly one team. These establish ownership at the final FS5 competition-week snapshot; they do not claim later offseason transaction coverage.
+
+Archive alias `CPA` is Max (team 9), supported by the site owner history for Double Dawgs, Mikes Brakes, Pompano Mokes and Certified Pipers Association. Archive alias `Michael` is Mike (team 4), supported by Maximum Brutality in the site owner history. Lowercase `matthew` is normalized to Matthew. The 2020 archive calls Max’s team Congrats David while the owner endpoint calls it Reigning Champion; the archive manager and persistent team ID identify the owner without relying on that differing team name.
+
+| Season | QB | RB | WR | TE |
+| --- | --- | --- | --- | --- |
+| 2019 | Lamar Jackson → Max | Christian McCaffrey → Mike | Michael Thomas → Brycen | Travis Kelce → Keith |
+| 2020 | Josh Allen → David | Alvin Kamara → Max | Davante Adams → Keith | Travis Kelce → Mike |
+| 2021 | Josh Allen → Keith | Jonathan Taylor → Matthew | Cooper Kupp → Keith | Mark Andrews → Ethan |
+| 2022 | Patrick Mahomes → Ethan | Austin Ekeler → Bailey | Justin Jefferson → Jordan | Travis Kelce → Keith |
+| 2023 | Josh Allen → Keith | Christian McCaffrey → Max | CeeDee Lamb → Chris | Sam LaPorta → Max |
+| 2024 | Lamar Jackson → Jordan | Jahmyr Gibbs → Bailey | Ja'Marr Chase → David | Brock Bowers → Jordan |
+| 2025 | Josh Allen → Ethan | Christian McCaffrey → Jordan | Puka Nacua → Max | Trey McBride → Brycen |
+
+[Machine-readable evidence](LOCKER_PPR_OWNER_MATCHES.json) preserves each archive URL, original roster URL, capture timestamp, owner alias, provider team ID, final roster week and leaderboard source. This research does not change the live medal list or locker visibility.
