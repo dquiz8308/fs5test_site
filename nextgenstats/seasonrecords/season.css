@@ -97,6 +97,12 @@ body > main::before {
     font-weight: 800;
     cursor: pointer;
 }
+.season-power-lines__play-icon { position: relative; display: inline-block; width: 10px; height: 12px; vertical-align: -2px; }
+.season-power-lines__play[aria-pressed="false"] .season-power-lines__play-icon::before { content: ""; position: absolute; top: 1px; left: 1px; width: 0; height: 0; border-top: 5px solid transparent; border-bottom: 5px solid transparent; border-left: 8px solid currentColor; }
+.season-power-lines__play[aria-pressed="true"] .season-power-lines__play-icon::before,
+.season-power-lines__play[aria-pressed="true"] .season-power-lines__play-icon::after { content: ""; position: absolute; top: 1px; width: 3px; height: 10px; border-radius: 1px; background: currentColor; }
+.season-power-lines__play[aria-pressed="true"] .season-power-lines__play-icon::before { left: 1px; }
+.season-power-lines__play[aria-pressed="true"] .season-power-lines__play-icon::after { right: 1px; }
 .season-power-lines__filter { display: flex; align-items: center; gap: 8px; color: var(--sr-muted); font-size: .68rem; font-weight: 800; text-transform: uppercase; }
 .season-power-lines__filter select { width: min(260px, 30vw); }
 .season-power-lines__scrubber { flex: 1 1 220px; min-width: 110px; margin: 0; accent-color: #ef5158; cursor: pointer; }

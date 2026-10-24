@@ -42,7 +42,6 @@
     function stop() {
         if (player) player.pause();
         play.setAttribute('aria-pressed', 'false');
-        play.querySelector('[aria-hidden="true"]').textContent = '▶';
         playLabel.textContent = 'Play';
         play.setAttribute('aria-label', 'Play standings progression');
     }
@@ -139,7 +138,7 @@
         } catch (error) { if (token !== requestToken) return; setStatus('Power Lines is temporarily unavailable for this season.'); window.console.warn('Historical Power Lines request failed.',error); }
     }
 
-    function updatePlayButton(playing) { play.setAttribute('aria-pressed',playing?'true':'false'); play.querySelector('[aria-hidden="true"]').textContent=playing?'❚❚':'▶'; playLabel.textContent=playing?'Pause':'Play'; play.setAttribute('aria-label',playing?'Pause standings progression':'Play standings progression'); }
+    function updatePlayButton(playing) { play.setAttribute('aria-pressed',playing?'true':'false'); playLabel.textContent=playing?'Pause':'Play'; play.setAttribute('aria-label',playing?'Pause standings progression':'Play standings progression'); }
     play.addEventListener('click', function () { if (player) player.toggle(); });
     range.addEventListener('input',function(){if(!player)return;player.pause();player.setPosition(range.value);});
     teamSelect.addEventListener('change',function(){highlightedOwnerId=teamSelect.value===''?null:Number(teamSelect.value);update();});
