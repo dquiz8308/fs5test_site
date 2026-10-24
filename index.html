@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/artwork/fs5-ios-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
     <title>FastStrongFive Fantasy Football</title>
-    <meta name="theme-color" content="#031d36">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="FS5">
-    <link rel="manifest" href="site.webmanifest">
-    <link rel="apple-touch-icon" sizes="180x180" href="artwork/fs5-ios-icon.png">
     <link rel="preload" as="image" href="artwork/fs5-intro-beveled.png" media="(max-width: 900px), (display-mode: standalone)">
     <!-- Critical opening styles stay inline so the shield needs no extra stylesheet. -->
     <style>
@@ -20,11 +17,10 @@
             place-items: center;
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 24px;
+            padding: 0;
             border: 0;
-            border-radius: 0;
-            background: #031d36;
+            background: radial-gradient(circle at 50% 43%, #0a4778 0%, #052f59 42%, #031d36 100%);
+            color: inherit;
             cursor: pointer;
             opacity: 1;
             transition: opacity 280ms ease-out;
@@ -79,7 +75,7 @@
             .app-intro__mark::before, .app-intro__mark::after { animation: none; }
         }
     </style>
-    <link rel="stylesheet" href="styles.css?v=power-lines-flow-20260918">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="common.css">
 </head>
 <body>
@@ -108,9 +104,9 @@
         <div class="container site-nav__container">
             <ul class="site-nav__list">
                 <li class="site-nav__item"><a class="site-nav__link is-active" href="index.html" aria-current="page"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/livescores/"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live</span></a></li>
                 <li class="site-nav__item"><a class="site-nav__link" href="owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
                 <li class="site-nav__item"><a class="site-nav__link" href="h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="livescores/index.html"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
                 <li class="site-nav__item site-nav__item--has-submenu">
                     <div class="site-nav__category-row">
                         <a class="site-nav__link" href="nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
@@ -158,11 +154,13 @@
             </div>
 
             <!-- Manually set only this value: preseason, regular, postseason, or completed. -->
-            <section class="home-season" aria-labelledby="current-season-heading" data-home-season-status="preseason">
-                <h2 class="home-season__heading" id="current-season-heading">Current Season</h2>
-                <div class="home-season__feature">
-                    <div class="home-season__crest-wrap">
-                        <img src="artwork/season15logo.png" alt="FastStrongFive Season XV crest" class="home-season__crest">
+            <section class="home-season" aria-labelledby="current-season-heading" data-home-season-status="regular" data-power-lines>
+                <div class="home-season__topbar">
+                    <div class="home-season__identity">
+                        <h2 class="home-season__heading" id="current-season-heading">
+                            <span>Current Season</span>
+                            <img src="artwork/season15logo.png" alt="FastStrongFive Season XV crest" class="home-season__crest">
+                        </h2>
                     </div>
                     <nav class="home-season__actions" aria-label="Current season destinations">
                         <a class="home-season__button home-season__button--primary" href="nextgenstats/seasonrecords/index.html">2025 Records <span aria-hidden="true">&rsaquo;</span></a>
@@ -170,22 +168,46 @@
                         <a class="home-season__button home-season__button--postseason" href="vault/probowl/index.html">Pro Bowl <span aria-hidden="true">&rsaquo;</span></a>
                     </nav>
                 </div>
-                <div class="home-season__stats">
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="4.5" y="7.5" width="23" height="20" rx="2.5"/><path d="M4.5 12.5h23M10 4.5v6M22 4.5v6M10 17h3M16 17h3M22 17h1M10 22h3M16 22h3M22 22h1"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Season</dt><dd>XV</dd></dl>
+                <div class="home-season__utility">
+                    <div class="home-season__stats">
+                            <div class="home-season__stat">
+                                <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="4.5" y="7.5" width="23" height="20" rx="2.5"/><path d="M4.5 12.5h23M10 4.5v6M22 4.5v6M10 17h3M16 17h3M22 17h1M10 22h3M16 22h3M22 22h1"/></svg>
+                                <dl class="home-season__stat-copy"><dt>Season</dt><dd>XV</dd></dl>
+                            </div>
+                            <div class="home-season__stat">
+                                <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="7" y="6.5" width="18" height="22" rx="2.5"/><path d="M12 6.5V4h8v2.5M11 15l3 3 7-7M11 23h10"/></svg>
+                                <dl class="home-season__stat-copy"><dt>Status</dt><dd>Complete</dd></dl>
+                            </div>
+                            <div class="home-season__stat">
+                                <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M6 5v11h20V5M16 16v11M11 27h10M6 10h5M21 10h5"/></svg>
+                                <dl class="home-season__stat-copy"><dt>Reigning Champion</dt><dd>The Rome Man Empire</dd></dl>
+                            </div>
+                            <div class="home-season__stat">
+                                <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.5 9-6 10-3.5-1-6-4-6-10zM10 8H5c0 5 2 8 6.5 8M22 8h5c0 5-2 8-6.5 8M16 20v5M11 28h10M12 25h8"/></svg>
+                                <dl class="home-season__stat-copy"><dt>Pro Bowl Winner</dt><dd>Smokey Road</dd></dl>
+                            </div>
                     </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><rect x="7" y="6.5" width="18" height="22" rx="2.5"/><path d="M12 6.5V4h8v2.5M11 15l3 3 7-7M11 23h10"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Status</dt><dd>Complete</dd></dl>
+                    <div class="power-lines__controls" data-power-lines-controls hidden>
+                        <button class="power-lines__play" type="button" data-power-lines-play aria-label="Play standings progression" aria-pressed="false">
+                            <span aria-hidden="true">&#9654;</span><span data-power-lines-play-label>Play</span>
+                        </button>
+                        <input id="power-lines-range" class="power-lines__scrubber" data-power-lines-range type="range" min="0" max="0" value="0" step="0.001" aria-label="Power Lines timeline">
+                        <label class="power-lines__team-filter">
+                            <span>Highlight Team</span>
+                            <select data-power-lines-team-select aria-label="Highlight Team"></select>
+                        </label>
+                        <output class="power-lines__week-output" data-power-lines-output for="power-lines-range">PRE</output>
                     </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M6 5v11h20V5M16 16v11M11 27h10M6 10h5M21 10h5"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Reigning Champion</dt><dd>The Rome Man Empire</dd></dl>
-                    </div>
-                    <div class="home-season__stat">
-                        <svg class="home-season__stat-icon" aria-hidden="true" focusable="false" viewBox="0 0 32 32"><path d="M10 5h12v5c0 6-2.5 9-6 10-3.5-1-6-4-6-10zM10 8H5c0 5 2 8 6.5 8M22 8h5c0 5-2 8-6.5 8M16 20v5M11 28h10M12 25h8"/></svg>
-                        <dl class="home-season__stat-copy"><dt>Pro Bowl Winner</dt><dd>Smokey Road</dd></dl>
+                </div>
+                <div class="power-lines" aria-label="Power Lines standings history">
+                    <div class="power-lines__board-wrap" data-power-lines-board-wrap hidden>
+                        <div class="power-lines__board" data-power-lines-board>
+                            <div class="power-lines__weeks" data-power-lines-weeks aria-hidden="true"></div>
+                            <div class="power-lines__ranks" data-power-lines-ranks aria-hidden="true"></div>
+                            <div class="power-lines__playoff-line" data-power-lines-playoff-line aria-hidden="true"><span>PLAYOFF LINE</span></div>
+                            <svg class="power-lines__paths" data-power-lines-paths aria-hidden="true" preserveAspectRatio="none"></svg>
+                            <div class="power-lines__markers" data-power-lines-markers aria-label="Standings at the selected week"></div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -234,38 +256,6 @@
                 </div>
             </section>
 
-            <section class="power-lines" data-power-lines data-league-id="1387297022695993344" aria-labelledby="power-lines-title">
-                <div class="power-lines__header">
-                    <div>
-                        <p class="power-lines__kicker">FS5 STANDINGS STORY</p>
-                        <div class="power-lines__title-row">
-                            <h2 id="power-lines-title">Power Lines</h2>
-                            <svg class="power-lines__pulse" viewBox="0 0 144 28" aria-label="Live standings pulse" role="img"><path d="M2 14h20l7-10 12 20 10-14 10 4h17l8-8 13 16 10-8h31"/></svg>
-                        </div>
-                        <p>From draft order to the weekly race for the playoffs.</p>
-                    </div>
-                    <p class="power-lines__status" data-power-lines-status aria-live="polite">Loading the season race…</p>
-                </div>
-                <div class="power-lines__board-wrap" data-power-lines-board-wrap hidden>
-                    <div class="power-lines__board" data-power-lines-board>
-                        <div class="power-lines__weeks" data-power-lines-weeks aria-hidden="true"></div>
-                        <div class="power-lines__ranks" data-power-lines-ranks aria-hidden="true"></div>
-                        <div class="power-lines__playoff-line" data-power-lines-playoff-line aria-hidden="true"><span>PLAYOFF LINE</span></div>
-                        <svg class="power-lines__paths" data-power-lines-paths aria-hidden="true" preserveAspectRatio="none"></svg>
-                        <div class="power-lines__markers" data-power-lines-markers aria-label="Standings at the selected week"></div>
-                    </div>
-                </div>
-                <div class="power-lines__controls" data-power-lines-controls hidden>
-                    <button class="power-lines__play" type="button" data-power-lines-play aria-label="Play standings progression" aria-pressed="false">
-                        <span aria-hidden="true">▶</span><span data-power-lines-play-label>Play</span>
-                    </button>
-                    <label class="power-lines__range-label" for="power-lines-range">Choose a point in the season</label>
-                    <input class="power-lines__range" id="power-lines-range" data-power-lines-range type="range" min="0" max="0" value="0" step="1">
-                    <output class="power-lines__week-output" data-power-lines-output for="power-lines-range">PRE</output>
-                </div>
-                <div class="power-lines__teams" data-power-lines-teams aria-label="Teams in the standings race"></div>
-            </section>
-
             <div class="home-welcome">
                 <img src="artwork/welcomebanner.png" alt="Welcome to the Fast Strong Five Fantasy Football League" class="home-welcome__image" loading="lazy">
             </div>
@@ -280,7 +270,8 @@
     <script src="supabase-config.js"></script>
     <script src="footer-status.js"></script>
     <script src="homepage.js"></script>
-    <script src="home-power-lines.js?v=accelerate-20260918"></script>
+    <script src="power-lines-timeline.js"></script>
+    <script src="home-power-lines.js"></script>
     <script src="mobile-menu.js"></script>
 </body>
 </html>
