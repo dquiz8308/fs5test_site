@@ -10,6 +10,7 @@
         highest: 0,
         nonpoint: 0
     };
+    var yearLoadToken = 0;
 
     var categoryOptions = {
         single: [
@@ -378,17 +379,25 @@
     }
 
     function loadAllPanels() {
-        Object.keys(panels).forEach(loadPanel);
+        return Promise.all(Object.keys(panels).map(loadPanel));
     }
 
     function handleYearChange() {
         var year = Number(yearDropdown.value);
+        var token = ++yearLoadToken;
         ['single', 'totals', 'highest', 'nonpoint'].forEach(function(panelKey) {
             rebuildDropdown(panelKey, year);
         });
         setCombinedScope();
         updateScopeControls();
-        loadAllPanels();
+        loadAllPanels().then(function() {
+            if (token !== yearLoadToken || year !== Number(yearDropdown.value)) {
+                return;
+            }
+            document.dispatchEvent(new CustomEvent('season-records-loaded', {
+                detail: { year: year }
+            }));
+        });
     }
 
     yearDropdown.addEventListener('change', handleYearChange);

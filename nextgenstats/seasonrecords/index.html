@@ -29,9 +29,9 @@
         <div class="container site-nav__container">
             <ul class="site-nav__list">
                 <li class="site-nav__item"><a class="site-nav__link" href="../../index.html"><svg class="site-nav__icon site-nav__icon--home" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/><path class="site-nav__icon-accent" d="M9.5 20v-6h5v6"/></svg><span>Home</span></a></li>
+                <li class="site-nav__item"><a class="site-nav__link" href="/livescores/"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live</span></a></li>
                 <li class="site-nav__item"><a class="site-nav__link" href="../../owners/index.html"><svg class="site-nav__icon site-nav__icon--owners" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3.5 20c.4-4 2.2-6 5.5-6s5.1 2 5.5 6"/><circle class="site-nav__icon-accent" cx="17" cy="9" r="2.3"/><path class="site-nav__icon-accent" d="M15.5 14.5c3.2-.5 5 1.3 5.5 4.5"/></svg><span>Owners</span></a></li>
                 <li class="site-nav__item"><a class="site-nav__link" href="../../h2h/index.html"><svg class="site-nav__icon site-nav__icon--h2h" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 8h13"/><path class="site-nav__icon-accent" d="m14 5 3 3-3 3"/><path d="M20 16H7"/><path class="site-nav__icon-accent" d="m10 13-3 3 3 3"/></svg><span>H2H</span></a></li>
-                <li class="site-nav__item"><a class="site-nav__link" href="/livescores/"><svg class="site-nav__icon site-nav__icon--livescores" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path class="site-nav__icon-accent" d="M8 10h3M8 14h8M14 10h2"/></svg><span>Live Scores</span></a></li>
                 <li class="site-nav__item site-nav__item--has-submenu is-section-active">
                     <div class="site-nav__category-row">
                         <a class="site-nav__link is-section-active" href="../../nextgenstats/index.html"><svg class="site-nav__icon site-nav__icon--nextgen" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M4 20V10h4v10M10 20V6h4v14M16 20v-7h4v7"/><path class="site-nav__icon-accent" d="m4 7 5-3 4 2 7-4"/></svg><span>NextGenStats</span></a>
@@ -90,6 +90,32 @@
                 <option value="2013">2013</option>
                 <option value="2012">2012</option>
             </select>
+        </div>
+      </section>
+
+      <section class="season-power-lines" data-season-power-lines aria-labelledby="season-power-lines-heading">
+        <div class="season-power-lines__header">
+          <h2 id="season-power-lines-heading">Power Lines</h2>
+          <div class="season-power-lines__controls" data-power-lines-controls hidden>
+            <button class="season-power-lines__play" type="button" data-power-lines-play aria-label="Play standings progression" aria-pressed="false">
+              <span aria-hidden="true">&#9654;</span><span data-power-lines-play-label>Play</span>
+            </button>
+            <input class="season-power-lines__scrubber" data-power-lines-range type="range" min="0" max="0" value="0" step="0.001" aria-label="Power Lines timeline">
+            <label class="season-power-lines__filter">
+              <span>Highlight Team</span>
+              <select data-power-lines-team-select aria-label="Highlight Team"></select>
+            </label>
+          </div>
+        </div>
+        <p class="season-power-lines__status" data-power-lines-status aria-live="polite">Loading Power Lines…</p>
+        <div class="season-power-lines__board-wrap" data-power-lines-board-wrap hidden>
+          <div class="season-power-lines__board" data-power-lines-board>
+            <div class="season-power-lines__weeks" data-power-lines-weeks aria-hidden="true"></div>
+            <div class="season-power-lines__ranks" data-power-lines-ranks aria-hidden="true"></div>
+            <div class="season-power-lines__playoff-line" data-power-lines-playoff-line aria-hidden="true"><span>PLAYOFF LINE</span></div>
+            <svg class="season-power-lines__paths" data-power-lines-paths aria-hidden="true" preserveAspectRatio="none"></svg>
+            <div class="season-power-lines__markers" data-power-lines-markers aria-label="Standings at the selected point in the season"></div>
+          </div>
         </div>
       </section>
 
@@ -296,6 +322,8 @@
         </div>
     </footer>
     <script src="season-data.js"></script>
+    <script src="../../power-lines-timeline.js"></script>
+    <script src="season-power-lines.js"></script>
     <script src="season-details.js"></script>
     <script src="../../footer-status.js"></script>
     <script src="../../mobile-menu.js"></script>
