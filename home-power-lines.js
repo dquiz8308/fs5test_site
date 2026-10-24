@@ -171,7 +171,6 @@
 
     function updatePlayButton(shouldPlay) {
         playButton.setAttribute('aria-pressed', shouldPlay ? 'true' : 'false');
-        playButton.querySelector('[aria-hidden="true"]').textContent = shouldPlay ? '❚❚' : '▶';
         playLabel.textContent = shouldPlay ? 'Pause' : 'Play';
         playButton.setAttribute('aria-label', shouldPlay ? 'Pause standings progression' : 'Play standings progression');
     }
