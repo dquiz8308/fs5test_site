@@ -107,6 +107,7 @@ body > main::before {
 .season-power-lines__filter select { width: min(260px, 30vw); }
 .season-power-lines__scrubber { flex: 1 1 220px; min-width: 110px; margin: 0; accent-color: #ef5158; cursor: pointer; }
 .season-power-lines__scrubber:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.season-power-lines__expand { display: none; }
 .season-power-lines__status { margin: 0; padding: 28px 18px; color: var(--sr-muted); text-align: center; }
 .season-power-lines__board-wrap { padding: 10px 12px 14px; }
 .season-power-lines__board {
@@ -493,19 +494,28 @@ td:nth-child(2), td:nth-child(3) { font-weight: 800; }
     .season-power-lines__header { align-items: stretch; flex-direction: column; gap: 10px; padding: 11px 10px; }
     .season-power-lines__controls {
         display: grid;
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: auto auto minmax(120px, 1fr);
         grid-template-areas:
-            "play filter"
-            "slider slider";
+            "play expand filter"
+            "slider slider slider";
         align-items: center;
         gap: 8px;
         width: 100%;
     }
     .season-power-lines__play { grid-area: play; }
+    .season-power-lines__expand { grid-area: expand; position: relative; display: inline-block; cursor: pointer; }
+    .season-power-lines__expand input { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; opacity: 0; }
+    .season-power-lines__expand span { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; box-sizing: border-box; padding: 6px 10px; border: 1px solid var(--sr-red-soft); border-radius: 999px; color: #fff; background: #123b50; font-size: .72rem; font-weight: 800; white-space: nowrap; }
+    .season-power-lines__expand span::before { content: ""; width: 14px; height: 14px; box-sizing: border-box; border: 1px solid var(--sr-red-soft); border-radius: 4px; background: #09283c; }
+    .season-power-lines__expand span::after { content: ""; position: absolute; top: 12px; left: 14px; width: 6px; height: 3px; border-bottom: 2px solid #073047; border-left: 2px solid #073047; opacity: 0; transform: rotate(-45deg); }
+    .season-power-lines__expand input:checked + span { border-color: #ef5158; color: #fff; background: var(--sr-red-soft); }
+    .season-power-lines__expand input:checked + span::before { border-color: #ef5158; background: #ef5158; }
+    .season-power-lines__expand input:checked + span::after { opacity: 1; }
+    .season-power-lines__expand input:focus-visible + span { outline: 3px solid #fff; outline-offset: 2px; }
     .season-power-lines__scrubber { grid-area: slider; width: 100%; min-width: 0; }
     .season-power-lines__filter { grid-area: filter; min-width: 0; justify-content: flex-end; }
     .season-power-lines__filter span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
-    .season-power-lines__filter select { width: min(250px, 50vw); }
+    .season-power-lines__filter select { width: 100%; }
     .season-power-lines__board-wrap { padding: 9px 5px 12px; overflow-x: hidden; }
     .season-power-lines__board { height: 430px; margin: 26px 18px 3px 31px; }
     .season-power-lines__marker { width: 25px; height: 25px; border-width: 1px; }
@@ -514,6 +524,13 @@ td:nth-child(2), td:nth-child(3) { font-weight: 800; }
     .season-power-lines__weeks span.is-week { font-size: 0; }
     .season-power-lines__weeks span.is-week::after { content: attr(data-mobile-label); font-size: .55rem; }
     .season-power-lines__ranks { left: -27px; width: 21px; }
+
+    .season-power-lines.is-power-lines-expanded .season-power-lines__board-wrap { overflow-x: auto; padding: 22px 0 3px; }
+    .season-power-lines.is-power-lines-expanded .season-power-lines__board { min-width: 760px; height: 335px; margin: 26px 0 3px 42px; }
+    .season-power-lines.is-power-lines-expanded .season-power-lines__weeks { inset-block-start: -25px; }
+    .season-power-lines.is-power-lines-expanded .season-power-lines__weeks span { font-size: .66rem; }
+    .season-power-lines.is-power-lines-expanded .season-power-lines__weeks span.is-week { font-size: .66rem; }
+    .season-power-lines.is-power-lines-expanded .season-power-lines__weeks span.is-week::after { content: none; }
 
     .row3 { margin-bottom: 0; }
 

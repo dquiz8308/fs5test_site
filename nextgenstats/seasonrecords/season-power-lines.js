@@ -24,6 +24,7 @@
     var range = panel.querySelector('[data-power-lines-range]');
     var play = panel.querySelector('[data-power-lines-play]');
     var playLabel = panel.querySelector('[data-power-lines-play-label]');
+    var expandToggle = panel.querySelector('[data-power-lines-expand]');
     var teamSelect = panel.querySelector('[data-power-lines-team-select]');
     var timeline = null;
     var highlightedOwnerId = null;
@@ -142,6 +143,7 @@
     play.addEventListener('click', function () { if (player) player.toggle(); });
     range.addEventListener('input',function(){if(!player)return;player.pause();player.setPosition(range.value);});
     teamSelect.addEventListener('change',function(){highlightedOwnerId=teamSelect.value===''?null:Number(teamSelect.value);update();});
+    expandToggle.addEventListener('change',function(){panel.classList.toggle('is-power-lines-expanded',expandToggle.checked);});
     document.addEventListener('season-records-loaded',function(event){
         if (event.detail && Number(event.detail.year) === Number(yearSelect.value)) load();
     });
