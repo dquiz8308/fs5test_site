@@ -925,6 +925,10 @@
     outline-offset: 3px;
 }
 
+.power-lines__expand {
+    display: none;
+}
+
 .power-lines__team-filter {
     display: grid;
     gap: 4px;
@@ -969,8 +973,29 @@
     }
 
     .power-lines__board {
-        min-width: 760px;
-        height: 335px;
+        min-width: 0;
+        height: 430px;
+        margin: 26px 18px 3px 31px;
+    }
+
+    .power-lines__board-wrap {
+        overflow-x: hidden;
+        padding: 9px 5px 12px;
+    }
+
+    .power-lines__weeks {
+        top: -27px;
+        bottom: auto;
+        font-size: 0.55rem;
+    }
+
+    .power-lines__weeks .is-week {
+        font-size: 0;
+    }
+
+    .power-lines__weeks .is-week::after {
+        content: attr(data-mobile-label);
+        font-size: 0.55rem;
     }
 
     .power-lines__board::after {
@@ -983,10 +1008,10 @@
     }
 
     .power-lines__controls {
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: auto auto minmax(120px, 1fr);
         grid-template-areas:
-            "play filter"
-            "slider slider";
+            "play expand filter"
+            "slider slider slider";
         margin-left: 38px;
         gap: 8px;
         align-items: center;
@@ -1002,6 +1027,82 @@
     .power-lines__scrubber {
         grid-area: slider;
         min-width: 70px;
+    }
+
+    .power-lines__expand {
+        grid-area: expand;
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .power-lines__expand input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    .power-lines__expand span {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 36px;
+        box-sizing: border-box;
+        padding: 6px 10px;
+        border: 1px solid rgba(142, 238, 210, 0.58);
+        border-radius: 999px;
+        color: #eafff8;
+        background: #123b50;
+        font-size: 0.72rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .power-lines__expand span::before {
+        content: "";
+        width: 14px;
+        height: 14px;
+        box-sizing: border-box;
+        border: 1px solid rgba(143, 243, 211, 0.72);
+        border-radius: 4px;
+        background: #09283c;
+    }
+
+    .power-lines__expand span::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 14px;
+        width: 6px;
+        height: 3px;
+        border-bottom: 2px solid #073047;
+        border-left: 2px solid #073047;
+        opacity: 0;
+        transform: rotate(-45deg);
+    }
+
+    .power-lines__expand input:checked + span {
+        border-color: #8ff3d3;
+        color: #fff;
+        background: rgba(37, 126, 128, 0.52);
+    }
+
+    .power-lines__expand input:checked + span::before {
+        border-color: #8ff3d3;
+        background: #8ff3d3;
+    }
+
+    .power-lines__expand input:checked + span::after {
+        opacity: 1;
+    }
+
+    .power-lines__expand input:focus-visible + span {
+        outline: 3px solid #fff;
+        outline-offset: 2px;
     }
 
     .power-lines__team-filter {
@@ -1024,15 +1125,40 @@
     }
 
     .power-lines__team-filter select {
-        width: min(250px, 50vw);
+        width: 100%;
         min-height: 42px;
+    }
+
+    .home-season.is-power-lines-expanded .power-lines__board-wrap {
+        overflow-x: auto;
+        padding: 22px 0 3px;
+    }
+
+    .home-season.is-power-lines-expanded .power-lines__board {
+        min-width: 760px;
+        height: 335px;
+        margin: 0 0 0 42px;
+    }
+
+    .home-season.is-power-lines-expanded .power-lines__weeks {
+        top: auto;
+        bottom: calc(100% + 8px);
+        font-size: 0.71rem;
+    }
+
+    .home-season.is-power-lines-expanded .power-lines__weeks .is-week {
+        font-size: inherit;
+    }
+
+    .home-season.is-power-lines-expanded .power-lines__weeks .is-week::after {
+        content: none;
     }
 
 }
 
 @media (max-width: 540px) {
     .power-lines__controls {
-        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-columns: auto auto minmax(120px, 1fr);
         margin-left: 0;
     }
 }

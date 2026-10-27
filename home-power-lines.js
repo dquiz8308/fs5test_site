@@ -16,6 +16,7 @@
     var output = panel.querySelector('[data-power-lines-output]');
     var playButton = panel.querySelector('[data-power-lines-play]');
     var playLabel = panel.querySelector('[data-power-lines-play-label]');
+    var expandToggle = panel.querySelector('[data-power-lines-expand]');
     var teamSelect = panel.querySelector('[data-power-lines-team-select]');
     var timeline = null;
     var highlightedOwnerId = null;
@@ -84,6 +85,10 @@
         for (var index = 0; index <= REGULAR_SEASON_WEEKS; index += 1) {
             var label = document.createElement('span');
             label.textContent = index === 0 ? 'PRE' : 'W' + index;
+            if (index > 0) {
+                label.classList.add('is-week');
+                label.setAttribute('data-mobile-label', String(index));
+            }
             if (index === Math.round(player.getPosition())) label.classList.add('is-active');
             if (index === currentWeekIndex) label.classList.add('is-current');
             if (index > currentWeekIndex) label.classList.add('is-future');
@@ -284,6 +289,9 @@
     teamSelect.addEventListener('change', function () {
         highlightedOwnerId = teamSelect.value === '' ? null : Number(teamSelect.value);
         updateVisuals();
+    });
+    expandToggle.addEventListener('change', function () {
+        panel.classList.toggle('is-power-lines-expanded', expandToggle.checked);
     });
     playButton.addEventListener('click', function () {
         if (!timeline || timeline.frames.length < 2) return;
