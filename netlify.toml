@@ -6,7 +6,13 @@
   directory = "netlify/functions"
 
 [functions."discord-live"]
-  schedule = "* * * * *"
+  schedule = "* 0-3 * * 1,2,5"
+
+[functions."discord-live-sunday-start"]
+  schedule = "30-59 16 * * 0"
+
+[functions."discord-live-sunday-day"]
+  schedule = "* 17-23 * * 0"
 
 [[headers]]
   for = "/owners/locker-personal-items.js"
