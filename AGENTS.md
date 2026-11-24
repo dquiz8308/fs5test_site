@@ -76,3 +76,12 @@
 - If cross-repository access is unavailable, stop and report that the authoritative shared document needs updating; do not edit the local copy.
 - Keep database implementation and private Admin implementation details in their owning repositories.
 
+## Repository boundaries
+
+- `codex_site` is authoritative for production and must remain read-only from `test_site` work.
+- Use `test_site` for collaborative development and testing. Promote changes to canonical only with explicit approval.
+- Synchronize canonical changes selectively; never overwrite intentional test-only experiments, especially Owners locker, achievement, medal, theme, and personal-item features.
+- Keep live Supabase reads enabled unless explicitly instructed otherwise.
+- Preserve the test-site SportsBook frontend submission guards. They are not a server-side security boundary.
+- Preserve Discord functionality while keeping test-site alerts disabled through Netlify environment configuration.
+

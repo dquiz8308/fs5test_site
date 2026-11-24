@@ -2,6 +2,8 @@
 
 Primary pages remain in their established folders with shared root assets where appropriate. Shared navigation, menu, footer/status, configuration, and common styling should remain centralized only where already designed to be shared. Older season wrappers and experimental material remain historical unless explicitly retired.
 
+`/livescores/` is the maintained Live Scores route. Its page-specific implementation and detailed operational context remain under `livescores/`, while its server functions and scheduled wrappers remain under `netlify/functions/` with schedules in root `netlify.toml`.
+
 ## Documentation
 
 ```text
