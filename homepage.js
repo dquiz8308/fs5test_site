@@ -1,7 +1,7 @@
 (function (window, document) {
     "use strict";
 
-    var seasonYear = 2025;
+    var seasonYear = 2026;
     var seasonNumeral = "XV";
     var allowedStatuses = ["preseason", "regular", "postseason", "completed"];
     var seasonPanel = document.querySelector(".home-season");
@@ -30,8 +30,9 @@
         },
         regular: {
             links: [
-                ["2025 Records", "nextgenstats/seasonrecords/index.html"],
-                ["Divisions", "divisions/index.html"]
+                ["2026 Records", "nextgenstats/currentyear/index.html"],
+                ["FS5 SPORTSBOOK", "fs5book/index.html", "sportsbook"],
+                ["Live Scores", "/livescores/"]
             ],
             stats: [
                 ["season", "Season", seasonNumeral],
@@ -44,7 +45,8 @@
             links: [
                 ["2025 Records", "nextgenstats/seasonrecords/index.html"],
                 ["Playoff Brackets", "vault/brackets/index.html"],
-                ["Bowl Games", "vault/bowls/index.html"]
+                ["Bowl Games", "vault/bowls/index.html"],
+                ["Live Scores", "/livescores/"]
             ],
             stats: [
                 ["season", "Season", seasonNumeral],
@@ -84,6 +86,9 @@
             var anchor = document.createElement("a");
             var arrow = document.createElement("span");
             anchor.className = "home-season__button" + (index === 0 ? " home-season__button--primary" : " home-season__button--status");
+            if (link[2]) {
+                anchor.classList.add("home-season__button--" + link[2]);
+            }
             anchor.href = link[1];
             anchor.appendChild(document.createTextNode(link[0] + " "));
             arrow.setAttribute("aria-hidden", "true");

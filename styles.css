@@ -224,6 +224,47 @@
     color: #fff;
 }
 
+.home-season__power-lines-title {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    margin: 2px 0 0;
+    padding-top: 7px;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.home-season__power-lines-title span {
+    opacity: 0.82;
+    white-space: nowrap;
+}
+
+.home-season__power-lines-title svg {
+    display: block;
+    width: clamp(86px, 12vw, 124px);
+    height: auto;
+    flex: 0 1 auto;
+    overflow: visible;
+    opacity: 0.82;
+}
+
+.home-season__power-lines-title polyline {
+    fill: none;
+    stroke: var(--home-red);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 4;
+}
+
 .home-season__stat {
     display: flex;
     gap: 6px;
@@ -967,6 +1008,19 @@
 }
 
 @media (max-width: 768px) {
+    .home-season__power-lines-title {
+        gap: 9px;
+        width: 100%;
+        font-size: clamp(1.8rem, 8.4vw, 2.3rem);
+    }
+
+    .home-season__power-lines-title svg {
+        width: auto;
+        min-width: 0;
+        max-width: 120px;
+        flex: 1 1 auto;
+    }
+
     .power-lines {
         margin: 0;
         padding: 10px 8px 8px;

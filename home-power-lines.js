@@ -205,11 +205,40 @@
         updateVisuals();
     }
 
-    function rpc(client, name, parameters) {
-        return client.rpc(name, parameters).then(function (result) {
-            if (result.error) throw result.error;
-            return result.data;
+    function delay(milliseconds) {
+        return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); });
+    }
+
+    async function rpc(client, name, parameters) {
+        var error = null;
+        for (var attempt = 0; attempt < 2; attempt += 1) {
+            var result = await client.rpc(name, parameters);
+            if (!result.error) return result.data;
+            error = result.error;
+            if (String(error.code) !== '57014' || attempt === 1) break;
+            await delay(350);
+        }
+        window.console.warn('Power Lines RPC failed.', {
+            rpc: name,
+            year: parameters.p_year,
+            week: parameters.p_through_week || null,
+            code: error && error.code,
+            message: error && error.message
         });
+        throw error;
+    }
+
+    async function loadWeeklyStandings(client, latestWeek) {
+        var weeklyRows = [];
+        for (var firstWeek = 1; firstWeek <= latestWeek; firstWeek += 2) {
+            var batch = [];
+            for (var week = firstWeek; week <= latestWeek && week < firstWeek + 2; week += 1) {
+                batch.push(rpc(client, 'site_power_lines_standings', { p_year: SEASON_YEAR, p_through_week: week }));
+            }
+            var batchRows = await Promise.all(batch);
+            weeklyRows.push.apply(weeklyRows, batchRows);
+        }
+        return weeklyRows;
     }
 
     function ownerImage(ownerName) {
@@ -271,12 +300,11 @@
             var homeRow = Array.isArray(homeData) ? homeData[0] : homeData;
             var latestWeek = Math.min(REGULAR_SEASON_WEEKS, Number(homeRow && homeRow.latest_completed_week));
             if (!Number.isInteger(latestWeek) || latestWeek < 1) throw new Error('No completed regular-season week is available.');
-            var requests = [rpc(client, 'site_draft_page', { p_year: SEASON_YEAR })];
-            for (var week = 1; week <= latestWeek; week += 1) {
-                requests.push(rpc(client, 'site_power_lines_standings', { p_year: SEASON_YEAR, p_through_week: week }));
-            }
-            var responses = await Promise.all(requests);
-            timeline = buildTimeline(responses[0], responses.slice(1), latestWeek);
+            var responses = await Promise.all([
+                rpc(client, 'site_draft_page', { p_year: SEASON_YEAR }),
+                loadWeeklyStandings(client, latestWeek)
+            ]);
+            timeline = buildTimeline(responses[0], responses[1], latestWeek);
             validateTimeline(timeline);
             configureTimeline();
         } catch (error) {
