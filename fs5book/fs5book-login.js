@@ -4,6 +4,22 @@
     const SESSION_KEY = 'fs5bookMemberSession';
     const FUNCTIONS_URL = 'https://aksxwbktytovuvdacypp.supabase.co/functions/v1';
     const FALLBACK_ART = '../artwork/logo.png';
+    const RUNTIME_CONFIG = Object.freeze(Object.assign({ readOnly: false }, window.FS5BOOK_RUNTIME_CONFIG || {}));
+    const BLOCKED_READ_ONLY_REQUESTS = new Set(['member-submit-wager', 'member-submit-survivor']);
+    const OWNER_PROFILE_IMAGES = {
+        brycen: '../owners/artwork/profile-current/brycen.png',
+        will: '../owners/artwork/profile-current/will.png',
+        david: '../owners/artwork/profile-current/david.png',
+        jordan: '../owners/artwork/profile-current/jordan.png',
+        chris: '../owners/artwork/profile-current/chris.png',
+        bailey: '../owners/artwork/profile-current/bailey.png',
+        mike: '../owners/artwork/profile-current/mike.png',
+        keith: '../owners/artwork/profile-current/keith.png',
+        ethan: '../owners/artwork/profile-current/ethan.png',
+        matthew: '../owners/artwork/profile-current/matthew.png',
+        cody: '../owners/artwork/profile-current/cody.png',
+        max: '../owners/artwork/profile-current/max.png'
+    };
     let token = sessionStorage.getItem(SESSION_KEY) || '';
     let book = null;
     let selectedFuture = null;
@@ -29,6 +45,9 @@
     };
 
     async function request(name, { method = 'GET', body, auth = true } = {}) {
+        if (RUNTIME_CONFIG.readOnly && BLOCKED_READ_ONLY_REQUESTS.has(name)) {
+            throw new Error('Submissions are disabled on this read-only test site.');
+        }
         const headers = { 'Content-Type': 'application/json' };
         const key = window.fs5Supabase && window.fs5Supabase.config.publishableKey;
         if (key) headers.apikey = key;
@@ -77,6 +96,11 @@
     function cells(row, values) { values.forEach(value => { row.insertCell().textContent = shown(value); }); }
     function owner(item, number) { return item[`owner${number}`] || {}; }
     function teamName(side) { return side.teamName || side.ownerName || 'Team unavailable'; }
+    function ownerProfileImage(side) {
+        const firstName = String(side.ownerName || '').trim().split(/\s+/)[0].toLowerCase();
+        return Object.prototype.hasOwnProperty.call(OWNER_PROFILE_IMAGES, firstName)
+            ? OWNER_PROFILE_IMAGES[firstName] : FALLBACK_ART;
+    }
     function statusClass(value) {
         const status = String(value || '').toLowerCase();
         if (status.includes('win') || status === 'won') return 'is-win';
@@ -88,6 +112,7 @@
     }
 
     function marketIsBettable(market) {
+        if (RUNTIME_CONFIG.readOnly) return false;
         if (!market || String(market.status || '').toUpperCase() !== 'OPEN') return false;
         const now = Date.now();
         const opensAt = market.opensAt ? Date.parse(market.opensAt) : null;
@@ -97,6 +122,7 @@
     }
 
     function futureIsBettable(item) {
+        if (RUNTIME_CONFIG.readOnly) return false;
         if (!item || String(item.marketStatus || '').toUpperCase() !== 'OPEN') return false;
         const now = Date.now();
         const opensAt = item.opensAt ? Date.parse(item.opensAt) : null;
@@ -144,7 +170,7 @@
             const side = banner.querySelector(number === 1 ? '.matchup-team--one' : '.matchup-team--two');
             side.querySelector('.matchup-team__label').textContent = teamName(sideData);
             side.querySelector('.matchup-team__spread').textContent = spread(sideData.spread);
-            side.querySelector('img').src = sideData.profileImagePath || FALLBACK_ART;
+            side.querySelector('img').src = ownerProfileImage(sideData);
             if (sideData.ownerId !== undefined && sideData.ownerId !== null) {
                 const option = document.createElement('option');
                 option.value = sideData.ownerId;
@@ -179,7 +205,7 @@
             const side = document.createElement('div');
             side.className = `history-team${Number(item.spreadWinnerOwnerId) === Number(sideData.ownerId) ? ' is-spread-winner' : ''}`;
             const identity = document.createElement('div'); identity.className = 'history-team__identity';
-            const image = document.createElement('img'); image.src = sideData.profileImagePath || FALLBACK_ART; image.alt = ''; image.setAttribute('aria-hidden', 'true');
+            const image = document.createElement('img'); image.src = ownerProfileImage(sideData); image.alt = ''; image.setAttribute('aria-hidden', 'true');
             const name = document.createElement('span'); name.className = 'history-team__name'; name.textContent = teamName(sideData);
             const line = document.createElement('span'); line.className = 'history-team__spread'; line.textContent = spread(sideData.spread);
             identity.append(image, name, line);
@@ -192,13 +218,23 @@
             scoreBlock.append(small, score); side.append(identity, scoreBlock); matchup.appendChild(side);
         });
         const summary = document.createElement('div'); summary.className = 'history-score-summary';
-        [['Actual Combined Score', item.actualCombinedScore], ['Your Combined Score', item.combinedScoreGuess],
-            ['Difference', item.combinedScoreDifference], ['Accepted Spread', item.acceptedSpread], ['Wager Result', label]
-        ].forEach(([title, value]) => {
-            const wrapper = document.createElement('span');
-            if (title === 'Wager Result') wrapper.className = 'history-wager-result';
+        const wagerAmount = Number(item.stakeAmount);
+        const wagerStatus = String(item.settlementResult || item.status || '').toUpperCase();
+        let netResult = '—';
+        if (item.stakeAmount !== null && item.stakeAmount !== undefined && item.stakeAmount !== '' && Number.isFinite(wagerAmount)) {
+            if (wagerStatus === 'LOSS') netResult = `-${money(Math.abs(wagerAmount))}`;
+            if (wagerStatus === 'WIN') netResult = `+${money(Math.abs(wagerAmount) * 2)}`;
+            if (wagerStatus === 'VOID') netResult = money(0);
+        }
+        [['actual', 'Actual Combined Score', item.actualCombinedScore],
+            ['your', 'Your Combined Score', item.combinedScoreGuess],
+            ['difference', 'Difference', item.combinedScoreDifference],
+            ['net', 'Net Result', netResult]
+        ].forEach(([kind, title, value]) => {
+            const wrapper = document.createElement('div'); wrapper.className = `history-stat history-stat--${kind}`;
+            if (kind === 'net' && netResult !== '—') wrapper.classList.add(`is-${wagerStatus.toLowerCase()}`);
             const small = document.createElement('small'); small.textContent = title;
-            const strong = document.createElement('strong'); strong.textContent = shown(value);
+            const strong = document.createElement('strong'); strong.textContent = value == null || String(value).trim() === '' ? '—' : String(value);
             wrapper.append(small, strong); summary.appendChild(wrapper);
         });
         article.append(matchup, summary); cell.appendChild(article); return row;
@@ -275,7 +311,7 @@
         }
         visible('survivor-selection-box', true); visible('survivor-box', true);
         const hasCurrentWeek = data.currentWeek !== null && data.currentWeek !== undefined;
-        const survivorOpen = String(data.status || '').toUpperCase() === 'OPEN' && data.canSubmit === true;
+        const survivorOpen = !RUNTIME_CONFIG.readOnly && String(data.status || '').toUpperCase() === 'OPEN' && data.canSubmit === true;
         el('survivordetail').textContent = hasCurrentWeek ? (data.instructions || `Select Pick for Week ${data.currentWeek}`) : 'Survivor';
         el('survivor-selection-title').textContent = hasCurrentWeek ? `Survivor Pool Selections - Week ${data.currentWeek}` : 'Survivor Pool Selections';
         const select = el('survivor-dropdown'); select.disabled = !survivorOpen; el('survivor-submit-button').disabled = !survivorOpen;
@@ -332,15 +368,6 @@
         el('balance').textContent = money(data.balances && data.balances.cash);
         el('free-bet-balance').textContent = money(data.balances && data.balances.freeBet);
         const gotw = Array.isArray(data.gotw) ? data.gotw : [];
-        try {
-            const publicGotw = gotw.filter(Boolean).map(market => ({
-                marketId: market.marketId ?? null, gotwNumber: market.gotwNumber ?? null,
-                marketTitle: market.marketTitle || '', weekNumber: market.weekNumber ?? market.week ?? null,
-                status: market.status || '', opensAt: market.opensAt || null, closesAt: market.closesAt || null,
-                owner1: owner(market, 1), owner2: owner(market, 2)
-            }));
-            localStorage.setItem('fs5_public_gotw_markets', JSON.stringify({savedAt: Date.now(), markets: publicGotw}));
-        } catch (error) { console.warn('FS5 GOTW public snapshot unavailable:', error); }
         renderMarket(1, gotw[0]); renderMarket(2, gotw[1]);
         renderGotwHistory(Array.isArray(data.gotwHistory) ? data.gotwHistory : []);
         renderFutures(Array.isArray(data.futuresOffered) ? data.futuresOffered : [], Array.isArray(data.futureHistory) ? data.futureHistory : []);
@@ -375,6 +402,7 @@
     async function submitGotw(slot) {
         if (pending) return; const button = el(`gotw${slot}submit-button`); const market = book.gotw[slot - 1];
         try {
+            if (RUNTIME_CONFIG.readOnly) throw new Error('Wager submissions are disabled on this read-only test site.');
             if (!marketIsBettable(market)) throw new Error('This GOTW market is not open for betting.');
             const selectedOwnerId = Number(el(`gotw${slot}-dropdown`).value); if (!selectedOwnerId) throw new Error('Choose a team before submitting.');
             const stakeAmount = stake(el(`gotw${slot}-amount-input`)); const scoreInput = el(`gotw${slot}-score-guess`); let combinedScoreGuess = null;
@@ -388,6 +416,7 @@
     async function submitFuture() {
         if (pending) return; const button = el('submit-future-button');
         try {
+            if (RUNTIME_CONFIG.readOnly) throw new Error('Wager submissions are disabled on this read-only test site.');
             if (!selectedFuture) throw new Error('Choose a future before submitting.');
             if (!futureIsBettable(selectedFuture)) throw new Error('Futures betting is closed.');
             const stakeAmount = stake(el('futures-amount-input'));
@@ -400,6 +429,7 @@
     async function submitSurvivor() {
         if (pending) return; const button = el('survivor-submit-button');
         try {
+            if (RUNTIME_CONFIG.readOnly) throw new Error('Survivor submissions are disabled on this read-only test site.');
             const selectedOwnerId = Number(el('survivor-dropdown').value); if (!selectedOwnerId) throw new Error('Choose a Survivor selection before submitting.');
             pending = true; setButton(button, true); await request('member-submit-survivor', { method: 'POST', body: { selectedOwnerId } }); await loadBook();
             let success = el('survivor-success');
@@ -423,6 +453,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+        const readOnlyBanner = el('sportsbook-read-only-banner');
+        if (readOnlyBanner) readOnlyBanner.hidden = !RUNTIME_CONFIG.readOnly;
         el('login-form').addEventListener('submit', login); el('logout-button').addEventListener('click', logout);
         el('gotw1submit-button').addEventListener('click', () => submitGotw(1)); el('gotw2submit-button').addEventListener('click', () => submitGotw(2));
         el('submit-future-button').addEventListener('click', submitFuture); el('survivor-submit-button').addEventListener('click', submitSurvivor);

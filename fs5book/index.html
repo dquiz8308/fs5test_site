@@ -69,6 +69,9 @@
     </nav>
     <main class="sportsbook-main">
       <div class="sportsbook-shell">
+      <aside id="sportsbook-read-only-banner" class="sportsbook-read-only-banner" hidden role="status">
+          Test-site read-only mode: live balances and wager history are available, but wager and Survivor submissions are disabled.
+      </aside>
       <section class="login-hero" aria-labelledby="login-title">
       <img src="../artwork/sportsbookLogo.png" alt="FS5 SportsBook" id="sb-logo" class="sb-logo">
       <div id="login-area">
@@ -288,6 +291,7 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../supabase-config.js"></script>
+    <script src="runtime-config.js"></script>
     <script src="fs5book-login.js"></script>
     <script src="../footer-status.js"></script>
     <script src="../mobile-menu.js"></script>

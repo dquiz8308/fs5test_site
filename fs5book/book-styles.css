@@ -216,6 +216,19 @@ button:hover {
     transform: translateY(-1px);
 }
 
+.sportsbook-read-only-banner {
+    margin: 0 0 18px;
+    padding: 12px 16px;
+    border: 1px solid rgba(212, 173, 98, 0.65);
+    border-radius: 10px;
+    background: #fff4d8;
+    color: #4d3510;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.4;
+    text-align: center;
+}
+
 #member-data {
     display: flex;
     align-items: stretch;
@@ -375,65 +388,37 @@ button:hover {
 }
 
 .matchup-team {
-    position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
+    gap: 10px;
     min-width: 0;
     min-height: 82px;
     padding: 12px 14px;
     overflow: hidden;
-}
-
-.matchup-team--one {
-    justify-content: flex-end;
-    text-align: right;
-}
-
-.matchup-team--two {
-    justify-content: flex-start;
-    text-align: left;
-}
-
-.matchup-team--one,
-.matchup-team--two {
-    justify-content: center;
     text-align: center;
 }
 
 .matchup-team__art {
-    position: absolute;
-    width: 66px;
-    height: 66px;
-    border: 1px solid rgba(212, 173, 98, 0.12);
-    border-radius: 50%;
+    flex: none;
+    width: 60px;
+    height: 60px;
+    border: 0px solid rgba(212, 173, 98, 0.12);
+    border-radius: 70%;
     object-fit: contain;
-    opacity: 0.055;
-    filter: grayscale(0.35);
-}
-
-.matchup-team--one .matchup-team__art {
-    left: 7px;
 }
 
 .matchup-team--two .matchup-team__art {
-    right: 7px;
-}
-
-.matchup-team--one .matchup-team__art,
-.matchup-team--two .matchup-team__art {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
+    order: 2;
 }
 
 .matchup-team__name {
-    position: relative;
-    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     min-height: 58px;
     color: var(--book-card-ink);
     font-size: clamp(0.92rem, 1.7vw, 1.1rem);
@@ -446,7 +431,7 @@ button:hover {
 .matchup-team__spread {
     margin-top: 5px;
     color: var(--book-card-gold);
-    font-size: 0.82em;
+    font-size: 1.00em;
     line-height: 1;
 }
 
@@ -935,14 +920,12 @@ td[style*="rgb(108, 173, 223)"] {
 }
 
 .history-team {
-    position: relative;
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 138px;
     padding: 0;
     overflow: hidden;
-    border: 1px solid transparent;
     border-radius: 9px;
 }
 
@@ -951,67 +934,75 @@ td[style*="rgb(108, 173, 223)"] {
 }
 
 .history-team.is-spread-winner {
-    border-color: rgba(212, 173, 98, 0.46);
     background: rgba(212, 173, 98, 0.08);
 }
 
 .history-team__identity {
-    position: relative;
-    display: flex;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 2px 8px;
     flex: 1;
-    flex-direction: column;
-    justify-content: center;
+    align-content: center;
     min-height: 86px;
-    padding: 10px;
-    overflow: hidden;
+    padding: 10px 8px;
 }
 
 .history-team img {
-    position: absolute;
-    left: 6px;
-    width: 62px;
-    height: 62px;
+    grid-column: 1;
+    grid-row: 1 / 4;
+    align-self: center;
+    width: 46px;
+    height: 46px;
+    border: 2px solid #fffdf7;
     border-radius: 50%;
-    object-fit: contain;
-    opacity: 0.1;
+    object-fit: cover;
+    box-shadow: 0 1px 4px rgba(21, 34, 49, 0.22);
+}
+
+.history-team:nth-of-type(2) .history-team__identity {
+    grid-template-columns: minmax(0, 1fr) 46px;
 }
 
 .history-team:nth-of-type(2) img {
-    right: 6px;
-    left: auto;
+    grid-column: 2;
 }
 
 .history-team__name,
 .history-team__spread,
 .history-team__winner-label {
-    position: relative;
-    z-index: 1;
+    grid-column: 2;
+    min-width: 0;
+}
+
+.history-team:nth-of-type(2) .history-team__name,
+.history-team:nth-of-type(2) .history-team__spread,
+.history-team:nth-of-type(2) .history-team__winner-label {
+    grid-column: 1;
 }
 
 .history-team__name {
     font-size: 1.02rem;
     font-weight: 800;
     line-height: 1.15;
-    overflow-wrap: anywhere;
+    overflow-wrap: normal;
+    word-break: normal;
 }
 
 .history-team__spread {
-    color: var(--book-gold);
+    color: var(--book-card-gold);
     font-size: 0.84rem;
     font-weight: 800;
 }
 
 .history-team__score {
-    color: var(--book-gold);
-    font-size: 1.28rem;
+    color: var(--book-card-ink);
+    font-size: 1.5rem;
     font-weight: 900;
     line-height: 1;
     white-space: nowrap;
 }
 
 .history-team__score-block {
-    position: relative;
-    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1039,49 +1030,59 @@ td[style*="rgb(108, 173, 223)"] {
 
 .history-matchup__vs {
     align-self: center;
-    color: var(--book-gold);
-    font-size: 0.65rem;
+    color: var(--book-card-gold);
+    font-size: 0.8rem;
     font-weight: 900;
+    letter-spacing: 0.04em;
+    transform: translateY(4px);
 }
 
 .history-score-summary {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 12px;
     border-top: 1px solid var(--book-line-soft);
+    background: #fffdf7;
 }
 
-.history-score-summary > span {
+.history-stat {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
     padding: 10px 12px;
-    border-right: 1px solid var(--book-line-soft);
-    border-bottom: 1px solid var(--book-line-soft);
+    border-radius: 10px;
+    background: rgba(212, 173, 98, 0.08);
 }
 
-.history-score-summary > span:nth-child(even) {
-    border-right: 0;
-}
-
-.history-score-summary small {
+.history-stat small {
     color: var(--book-card-muted);
-    font-size: 0.58rem;
+    font-size: 0.62rem;
     font-weight: 800;
-    letter-spacing: 0.07em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
 }
 
-.history-score-summary strong {
+.history-stat strong {
     color: var(--book-card-ink);
-    font-size: 1rem;
+    font-size: 1.22rem;
+    line-height: 1.1;
 }
 
-.gotw-history-detail.is-win .history-wager-result strong,
-.gotw-history-detail.is-loss .history-wager-result strong,
-.gotw-history-detail.is-pending .history-wager-result strong,
-.gotw-history-detail.is-confirmed .history-wager-result strong,
-.gotw-history-detail.is-push .history-wager-result strong {
+.history-stat--net strong {
     color: var(--book-card-ink);
+    font-size: 1.28rem;
+    font-weight: 900;
+}
+
+.history-stat--net.is-win strong {
+    color: var(--book-green);
+}
+
+.history-stat--net.is-loss strong {
+    color: var(--book-red);
 }
 
 .survivor-selection {
@@ -1273,23 +1274,35 @@ td[style*="rgb(108, 173, 223)"] {
     }
 
     .matchup-team {
+        display: grid;
+        grid-template-columns: minmax(44px, 1fr) minmax(0, max-content) minmax(44px, 1fr);
+        column-gap: 8px;
+        width: 100%;
         min-height: 86px;
         padding: 13px 15px;
-        justify-content: center;
-        text-align: center;
     }
 
-    .matchup-team--two {
-        justify-content: center;
-        text-align: center;
-    }
-
-    .matchup-team__art,
-    .matchup-team--one .matchup-team__art,
-    .matchup-team--two .matchup-team__art {
-        left: 50%;
+    .matchup-team__art {
+        position: static;
+        left: auto;
         right: auto;
-        transform: translateX(-50%);
+        transform: none;
+        grid-column: 1;
+        justify-self: end;
+        width: 44px;
+        height: 44px;
+        opacity: 1;
+    }
+
+    .matchup-team--two .matchup-team__art {
+        order: 0;
+    }
+
+    .matchup-team__name {
+        grid-column: 2;
+        justify-self: center;
+        width: auto;
+        flex: 0 1 auto;
     }
 
     .matchup-vs {
@@ -1317,13 +1330,34 @@ td[style*="rgb(108, 173, 223)"] {
 
     .history-team,
     .history-team:nth-of-type(2) {
-        justify-items: center;
         min-height: 82px;
-        text-align: center;
+    }
+
+    .history-team:first-of-type .history-team__identity {
+        min-height: 76px;
+        padding-block: 6px;
+    }
+
+    .history-team:nth-of-type(2) {
+        text-align: left;
+    }
+
+    .history-team:nth-of-type(2) .history-team__identity {
+        grid-template-columns: 46px minmax(0, 1fr);
+    }
+
+    .history-team:nth-of-type(2) img {
+        grid-column: 1;
+    }
+
+    .history-team:nth-of-type(2) .history-team__name,
+    .history-team:nth-of-type(2) .history-team__spread,
+    .history-team:nth-of-type(2) .history-team__winner-label {
+        grid-column: 2;
     }
 
     .history-team__name {
-        font-size: 1.14rem;
+        font-size: 1.06rem;
         line-height: 1.08;
     }
 
@@ -1331,20 +1365,23 @@ td[style*="rgb(108, 173, 223)"] {
         font-size: 0.92rem;
     }
 
-    .history-team img,
-    .history-team:nth-of-type(2) img {
-        right: auto;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
     .history-matchup__vs {
         justify-self: center;
         margin: 0;
+        transform: none;
     }
 
     .history-score-summary {
-        border-top: 4px solid #091521;
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .history-stat {
+        padding: 8px;
+    }
+
+    .history-stat small {
+        font-size: 0.58rem;
     }
 
     .gotw1-selection,
@@ -1434,6 +1471,10 @@ td[style*="rgb(108, 173, 223)"] {
 @media (max-width: 430px) {
     .sportsbook-shell {
         width: min(100% - 16px, 420px);
+    }
+
+    .history-team__name {
+        font-size: 1rem;
     }
 
     #gotw1-box,
