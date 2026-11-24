@@ -28,7 +28,43 @@ document.addEventListener('DOMContentLoaded', function() {
     swapButton.addEventListener('click', swapOwners);
     gameLogToggle.addEventListener('click', toggleGameLog);
     clearResults();
-    showStatus('Select two owners to view their head-to-head records.', '');
+    if (!applyUrlOwnerSelection()) {
+        showStatus('Select two owners to view their head-to-head records.', '');
+    }
+
+    function applyUrlOwnerSelection() {
+        var params = new URLSearchParams(window.location.search);
+        var owner1Name = ownerNameForId(params.get('owner1'), owner1Dropdown);
+        var owner2Name = ownerNameForId(params.get('owner2'), owner2Dropdown);
+
+        if (!owner1Name || !owner2Name || owner1Name === owner2Name) return false;
+
+        owner1Dropdown.value = owner1Name;
+        owner2Dropdown.value = owner2Name;
+        updateH2HPage();
+        return true;
+    }
+
+    function ownerNameForId(rawId, dropdown) {
+        if (rawId === null || rawId === '') return '';
+
+        var numericId = Number(rawId);
+        if (!Number.isInteger(numericId)) return '';
+
+        var ownerNames = Object.keys(ownerIds);
+        for (var i = 0; i < ownerNames.length; i += 1) {
+            var ownerName = ownerNames[i];
+            if (ownerIds[ownerName] === numericId && dropdownHasValue(dropdown, ownerName)) return ownerName;
+        }
+        return '';
+    }
+
+    function dropdownHasValue(dropdown, value) {
+        for (var i = 0; i < dropdown.options.length; i += 1) {
+            if (dropdown.options[i].value === value) return true;
+        }
+        return false;
+    }
 
     function swapOwners() {
         var firstOwner = owner1Dropdown.value;

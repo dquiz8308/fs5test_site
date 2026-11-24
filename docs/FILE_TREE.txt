@@ -2,10 +2,15 @@ FS5 repository file tree
 .
 +---artwork
 |   +---divisions.png
+|   +---fs5-icon-192.png
+|   +---fs5-icon-512.png
+|   +---fs5-intro-beveled.png
+|   +---fs5-ios-icon.png
 |   +---h2hlogo.png
 |   +---hallofchampslogo.png
 |   +---header2.png
 |   +---header3.png
+|   +---IOS-ICON-README.txt
 |   +---logo.png
 |   +---logowhite.jpg
 |   +---NextGenFS5.png
@@ -48,6 +53,8 @@ FS5 repository file tree
 |   +---DECISIONS.md
 |   +---DESIGN_RULES.md
 |   +---FILE_TREE.txt
+|   +---LOCKER_PPR_MEDALS.md
+|   +---LOCKER_PPR_OWNER_MATCHES.json
 |   +---PROJECT_CONTEXT.md
 |   +---SITE_STRUCTURE.md
 |   \---SUPABASE_WEBSITE_INTEGRATION.md
@@ -60,7 +67,8 @@ FS5 repository file tree
 |   |   \---fs5sb.JPG
 |   +---book-styles.css
 |   +---fs5book-login.js
-|   \---index.html
+|   +---index.html
+|   \---runtime-config.js
 +---h2h
 |   +---artwork
 |   |   \---.gitkeep
@@ -89,6 +97,17 @@ FS5 repository file tree
 |   +---hall.css
 |   +---hall.js
 |   \---index.html
++---livescores
+|   +---index.html
+|   +---LIVESCORES_CONTEXT.md
+|   +---livescores.css
+|   \---livescores.js
++---netlify
+|   \---functions
+|       +---discord-live-sunday-day.js
+|       +---discord-live-sunday-start.js
+|       +---discord-live.js
+|       \---live-scores.js
 +---nextgenstats
 |   +---alltime
 |   |   +---artwork
@@ -118,6 +137,7 @@ FS5 repository file tree
 |   |   +---responsive-tables.css
 |   |   +---season-data.js
 |   |   +---season-details.js
+|   |   +---season-power-lines.js
 |   |   \---season.css
 |   +---singlegame
 |   |   +---artwork
@@ -133,6 +153,129 @@ FS5 repository file tree
 |   \---nextgen-styles.css
 +---owners
 |   +---artwork
+|   |   +---achievements
+|   |   |   +---trophy-bronze.png
+|   |   |   +---trophy-gold.png
+|   |   |   +---trophy-legacy.png
+|   |   |   +---trophy-silver.png
+|   |   |   +---wall-of-shame-bronze.png
+|   |   |   +---wall-of-shame-gold.png
+|   |   |   +---wall-of-shame-legacy.png
+|   |   |   \---wall-of-shame-silver.png
+|   |   +---locker
+|   |   |   +---bailey
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---black-metal-t-shirt.png
+|   |   |   |   +---cougars-helmet.png
+|   |   |   |   +---mike-check-microphone.png
+|   |   |   |   \---pbr-can-pyramid.png
+|   |   |   +---bowl game trophies
+|   |   |   |   +---archive-illustrated-v1-20260920
+|   |   |   |   |   +---bloodbath.png
+|   |   |   |   |   +---championship-football.png
+|   |   |   |   |   +---city-of-homes.png
+|   |   |   |   |   +---lynch-rusted-sign.png
+|   |   |   |   |   \---newnan-city-of-homes-sign.png
+|   |   |   |   +---archive-pre-illustrated-20260920
+|   |   |   |   |   +---battle-tank.png
+|   |   |   |   |   +---bloodbath.png
+|   |   |   |   |   +---bronze-chair.png
+|   |   |   |   |   +---championship-football.png
+|   |   |   |   |   +---city-of-homes.png
+|   |   |   |   |   +---disco.png
+|   |   |   |   |   +---duct-tape.png
+|   |   |   |   |   +---edge-seat.png
+|   |   |   |   |   +---game-ball.png
+|   |   |   |   |   +---lynch-football.png
+|   |   |   |   |   +---lynch-rusted-sign.png
+|   |   |   |   |   +---memorial.png
+|   |   |   |   |   +---newnan-city-of-homes-sign.png
+|   |   |   |   |   +---ninth-medal.png
+|   |   |   |   |   +---pierogi.png
+|   |   |   |   |   +---pizza-rolls.png
+|   |   |   |   |   +---random-dancer.png
+|   |   |   |   |   \---studio-reel.png
+|   |   |   |   +---battle-tank.png
+|   |   |   |   +---bloodbath.png
+|   |   |   |   +---bronze-chair.png
+|   |   |   |   +---championship-football.png
+|   |   |   |   +---city-of-homes.png
+|   |   |   |   +---disco.png
+|   |   |   |   +---duct-tape.png
+|   |   |   |   +---edge-seat.png
+|   |   |   |   +---game-ball.png
+|   |   |   |   +---lynch-football.png
+|   |   |   |   +---lynch-rusted-sign.png
+|   |   |   |   +---memorial.png
+|   |   |   |   +---newnan-city-of-homes-sign.png
+|   |   |   |   +---ninth-medal.png
+|   |   |   |   +---pierogi.png
+|   |   |   |   +---pizza-rolls.png
+|   |   |   |   +---random-dancer.png
+|   |   |   |   \---studio-reel.png
+|   |   |   +---brycen
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---bud-light-cans-crushed-scattered.png
+|   |   |   |   \---tame-impala-currents-poster.png
+|   |   |   +---chris
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---black-metal-t-shirt.png
+|   |   |   |   +---busch-light-can-shotgunned.png
+|   |   |   |   +---drum-set.png
+|   |   |   |   \---georgia-tech-helmet.png
+|   |   |   +---cody
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---black-metal-t-shirt.png
+|   |   |   |   +---double-neck-guitar.png
+|   |   |   |   +---georgia-bulldogs-helmet.png
+|   |   |   |   \---miller-lite-can-pyramid.png
+|   |   |   +---david
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---cougars-helmet.png
+|   |   |   |   \---miller-lite-cans-crushed-scattered.png
+|   |   |   +---ethan
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---georgia-southern-helmet.png
+|   |   |   |   \---pbr-can-shotgunned.png
+|   |   |   +---jordan
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---georgia-southern-helmet.png
+|   |   |   |   +---pbr-can-pyramid.png
+|   |   |   |   \---standing-playstation-5.png
+|   |   |   +---keith
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---black-five-string-bass.png
+|   |   |   |   +---black-metal-t-shirt.png
+|   |   |   |   \---bud-light-cans-crushed-scattered.png
+|   |   |   +---matthew
+|   |   |   |   +---.gitkeep
+|   |   |   |   \---busch-light-can-shotgunned.png
+|   |   |   +---max
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---bud-light-can-pyramid.png
+|   |   |   |   +---georgia-bulldogs-helmet.png
+|   |   |   |   \---titleist-pro-v1-golf-balls.png
+|   |   |   +---mike
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---busch-light-cans-crushed-scattered.png
+|   |   |   |   +---falcons-jersey-with-tag.png
+|   |   |   |   \---georgia-bulldogs-helmet.png
+|   |   |   +---will
+|   |   |   |   +---.gitkeep
+|   |   |   |   +---golf-driver-headcover-oversize.png
+|   |   |   |   +---kennesaw-state-helmet.png
+|   |   |   |   \---miller-lite-can-shotgunned.png
+|   |   |   +---fs5-3d-locker-wide-template.png
+|   |   |   +---history-logo-frame-championship.png
+|   |   |   +---history-logo-frame-varsity.png
+|   |   |   +---history-logo-frame-walnut.png
+|   |   |   +---last-place-license-plate.png
+|   |   |   +---locker-pedestal-512.png
+|   |   |   +---ppr-leader-gold.png
+|   |   |   +---README.md
+|   |   |   +---wooden-shelf-locker-feature-template.png
+|   |   |   +---wooden-shelf-locker-nameplate-template.png
+|   |   |   \---wooden-shelf-locker-template.png
 |   |   +---ownerpics
 |   |   |   +---david.jpg
 |   |   |   \---david2.jpg
@@ -163,6 +306,7 @@ FS5 repository file tree
 |   |   |   +---bailey_2023.png
 |   |   |   +---bailey_2024.png
 |   |   |   +---bailey_2025.png
+|   |   |   +---bailey_2026.png
 |   |   |   +---brycen_2012.png
 |   |   |   +---brycen_2013.png
 |   |   |   +---brycen_2014.png
@@ -177,6 +321,7 @@ FS5 repository file tree
 |   |   |   +---brycen_2023.png
 |   |   |   +---brycen_2024.png
 |   |   |   +---brycen_2025.png
+|   |   |   +---brycen_2026.png
 |   |   |   +---chris_2012.png
 |   |   |   +---chris_2013.png
 |   |   |   +---chris_2014.png
@@ -191,6 +336,7 @@ FS5 repository file tree
 |   |   |   +---chris_2023.png
 |   |   |   +---chris_2024.png
 |   |   |   +---chris_2025.png
+|   |   |   +---chris_2026.png
 |   |   |   +---cody_2012.png
 |   |   |   +---cody_2013.png
 |   |   |   +---cody_2014.png
@@ -202,6 +348,7 @@ FS5 repository file tree
 |   |   |   +---cody_2023.png
 |   |   |   +---cody_2024.png
 |   |   |   +---cody_2025.png
+|   |   |   +---cody_2026.PNG
 |   |   |   +---david_2012.png
 |   |   |   +---david_2013.png
 |   |   |   +---david_2014.png
@@ -216,6 +363,7 @@ FS5 repository file tree
 |   |   |   +---david_2023.png
 |   |   |   +---david_2024.png
 |   |   |   +---david_2025.png
+|   |   |   +---david_2026.png
 |   |   |   +---ethan_2017.png
 |   |   |   +---ethan_2018.png
 |   |   |   +---ethan_2019.png
@@ -225,6 +373,7 @@ FS5 repository file tree
 |   |   |   +---ethan_2023.png
 |   |   |   +---ethan_2024.png
 |   |   |   +---ethan_2025.png
+|   |   |   +---ethan_2026.png
 |   |   |   +---harrison_2015.png
 |   |   |   +---harrison_2016.png
 |   |   |   +---harrison_2017.png
@@ -243,6 +392,7 @@ FS5 repository file tree
 |   |   |   +---jordan_2023.png
 |   |   |   +---jordan_2024.png
 |   |   |   +---jordan_2025.png
+|   |   |   +---jordan_2026.png
 |   |   |   +---jt_2017.png
 |   |   |   +---jt_2018.png
 |   |   |   +---keith_2015.png
@@ -256,6 +406,7 @@ FS5 repository file tree
 |   |   |   +---keith_2023.png
 |   |   |   +---keith_2024.png
 |   |   |   +---keith_2025.png
+|   |   |   +---keith_2026.png
 |   |   |   +---matthew_2014.png
 |   |   |   +---matthew_2015.png
 |   |   |   +---matthew_2016.png
@@ -268,6 +419,7 @@ FS5 repository file tree
 |   |   |   +---matthew_2023.png
 |   |   |   +---matthew_2024.png
 |   |   |   +---matthew_2025.png
+|   |   |   +---matthew_2026.png
 |   |   |   +---max_2012.png
 |   |   |   +---max_2014.png
 |   |   |   +---max_2019.png
@@ -277,6 +429,7 @@ FS5 repository file tree
 |   |   |   +---max_2023.png
 |   |   |   +---max_2024.png
 |   |   |   +---max_2025.png
+|   |   |   +---max_2026.png
 |   |   |   +---mike_2013.png
 |   |   |   +---mike_2014.png
 |   |   |   +---mike_2016.png
@@ -289,6 +442,7 @@ FS5 repository file tree
 |   |   |   +---mike_2023.png
 |   |   |   +---mike_2024.png
 |   |   |   +---mike_2025.png
+|   |   |   +---mike_2026.png
 |   |   |   +---parker_2012.png
 |   |   |   +---preston_2012.png
 |   |   |   +---preston_2013.png
@@ -313,14 +467,20 @@ FS5 repository file tree
 |   |   |   +---will_2022.png
 |   |   |   +---will_2023.png
 |   |   |   +---will_2024.png
-|   |   |   \---will_2025.png
+|   |   |   +---will_2025.png
+|   |   |   \---will_2026.png
 |   |   +---cody.PNG
 |   |   +---crosbystudios.jpg
 |   |   +---moorbius.jpg
 |   |   \---temp.png
 |   +---index.html
+|   +---locker-awards.js
+|   +---locker-personal-items.js
+|   +---locker-ppr-medals.js
 |   +---ownerscript.js
 |   \---ownerstyle.css
++---scripts
+|   \---build-owner-locker-personal-items.js
 +---vault
 |   +---archive
 |   |   +---2012
@@ -370,33 +530,51 @@ FS5 repository file tree
 |   |   \---.gitkeep
 |   +---bowls
 |   |   +---artwork
-|   |   |   +---1_2024.png
-|   |   |   +---1_2025.png
-|   |   |   +---11_2024.png
-|   |   |   +---11_2025.png
-|   |   |   +---3_2025.png
-|   |   |   +---5_2024.png
-|   |   |   +---5_2025.png
-|   |   |   +---7_2024.png
-|   |   |   +---7_2025.png
-|   |   |   +---9_2024.png
-|   |   |   +---9_2025.png
-|   |   |   +---COSF1_2024.png
-|   |   |   +---COSF1_2025.png
-|   |   |   +---COSF2_2024.png
-|   |   |   +---COSF2_2025.png
-|   |   |   +---inseasontournament_2024.png
-|   |   |   +---inseasontournament_2025.png
-|   |   |   +---logo.jpg
-|   |   |   +---POSF1_2024.png
-|   |   |   +---POSF1_2025.png
-|   |   |   +---POSF2_2024.png
-|   |   |   +---POSF2_2025.png
-|   |   |   +---PQF3v6_2024.png
-|   |   |   +---PQF3v6_2025.png
-|   |   |   +---PQF4v5_2024.png
-|   |   |   +---PQF4v5_2025.png
-|   |   |   \---probowl_2025.png
+|   |   |   +---2024
+|   |   |   |   +---1_2024.png
+|   |   |   |   +---11_2024.png
+|   |   |   |   +---5_2024.png
+|   |   |   |   +---7_2024.png
+|   |   |   |   +---9_2024.png
+|   |   |   |   +---COSF1_2024.png
+|   |   |   |   +---COSF2_2024.png
+|   |   |   |   +---inseasontournament_2024.png
+|   |   |   |   +---POSF1_2024.png
+|   |   |   |   +---POSF2_2024.png
+|   |   |   |   +---PQF3v6_2024.png
+|   |   |   |   \---PQF4v5_2024.png
+|   |   |   +---2025
+|   |   |   |   +---1_2025.png
+|   |   |   |   +---11_2025.png
+|   |   |   |   +---3_2025.png
+|   |   |   |   +---5_2025.png
+|   |   |   |   +---7_2025.png
+|   |   |   |   +---9_2025.png
+|   |   |   |   +---COSF1_2025.png
+|   |   |   |   +---COSF2_2025.png
+|   |   |   |   +---inseasontournament_2025.png
+|   |   |   |   +---POSF1_2025.png
+|   |   |   |   +---POSF2_2025.png
+|   |   |   |   +---PQF3v6_2025.png
+|   |   |   |   +---PQF4v5_2025.png
+|   |   |   |   \---probowl_2025.png
+|   |   |   +---2026
+|   |   |   |   +---1_2026.png
+|   |   |   |   +---11_2026.png
+|   |   |   |   +---3_2026.png
+|   |   |   |   +---5_2026.png
+|   |   |   |   +---7_2026.png
+|   |   |   |   +---9_2026.png
+|   |   |   |   +---COSF1_2026.png
+|   |   |   |   +---COSF2_2026.png
+|   |   |   |   +---inseasontournament_2026.png
+|   |   |   |   +---POSF1_2026_mobile.png
+|   |   |   |   +---POSF1_2026.png
+|   |   |   |   +---POSF2_2026.png
+|   |   |   |   +---PQF3v6_2026.png
+|   |   |   |   +---PQF4v5_2026.png
+|   |   |   |   \---probowl_2026.png
+|   |   |   \---logo.jpg
 |   |   +---bowls.css
 |   |   +---bowls.js
 |   |   +---index.html
@@ -432,6 +610,33 @@ FS5 repository file tree
 |   |   |   |   +---PQ2.png
 |   |   |   |   +---PS1.png
 |   |   |   |   \---PS2.png
+|   |   |   +---2026
+|   |   |   |   +---bowls
+|   |   |   |   |   +---CS1.png
+|   |   |   |   |   +---CS2.png
+|   |   |   |   |   +---F1.png
+|   |   |   |   |   +---F11.png
+|   |   |   |   |   +---F3.png
+|   |   |   |   |   +---F5.png
+|   |   |   |   |   +---F7.png
+|   |   |   |   |   +---F9.png
+|   |   |   |   |   +---PQ1.png
+|   |   |   |   |   +---PQ2.png
+|   |   |   |   |   +---PS1.png
+|   |   |   |   |   \---PS2.png
+|   |   |   |   \---profiles
+|   |   |   |       +---c1.jpg
+|   |   |   |       +---c2.jpg
+|   |   |   |       +---c3.jpg
+|   |   |   |       +---c4.jpg
+|   |   |   |       +---c5.jpg
+|   |   |   |       +---c6.jpg
+|   |   |   |       +---p1.jpg
+|   |   |   |       +---p2.jpg
+|   |   |   |       +---p3.jpg
+|   |   |   |       +---p4.jpg
+|   |   |   |       +---p5.jpg
+|   |   |   |       \---p6.jpg
 |   |   |   +---GP.jpg
 |   |   |   +---logo.png
 |   |   |   \---PQ1_2025.png
@@ -475,10 +680,18 @@ FS5 repository file tree
 |   \---vault.css
 +---.gitignore
 +---AGENTS.md
++---app-intro.js
 +---common.css
++---deno.lock
 +---footer-status.js
++---home-power-lines.js
 +---homepage.js
 +---index.html
 +---mobile-menu.js
++---netlify.toml
++---package-lock.json
++---package.json
++---power-lines-timeline.js
++---site.webmanifest
 +---styles.css
 \---supabase-config.js

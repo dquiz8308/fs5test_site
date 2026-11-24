@@ -34,7 +34,25 @@
     var requestToken = 0;
 
     function configFor(year) { return CONFIG.find(function (item) { return year >= item.from && year <= item.to; }); }
-    function rpc(client, name, args) { return client.rpc(name, args).then(function (result) { if (result.error) throw result.error; return result.data || []; }); }
+    function delay(milliseconds) { return new Promise(function (resolve) { window.setTimeout(resolve, milliseconds); }); }
+    async function rpc(client, name, args) {
+        var error = null;
+        for (var attempt = 0; attempt < 2; attempt += 1) {
+            var result = await client.rpc(name, args);
+            if (!result.error) return result.data || [];
+            error = result.error;
+            if (String(error.code) !== '57014' || attempt === 1) break;
+            await delay(350);
+        }
+        window.console.warn('Historical Power Lines RPC failed.', {
+            rpc: name,
+            year: args.p_year,
+            week: args.p_through_week || null,
+            code: error && error.code,
+            message: error && error.message
+        });
+        throw error;
+    }
     function ownerKey(name) { return String(name || '').trim().split(/\s+/)[0].toLowerCase(); }
     function portrait(name, year) { return '../../owners/artwork/profile-history/' + ownerKey(name) + '_' + year + '.png'; }
     function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
