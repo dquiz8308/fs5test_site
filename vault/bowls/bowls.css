@@ -227,13 +227,51 @@ main::before {
 .bowl-panel__title { margin: 0; color: var(--gold); font-size: clamp(1rem, 2vw, 1.35rem); letter-spacing: 0.06em; line-height: 1.1; text-transform: uppercase; }
 .bowl-panel__inner { min-height: 0; }
 .season-list { display: grid; gap: 12px; }
+.season-list__older { display: grid; gap: 12px; }
+.season-list__older[hidden] { display: none; }
+
+.season-history-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 10px;
+  width: min(100%, 320px);
+  margin-top: 2px;
+  padding: 11px 18px;
+  border: 1px solid #b98222;
+  border-radius: 7px;
+  background: #17222c;
+  color: var(--gold);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.season-history-toggle::after {
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: "";
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.season-history-toggle:hover { border-color: #e2a83b; background: #1d2a35; color: #f1bd50; }
+.season-history-toggle:focus-visible { outline: 3px solid var(--focus-color); outline-offset: 2px; }
+.season-history-toggle[aria-expanded="true"]::after { transform: translateY(2px) rotate(-135deg); }
 
 .season-card {
   display: grid;
   grid-template-columns: minmax(260px, 38%) minmax(0, 1fr);
   min-height: 285px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.13));
   border-radius: 10px;
   background: var(--card-bg);
   color: var(--card-text);
@@ -246,7 +284,15 @@ main::before {
 .season-card__footer { position: absolute; right: clamp(24px, 4vw, 42px); bottom: 3px; left: clamp(24px, 4vw, 42px); margin: 0; font-style: italic; opacity: 0.8; }
 .season-card__heading { margin-bottom: 26px; }
 .season-card__year { display: block; margin-bottom: 7px; color: var(--card-accent); font-size: 0.9rem; font-weight: 800; letter-spacing: 0.12em; line-height: 1; }
-.season-card__name { margin: 0; padding: 10px 14px; border-bottom: 4px solid var(--card-accent); border-radius: 7px; background: rgba(0, 0, 0, 0.20); color: #fff; font-size: clamp(1.55rem, 3.5vw, 2.35rem); line-height: 1.08; text-shadow: none; }
+.season-card__name { margin: 0; padding: 10px 14px; border-bottom: 4px solid var(--card-accent); border-radius: 7px; background: var(--card-title-bg, rgba(0, 0, 0, 0.20)); color: #fff; font-size: clamp(1.55rem, 3.5vw, 2.35rem); line-height: 1.08; text-shadow: none; }
+.season-card--pro-bowl-2026 .season-card__name--pro-bowl { display: grid; gap: 4px; padding: 8px 12px; text-align: center; }
+.season-card--pro-bowl-2026 .pro-bowl-title__above,
+.season-card--pro-bowl-2026 .pro-bowl-title__below { display: block; font-weight: 700; letter-spacing: 0.02em; line-height: 1.25; overflow-wrap: anywhere; }
+.season-card--pro-bowl-2026 .pro-bowl-title__above { color: var(--card-accent); font-size: clamp(0.72rem, 1.4vw, 0.95rem); }
+.season-card--pro-bowl-2026 .pro-bowl-title__main { display: block; font-size: inherit; font-weight: inherit; line-height: inherit; }
+.season-card--pro-bowl-2026 .pro-bowl-title__below { font-size: clamp(0.62rem, 1.15vw, 0.78rem); }
+.season-card--pro-bowl-2026 .season-card__artwork img { object-fit: cover; object-position: center top; }
+
 .season-card__description { max-width: 65ch; margin: 10px 0 0; color: inherit; font-size: clamp(0.78rem, 1.3vw, 0.9rem); font-weight: 700; line-height: 1.4; opacity: 0.9; overflow-wrap: anywhere; }
 
 .matchup { display: grid; gap: 10px; }
@@ -331,5 +377,5 @@ main::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bowl-trigger, .bowl-trigger__icon::after { transition: none; }
+  .bowl-trigger, .bowl-trigger__icon::after, .season-history-toggle { transition: none; }
 }

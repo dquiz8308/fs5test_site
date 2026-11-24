@@ -51,6 +51,72 @@ if (bowlAccordion) {
 
   const entries = [];
 
+  function getSeasonYear(card) {
+    const year = Number.parseInt(card.querySelector(".season-card__year")?.textContent, 10);
+    return Number.isFinite(year) ? year : Number.NEGATIVE_INFINITY;
+  }
+
+  function initializeSeasonHistory(panel) {
+    const seasonList = panel.querySelector(".season-list");
+
+    if (!seasonList) {
+      return;
+    }
+
+    const cards = Array.from(seasonList.children)
+      .filter((child) => child.classList.contains("season-card"))
+      .sort((cardA, cardB) => getSeasonYear(cardB) - getSeasonYear(cardA));
+
+    cards.forEach((card) => seasonList.append(card));
+
+    if (cards.length <= 2) {
+      return;
+    }
+
+    const olderGames = document.createElement("div");
+    const toggle = document.createElement("button");
+    const olderGamesId = `${panel.id}-older-games`;
+
+    olderGames.className = "season-list__older";
+    olderGames.id = olderGamesId;
+    olderGames.hidden = true;
+    cards.slice(2).forEach((card) => olderGames.append(card));
+
+    toggle.className = "season-history-toggle";
+    toggle.type = "button";
+    toggle.textContent = "Show Older Games";
+    toggle.setAttribute("aria-controls", olderGamesId);
+    toggle.setAttribute("aria-expanded", "false");
+
+    toggle.addEventListener("click", () => {
+      const willExpand = toggle.getAttribute("aria-expanded") !== "true";
+
+      olderGames.hidden = !willExpand;
+      toggle.setAttribute("aria-expanded", String(willExpand));
+      toggle.textContent = willExpand ? "Show Less" : "Show Older Games";
+
+      if (!willExpand) {
+        window.requestAnimationFrame(() => {
+          const heading = panel.querySelector(".bowl-panel__header");
+          const headingBounds = heading?.getBoundingClientRect();
+          const headingIsVisible = headingBounds
+            && headingBounds.bottom > 0
+            && headingBounds.top < window.innerHeight;
+
+          if (heading && !headingIsVisible) {
+            const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            heading.scrollIntoView({
+              behavior: reduceMotion ? "auto" : "smooth",
+              block: "start"
+            });
+          }
+        });
+      }
+    });
+
+    seasonList.append(olderGames, toggle);
+  }
+
   categoryOrder.forEach((category) => {
     const label = document.createElement("h3");
     label.className = "bowl-group-label";
@@ -68,6 +134,7 @@ if (bowlAccordion) {
       heading.className = "bowl-panel__header";
       heading.innerHTML = `<h2 class="bowl-panel__title">${title}</h2>`;
       panel.prepend(heading);
+      initializeSeasonHistory(panel);
 
       rail.append(trigger);
       history.append(panel);
@@ -112,5 +179,9 @@ if (bowlAccordion) {
     });
   });
 
-  historyEmptyState.hidden = false;
+  if (entries.length > 0) {
+    openEntry(entries[0]);
+  } else {
+    historyEmptyState.hidden = false;
+  }
 }
