@@ -35,7 +35,140 @@
     bench: placeholderBench(label)
   });
 
+  const pendingPlayer = (position) => ({
+    name: "TBD",
+    position,
+    nflTeam: "TBD",
+    points: 0
+  });
+
+  const pendingLineup = () => ({
+    starters: [
+      "QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "K", "DEF"
+    ].map(pendingPlayer),
+    bench: [
+      "QB", "RB", "RB", "WR", "WR", "TE"
+    ].map(pendingPlayer)
+  });
+
+  const pendingTeam = (teamId, seed) => ({
+    teamId,
+    seed,
+    score: 0,
+    touchdowns: 0,
+    lineup: pendingLineup()
+  });
+
+  const pendingMatchup = ({
+    id,
+    round,
+    slot,
+    roundName,
+    bowlName = "",
+    plainHeader = false,
+    teams,
+    theme
+  }) => ({
+    type: "matchup",
+    pending: true,
+    id,
+    round,
+    slot,
+    roundName,
+    bowlName,
+    plainHeader,
+    bowlArt: plainHeader ? "" : `artwork/2026/bowls/${id}.png`,
+    ...(theme ? { theme } : {}),
+    teams: teams.map(([teamId, seed]) => pendingTeam(teamId, seed))
+  });
+
   const BRACKET_DATA = {
+
+//START YEAR 2026
+
+    2026: {
+      format: "current",
+      teams: {
+        p1: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p1.jpg" },
+        p2: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p2.jpg" },
+        p3: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p3.jpg" },
+        p4: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p4.jpg" },
+        p5: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p5.jpg" },
+        p6: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/p6.jpg" },
+        c1: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c1.jpg" },
+        c2: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c2.jpg" },
+        c3: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c3.jpg" },
+        c4: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c4.jpg" },
+        c5: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c5.jpg" },
+        c6: { name: "TBD", owner: "TBD", art: "artwork/2026/profiles/c6.jpg" }
+      },
+
+      playoffs: {
+        label: "Playoffs",
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+        cards: [
+          { type: "bye", id: "playoffs-bye-1", round: "first", slot: "bye-top", seed: 1, teamId: "p1" },
+          pendingMatchup({ id: "PQ1", round: "first", slot: "first-upper", roundName: "First Round", bowlName: "The Pierogi Bowl", teams: [["p4", 4], ["p5", 5]], theme: { accent: "#E8A43A", dark: "#291827", soft: "#F7E3BF" } }),
+          pendingMatchup({ id: "PQ2", round: "first", slot: "first-lower", roundName: "First Round", bowlName: "The Bloodbath Bowl", teams: [["p3", 3], ["p6", 6]], theme: { accent: "#FF5A45", dark: "#2B080D", soft: "#F5D0CB" } }),
+          { type: "bye", id: "playoffs-bye-2", round: "first", slot: "bye-bottom", seed: 2, teamId: "p2" },
+          pendingMatchup({ id: "PS1", round: "semifinals", slot: "semi-upper", roundName: "Semifinal", bowlName: "R.A.N.D.O.M Bowl", teams: [["p1", 1], ["p4", 4]], theme: { accent: "#C56CFF", dark: "#130D35", soft: "#E9DAF7" } }),
+          pendingMatchup({ id: "PS2", round: "semifinals", slot: "semi-lower", roundName: "Semifinal", bowlName: "The Unprotected Sex Bowl", teams: [["p2", 2], ["p3", 3]], theme: { accent: "#E3A72F", dark: "#123E68", soft: "#F4E4B8" } }),
+          pendingMatchup({ id: "F1", round: "finals", slot: "final-championship", roundName: "Championship", bowlName: "The City of Homes Bowl", teams: [["p1", 1], ["p2", 2]], theme: { accent: "#F28C6B", dark: "#2C324B", soft: "#F6D8CF" } }),
+          pendingMatchup({ id: "F3", round: "finals", slot: "final-third", roundName: "Third Place Game", bowlName: "The Bronze Chair Bowl", teams: [["p3", 3], ["p4", 4]], theme: { accent: "#C9873F", dark: "#342027", soft: "#EAD4B8" } }),
+          pendingMatchup({ id: "F5", round: "finals", slot: "final-fifth", roundName: "Fifth Place Game", bowlName: "The Crosby Studios Bowl", teams: [["p5", 5], ["p6", 6]], theme: { accent: "#EBCB70", dark: "#10243F", soft: "#F1E2B8" } })
+        ],
+        connections: [
+          { from: "playoffs-bye-1", to: "PS1", result: "winner" },
+          { from: "PQ1", to: "PS1", result: "winner" },
+          { from: "playoffs-bye-2", to: "PS2", result: "winner" },
+          { from: "PQ2", to: "PS2", result: "winner" },
+          { from: "PS1", to: "F1", result: "winner" },
+          { from: "PS2", to: "F1", result: "winner" },
+          { from: "PS1", to: "F3", result: "loser" },
+          { from: "PS2", to: "F3", result: "loser" },
+          { from: "PQ1", to: "F5", result: "loser" },
+          { from: "PQ2", to: "F5", result: "loser" }
+        ]
+      },
+
+      consolation: {
+        label: "Consolation",
+        rounds: [
+          { key: "first", label: "First Round" },
+          { key: "semifinals", label: "Semifinals" },
+          { key: "finals", label: "Final Games" }
+        ],
+        cards: [
+          { type: "bye", id: "consolation-bye-1", round: "first", slot: "bye-top", seed: 1, teamId: "c1" },
+          pendingMatchup({ id: "CQ1", round: "first", slot: "first-upper", roundName: "First Round", plainHeader: true, teams: [["c4", 4], ["c5", 5]], theme: { accent: "#D8A24A", dark: "#27302F", soft: "#E6DDC9" } }),
+          pendingMatchup({ id: "CQ2", round: "first", slot: "first-lower", roundName: "First Round", plainHeader: true, teams: [["c3", 3], ["c6", 6]], theme: { accent: "#E06052", dark: "#2A1010", soft: "#E7CCC2" } }),
+          { type: "bye", id: "consolation-bye-2", round: "first", slot: "bye-bottom", seed: 2, teamId: "c2" },
+          pendingMatchup({ id: "CS1", round: "semifinals", slot: "semi-upper", roundName: "Semifinal", bowlName: "Totino's Pizza Roll Bowl", teams: [["c1", 1], ["c4", 4]], theme: { accent: "#F07832", dark: "#17243A", soft: "#F7D7B1" } }),
+          pendingMatchup({ id: "CS2", round: "semifinals", slot: "semi-lower", roundName: "Semifinal", bowlName: "The Battle of Iwo Jima", teams: [["c2", 2], ["c3", 3]], theme: { accent: "#C7CED6", dark: "#20252B", soft: "#E4E7EA" } }),
+          pendingMatchup({ id: "F7", round: "finals", slot: "final-championship", roundName: "Consolation Championship", bowlName: "The Brycen Buchanan Whinery Bowl", teams: [["c1", 1], ["c2", 2]], theme: { accent: "#D6A23F", dark: "#241927", soft: "#EAD7C0" } }),
+          pendingMatchup({ id: "F9", round: "finals", slot: "final-third", roundName: "Ninth Place Game", bowlName: "The Cody LeeGBTQ Trans Hawg Bowl", teams: [["c3", 3], ["c4", 4]], theme: { accent: "#3ED6E8", dark: "#1B1630", soft: "#D7F0F4" } }),
+          pendingMatchup({ id: "F11", round: "finals", slot: "final-fifth", roundName: "Last Place Game", bowlName: "The MR Memorial Bowl", teams: [["c5", 5], ["c6", 6]], theme: { accent: "#FF7A2F", dark: "#261217", soft: "#F2D1B5" } })
+        ],
+        connections: [
+          { from: "consolation-bye-1", to: "CS1", result: "winner" },
+          { from: "CQ1", to: "CS1", result: "winner" },
+          { from: "consolation-bye-2", to: "CS2", result: "winner" },
+          { from: "CQ2", to: "CS2", result: "winner" },
+          { from: "CS1", to: "F7", result: "winner" },
+          { from: "CS2", to: "F7", result: "winner" },
+          { from: "CS1", to: "F9", result: "loser" },
+          { from: "CS2", to: "F9", result: "loser" },
+          { from: "CQ1", to: "F11", result: "loser" },
+          { from: "CQ2", to: "F11", result: "loser" }
+        ]
+      }
+    },
+
+//END YEAR 2026
 
 //START YEAR 2025
 
@@ -16647,7 +16780,7 @@ const roundLabel = card.bowlName
 
     return `
       <button
-        class="matchup-card"
+        class="matchup-card${card.plainHeader ? " matchup-card--plain-header" : ""}"
         type="button"
         data-card-id="${escapeAttribute(card.id)}"
         data-matchup-id="${escapeAttribute(card.id)}"
@@ -16946,9 +17079,7 @@ elements.modalContent.style.setProperty(
   }
 
   function renderModalContent(season, matchup) {
-    const title = matchup.bowlName
-      ? `${matchup.roundName} — ${matchup.bowlName}`
-      : matchup.roundName;
+    const title = matchup.bowlName || matchup.roundName;
 
 const eyebrow = matchup.bowlName
   ? `
@@ -16972,6 +17103,14 @@ const eyebrow = matchup.bowlName
     const teamB =
       season.teams[teamBEntry.teamId];
 
+    const hasStarters = [teamAEntry, teamBEntry].some(
+      (entry) => entry.lineup.starters.length > 0
+    );
+
+    const hasBench = [teamAEntry, teamBEntry].some(
+      (entry) => entry.lineup.bench.length > 0
+    );
+
     return `
       <header
         class="matchup-modal__hero"
@@ -16990,7 +17129,7 @@ ${eyebrow}
       <div class="matchup-modal__body">
         <section
           class="matchup-scoreboard"
-          aria-label="Final score"
+          aria-label="Matchup details"
         >
           ${renderScoreboardTeam(
             teamA,
@@ -17001,7 +17140,7 @@ ${eyebrow}
             class="matchup-scoreboard__versus"
             aria-hidden="true"
           >
-            FINAL
+            ${matchup.pending ? "VS" : hasStarters ? "FINAL" : "VS"}
           </div>
 
           ${renderScoreboardTeam(
@@ -17010,7 +17149,7 @@ ${eyebrow}
           )}
         </section>
 
-        <section
+        ${hasStarters ? `<section
           class="lineup-section"
           aria-labelledby="starting-lineups-title"
         >
@@ -17040,9 +17179,12 @@ ${eyebrow}
               "Starters"
             )}
           </div>
-        </section>
+        </section>` : `
+        <p class="lineup-section__empty">
+          Lineups and statistics will be available after this matchup is played.
+        </p>`}
 
-        <div class="bench-control">
+        ${hasBench ? `<div class="bench-control">
           <button
             class="bench-control__button"
             type="button"
@@ -17082,13 +17224,13 @@ ${eyebrow}
               "Bench"
             )}
           </div>
-        </section>
+        </section>` : ""}
       </div>
     `;
   }
 
   function renderScoreboardTeam(team, entry) {
-    const showTouchdowns = state.year >= 2019;
+    const showTouchdowns = state.year >= 2019 && entry.touchdowns != null;
     const artStyle = team.art
       ? ` style="--team-art: url('${escapeCssUrl(team.art)}')"`
       : "";
@@ -17107,13 +17249,13 @@ ${eyebrow}
           ${escapeHTML(team.name)}
         </h3>
 
-        <p class="matchup-scoreboard__owner">
+        ${team.owner ? `<p class="matchup-scoreboard__owner">
           Owner: ${escapeHTML(team.owner)}
-        </p>
+        </p>` : ""}
 
         <div class="matchup-scoreboard__stats">
           <strong class="matchup-scoreboard__score">
-            ${formatScore(entry.score)}
+            ${entry.score == null ? "—" : formatScore(entry.score)}
           </strong>
 
 ${showTouchdowns

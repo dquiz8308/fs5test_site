@@ -335,7 +335,7 @@ button.matchup-card:focus-visible {
   min-height: 66px;
   padding: 12px 14px 10px;
   background:
-    linear-gradient(90deg, rgba(16, 28, 45, 0.98), rgba(16, 28, 45, 0.7)),
+    linear-gradient(90deg, rgba(16, 28, 45, 0.68), rgba(16, 28, 45, 0.4)),
     var(--bowl-art, none) var(--bowl-position, center) / cover no-repeat;
   overflow: hidden;
 }
@@ -348,9 +348,18 @@ button.matchup-card:focus-visible {
   background: linear-gradient(90deg, var(--bracket-accent), transparent 85%);
 }
 
+.matchup-card--plain-header .matchup-card__header {
+  background:
+    linear-gradient(125deg, rgba(230, 184, 77, 0.19), rgba(255, 255, 255, 0.04)),
+    #15253b;
+}
+
 .matchup-card__title {
   position: relative;
   z-index: 1;
+  display: block;
+  width: 60%;
+  max-width: 60%;
   margin: 3px 0 0;
   color: #fff;
   font-size: clamp(0.92rem, 1.2vw, 1.06rem);
@@ -720,6 +729,16 @@ button.matchup-card:focus-visible {
   margin: 0;
   color: #667085;
   font-size: 0.82rem;
+}
+
+.lineup-section__empty {
+  margin: 28px 0 0;
+  padding: 18px;
+  border: 1px solid rgba(20, 32, 51, 0.12);
+  border-radius: 12px;
+  color: #667085;
+  background: rgba(255, 255, 255, 0.48);
+  text-align: center;
 }
 
 .lineup-grid {
@@ -1128,7 +1147,8 @@ body.bracket-modal-open {
 }
 
 .bracket-page .matchup-modal__title {
-  width: auto;
+  width: 60%;
+  max-width: 60%;
   min-height: 0;
   margin: 0;
   padding: 0 !important;
@@ -1164,8 +1184,8 @@ body.bracket-modal-open {
   background:
     linear-gradient(
       115deg,
-      color-mix(in srgb, var(--matchup-dark, #172840) 96%, transparent),
-      color-mix(in srgb, var(--matchup-dark, #172840) 72%, transparent)
+      color-mix(in srgb, var(--matchup-dark, #172840) 66%, transparent),
+      color-mix(in srgb, var(--matchup-dark, #172840) 52%, transparent)
     ),
     var(--bowl-art, none) var(--bowl-position, center) / cover no-repeat;
 }
@@ -1185,6 +1205,10 @@ body.bracket-modal-open {
 
 .matchup-modal__eyebrow {
   color: var(--matchup-accent, #e6b84d);
+  font-size: 0.92rem;
+  line-height: 1;
+  margin-bottom: -2px;
+  transform: translateY(-4px);
 }
 
 .matchup-scoreboard__team.is-winner {
